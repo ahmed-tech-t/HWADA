@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">HWA DA</string>
+    <string name="username_hint"><font size="15">Имя пользователя</font></string>
+    <string name="email_hint"><font size="15">Почта</font></string>
+    <string name="phone_hint"><font size="15">номер телефона</font></string>
+    <string name="password_hint"><font size="15">Пароль</font></string>
+    <string name="confirm_password_hint"><font size="15">подтвердите пароль</font></string>
+    <string name="signup"><font size="18">Зарегистрироваться</font></string>
+    <string name="already_have_account"><font size="13">Уже есть аккаунт</font></string>
+    <string name="login_link"><font size="15"><u>войти</u></font></string>
+    <string name="login">войти</string>
+
+    <string name="clientId">1067559738190-ap4407n27030u1r0lq48i6jpe90m34hi.apps.googleusercontent.com</string>
+    <string name="conWithGoogle"><font size="15">Продолжить через гугл</font></string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+</resources>

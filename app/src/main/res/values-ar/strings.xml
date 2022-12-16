@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">HWA DA</string>
+    <string name="username_hint"><font size="15">الاسم</font></string>
+    <string name="email_hint"><font size="15">الايميل</font></string>
+    <string name="phone_hint"><font size="15">الهاتف</font></string>
+    <string name="password_hint"><font size="15">الرقم السرى</font></string>
+    <string name="confirm_password_hint"><font size="15">تأكيد الرقم السرى</font></string>
+    <string name="signup"><font size="18">انشاء حساب</font></string>
+    <string name="already_have_account"><font size="13">لديك حساب بالفعل</font></string>
+    <string name="login_link"><font size="15"><u>تسجيل دخول</u></font></string>
+    <string name="login">تسجيل دخول</string>
+    <string name="clientId">1067559738190-ap4407n27030u1r0lq48i6jpe90m34hi.apps.googleusercontent.com</string>
+    <string name="conWithGoogle"><font size="15">تابع باستخدام جوجل</font></string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+</resources>

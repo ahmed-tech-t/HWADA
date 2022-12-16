@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1067559738190",
+    "firebase_url": "https://hwada-3b250-default-rtdb.firebaseio.com",
+    "project_id": "hwada-3b250",
+    "storage_bucket": "hwada-3b250.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1067559738190:android:08448a877e8310f23e5c1f",
+        "android_client_info": {
+          "package_name": "com.example.hwada"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1067559738190-2o2tjqr5cd6n9u0qfoo47d6h2ij94dbr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.hwada",
+            "certificate_hash": "8b47e3494c4f826f2cbbee1461e5fae1186bd088"
+          }
+        },
+        {
+          "client_id": "1067559738190-ap4407n27030u1r0lq48i6jpe90m34hi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAavrUyrZVbCCN57CIYO0I4jja9XJM02hM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1067559738190-ap4407n27030u1r0lq48i6jpe90m34hi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

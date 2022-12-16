@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">HWA DA</string>
+    <string name="username_hint"><font size="15">UserName</font></string>
+    <string name="email_hint"><font size="15">Email</font></string>
+    <string name="phone_hint"><font size="15">Phone</font></string>
+    <string name="password_hint"><font size="15">Password</font></string>
+    <string name="confirm_password_hint"><font size="15">Confirm Password</font></string>
+    <string name="signup">SignUp</string>
+    <string name="already_have_account"><font size="13">Already have account</font></string>
+    <string name="login_link"><font size="15"><u>login</u></font></string>
+    <string name="signUp_link" translatable="false"><font size="15"><u>signUp</u></font></string>
+    <string name="not_having_account" translatable="false">don\'t have account</string>
+    <string name="login">Login</string>
+    <string name="clientId">1067559738190-ap4407n27030u1r0lq48i6jpe90m34hi.apps.googleusercontent.com</string>
+    <string name="conWithGoogle"><font size="15">Continue with google</font></string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="yourAddress"><font size="15">your address</font></string>
+    <string name="whatDoYouWant"><font size="15">what do you want</font></string>
+    <string name="homeFood"><font size="12">home food</font></string>
+    <string name="worker"><font size="12">worker</font></string>
+    <string name="freelance"><font size="12">freelance</font></string>
+    <string name="handcraft"><font size="12">handcraft</font></string>
+    <string name="jop"><font size="18">jop</font></string>
+    <string name="away"><font size="10">away</font></string>
+    <string name="title_activity_map">Map</string>
+    <string name="loadingYourLocation"><font size="18">Loading Your Location ...</font></string>
+    <string name="save">save</string>
+    <string name="home">home</string>
+    <string name="account">account</string>
+    <string name="chat">chat</string>
+    <string name="favorites" >favorites</string>
+</resources>
