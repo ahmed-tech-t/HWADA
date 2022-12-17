@@ -1,15 +1,20 @@
 package com.example.hwada.ui;
 
+import static androidx.fragment.app.FragmentManager.TAG;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -23,6 +28,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Looper;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -30,9 +36,12 @@ import android.view.WindowManager;
 
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
-import com.example.hwada.adapter.MainAdapter;
 import com.example.hwada.databinding.ActivityMainBinding;
-import com.example.hwada.viewmodel.AdsViewModel;
+import com.example.hwada.ui.view.AccountFragment;
+import com.example.hwada.ui.view.ChatFragment;
+import com.example.hwada.ui.view.FavoritesFragment;
+import com.example.hwada.ui.view.HomeFragment;
+import com.example.hwada.viewmodel.UserViewModel;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
@@ -46,54 +55,45 @@ import java.util.List;
 import java.util.Locale;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    AdsViewModel viewModel;
-    MainAdapter adapter;
+public class MainActivity extends AppCompatActivity {
+
     ActivityMainBinding binding;
     Dialog locationDialog;
     int PERMISSION_ID = 1;
     private User user;
+    FragmentManager fragmentManager;
+    FragmentTransaction fragmentTransaction;
+    private UserViewModel userViewModel ;
 
     FusedLocationProviderClient mFusedLocationClient;
 
+    @SuppressLint("RestrictedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
+        callHomeFragment();
+        navBarOnSelected();
+
         Intent intent = getIntent();
         user = (User) intent.getParcelableExtra("user");
+        userViewModel= ViewModelProviders.of(this).get(UserViewModel.class);
 
+        if(user.getLocation()!=null){
+            userViewModel.setUser(user);
+        }
+
+        //disable middle button in bottom nav bar
+        binding.bottomNavView.getMenu().getItem(2).setEnabled(false) ;
         //set user location
-        if(user.getLocation()!=null) getUserAddress(user.getLocation());
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        binding.userAddress.setOnClickListener(this);
-        viewModel = new ViewModelProvider(this, (ViewModelProvider.Factory) ViewModelProvider.AndroidViewModelFactory.getInstance(this.getApplication())).get(AdsViewModel.class);
-
-        setAdsToList();
         getLastLocation();
-    }
 
-    public void setAdsToList() {
-        adapter = new MainAdapter();
-        binding.mainRecycler.setAdapter(adapter);
-        viewModel.getAllAds();
-        viewModel.adsLiveData.observe(this, ads -> {
-            adapter.setList(ads);
-        });
-        binding.mainRecycler.setLayoutManager(new LinearLayoutManager(this));
-    }
 
-    @Override
-    public void onClick(View v) {
-        if (v.getId() == binding.userAddress.getId()) {
-            Intent intent = new Intent(MainActivity.this, MapActivity.class);
-            intent.putExtra("user", user);
-            startActivity(intent);
-        }
     }
 
     public void setLocationDialog() {
@@ -182,11 +182,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                // Log.e(TAG, "location = null ");
                             } else {
                                 user.setLocation(location);
-                                getUserAddress(location);
-
+                                userViewModel.setUser(user);
                                 //TODO save to dataBase
+
                                 if(locationDialog.isShowing()) locationDialog.dismiss();
-                               // Log.e(TAG, "getLastLocation: close location dialog" );
                             }
                         }
                     });
@@ -219,23 +218,50 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void onLocationResult(LocationResult locationResult) {
             Location location = locationResult.getLastLocation();
-           // Log.e(TAG, "onLocationChanged: "+location.getLatitude() + " " + location.getLongitude());
             user.setLocation(location);
-            getUserAddress(location);
             if(locationDialog.isShowing()) locationDialog.dismiss();
             //TODO save to dataBase
+            userViewModel.setUser(user);
+
+
         }
     };
 
-    public void getUserAddress(Location location){
-        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-        try {
-            List<Address> addresses =  geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-        String address = addresses.get(0).getAddressLine(0);
-            address = address.split(",")[0]+ address.split(",")[1] ;
-            binding.userAddress.setText(address);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private void callHomeFragment(){
+        fragmentManager = getSupportFragmentManager();
+        fragmentTransaction = fragmentManager.beginTransaction();
+
+        fragmentTransaction.replace(R.id.main_fragment_container, new HomeFragment());
+        fragmentTransaction.commit();
+    }
+    private void navBarOnSelected(){
+        binding.bottomNavView.setOnItemSelectedListener(item -> {
+            try {
+                switch (item.getItemId()){
+                    case R.id.home:
+                        callHomeFragment();
+                        break;
+                    case R.id.chat:
+                        fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction.replace(R.id.main_fragment_container, new ChatFragment());
+                        fragmentTransaction.commit();
+                        break;
+                    case R.id.favorites:
+                        fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction.replace(R.id.main_fragment_container, new FavoritesFragment());
+                        fragmentTransaction.commit();
+                        break;
+                    case R.id.account:
+                        fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction.replace(R.id.main_fragment_container, new AccountFragment());
+                        fragmentTransaction.commit();
+                        break;
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            return true;
+        });
+
     }
 }

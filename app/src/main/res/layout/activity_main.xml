@@ -9,250 +9,59 @@
     android:layout_height="match_parent"
     tools:context=".ui.MainActivity">
 
+
+
     <LinearLayout
-        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="60dp"
-        android:background="@drawable/white_background"
-        android:orientation="vertical">
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:src="@drawable/arrow_up" />
-
-        <EditText
-            android:id="@+id/user_address"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginRight="20dp"
-            android:background="@drawable/frame"
-
-            android:clickable="true"
-
-            android:drawableLeft="@drawable/location_icon"
-
-            android:drawableRight="@drawable/arrow_right"
-            android:drawablePadding="10dp"
-            android:focusable="false"
-
-            android:hint="@string/yourAddress"
-
-            android:inputType="text"
-            android:maxLines="1"
-
-            android:padding="5dp"
-            android:paddingLeft="10dp"
-
-            android:paddingTop="2dp"
-            android:paddingRight="10dp"
-
-            android:paddingBottom="2dp"
-            android:textColorHint="@color/gray"
-
-            android:textSize="15dp"
-
-            />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginRight="20dp"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <EditText
-                android:id="@+id/ed_search"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
-
-                android:layout_weight="1"
-                android:background="@drawable/frame"
-
-                android:drawableLeft="@drawable/search_icon"
-
-                android:drawablePadding="10dp"
-
-                android:hint="@string/whatDoYouWant"
-
-                android:inputType="text"
-                android:maxLines="1"
-
-                android:paddingLeft="10dp"
-                android:paddingTop="2dp"
-
-                android:paddingRight="10dp"
-                android:paddingBottom="2dp"
-
-                android:textColorHint="@color/gray"
-
-                />
-
-            <ImageView
-                android:id="@+id/im_filter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                android:src="@drawable/filter_icon" />
-
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="6dp"
-            android:layout_marginTop="15dp"
-            android:background="@color/white_gray" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginRight="20dp"
-            android:orientation="horizontal">
-
-            <LinearLayout
-                android:id="@+id/home_food_category"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/circle"
-                    android:backgroundTint="@color/yellow"
-                    android:gravity="center">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/burger_icon" />
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/homeFood"
-                    android:textColor="@color/black" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/worker_category"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/circle"
-                    android:backgroundTint="@color/sky_blue"
-                    android:gravity="center">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/worker_icon" />
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/worker"
-                    android:textColor="@color/black" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/freelance_category"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/circle"
-                    android:backgroundTint="@color/Turquoise"
-                    android:gravity="center">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/freelance_icon" />
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/freelance"
-                    android:textColor="@color/black" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/handcraft_category"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/circle"
-                    android:backgroundTint="@color/apple_green"
-                    android:gravity="center">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/handcraft_icon" />
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/handcraft"
-                    android:textColor="@color/black" />
-
-            </LinearLayout>
-        </LinearLayout>
+        android:id="@+id/main_fragment_container"
+        android:orientation="vertical"
+        />
+<com.google.android.material.bottomappbar.BottomAppBar
+    android:id="@+id/bottom_app_bar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:layout_margin="0dp"
+    app:backgroundTint="@color/nav_color"
+    app:fabCradleRoundedCornerRadius="40dp"
+    app:fabCradleMargin="10dp"
 
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="6dp"
-            android:layout_marginTop="15dp"
-            android:background="@color/white_gray" />
+    >
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/main_recycler"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="5dp"
-            android:orientation="vertical">
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_nav_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:menu="@menu/bottom_nav_menu"
+        android:background="@drawable/nav_bar"
+        android:layout_gravity="bottom"
+        android:layout_alignParentBottom="true"
+        app:itemIconTint="@color/black"
+        app:itemTextColor="@color/black"
+        app:labelVisibilityMode="labeled"
+        />
+</com.google.android.material.bottomappbar.BottomAppBar>
 
-        </androidx.recyclerview.widget.RecyclerView>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/add_nav_icon"
+        app:maxImageSize="50dp"
+        android:clickable="true"
+
+        android:backgroundTint="@color/white"
+        app:layout_anchor="@id/bottom_app_bar"
+        app:backgroundTint="#F2F2F2"
+
+        />
+
+=
 
 
-    </LinearLayout>
+
+
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

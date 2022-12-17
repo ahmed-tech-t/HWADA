@@ -29,5 +29,5 @@
     <string name="home">home</string>
     <string name="account">account</string>
     <string name="chat">chat</string>
-    <string name="favorites" >favorites</string>
+    <string name="favorites">favorites</string>
 </resources>

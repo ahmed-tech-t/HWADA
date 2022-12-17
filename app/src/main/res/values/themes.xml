@@ -14,7 +14,10 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- remove notification color -->
         <item name="android:windowTranslucentStatus">true</item>
-        <item name="android:windowTranslucentNavigation">true</item>
+      <!--  <item name="android:windowTranslucentNavigation">true</item>-->
+
+        <item name="android:navigationBarColor">@color/nav_color</item>
+
     </style>
 
     <style name="Button.background" parent="ThemeOverlay.AppCompat">

@@ -15,4 +15,5 @@
     <color name="Turquoise">#2DCF79</color>
     <color name="apple_green">#A6EE29</color>
     <color name="transparent">#00000000</color>
+    <color name="nav_color">#FDFDFD</color>
 </resources>
