@@ -5,8 +5,10 @@ import static androidx.fragment.app.FragmentManager.TAG;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -14,7 +16,6 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -74,12 +75,23 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
-        callHomeFragment();
-        navBarOnSelected();
-
+        // get user data
         Intent intent = getIntent();
         user = (User) intent.getParcelableExtra("user");
+
+        // ##############
+
+        callFragment(new HomeFragment(),"home");
+        navBarOnSelected();
         userViewModel= ViewModelProviders.of(this).get(UserViewModel.class);
+        ViewModelProviders.of(this).get(UserViewModel.class).getUser().observe(this, new Observer<User>() {
+            @Override
+            public void onChanged(User u) {
+                user = u;
+                //TODO SAVE TO DATA BASE
+            }
+        });
+
 
         if(user.getLocation()!=null){
             userViewModel.setUser(user);
@@ -227,34 +239,21 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private void callHomeFragment(){
-        fragmentManager = getSupportFragmentManager();
-        fragmentTransaction = fragmentManager.beginTransaction();
-
-        fragmentTransaction.replace(R.id.main_fragment_container, new HomeFragment());
-        fragmentTransaction.commit();
-    }
     private void navBarOnSelected(){
         binding.bottomNavView.setOnItemSelectedListener(item -> {
             try {
                 switch (item.getItemId()){
                     case R.id.home:
-                        callHomeFragment();
+                        callFragment(new HomeFragment(),"home");
                         break;
                     case R.id.chat:
-                        fragmentTransaction = fragmentManager.beginTransaction();
-                        fragmentTransaction.replace(R.id.main_fragment_container, new ChatFragment());
-                        fragmentTransaction.commit();
+                      callFragment(new ChatFragment(),"chat");
                         break;
                     case R.id.favorites:
-                        fragmentTransaction = fragmentManager.beginTransaction();
-                        fragmentTransaction.replace(R.id.main_fragment_container, new FavoritesFragment());
-                        fragmentTransaction.commit();
-                        break;
+                     callFragment(new FavoritesFragment(),"fav");
+                             break;
                     case R.id.account:
-                        fragmentTransaction = fragmentManager.beginTransaction();
-                        fragmentTransaction.replace(R.id.main_fragment_container, new AccountFragment());
-                        fragmentTransaction.commit();
+                      callFragment(new AccountFragment(),"account");
                         break;
                 }
             }catch (Exception e){
@@ -263,5 +262,15 @@ public class MainActivity extends AppCompatActivity {
             return true;
         });
 
+    }
+
+    private void callFragment(Fragment fragment,String tag){
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("user", user);
+        fragment.setArguments(bundle);
+        fragmentManager = getSupportFragmentManager();
+        fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.main_fragment_container, fragment,tag);
+        fragmentTransaction.commit();
     }
 }

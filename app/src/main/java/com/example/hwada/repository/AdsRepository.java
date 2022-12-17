@@ -13,6 +13,7 @@ import java.util.ArrayList;
 public class AdsRepository {
     private Application application ;
     MutableLiveData<ArrayList<Ads>> adsMutableLiveData;
+    MutableLiveData<ArrayList<Ads>> favAdsMutableLiveData;
 
     public MutableLiveData<ArrayList<Ads>> getAllAds(){
         ArrayList<Ads> list = new ArrayList<>();
@@ -30,9 +31,26 @@ public class AdsRepository {
         return  adsMutableLiveData;
     }
 
+    public MutableLiveData<ArrayList<Ads>> getFavAds(User user){
+        ArrayList<Ads> list = new ArrayList<>();
+
+        list.add(new Ads("worker1","mohamed said","4 Nov" ,"10 km"));
+        list.add(new Ads("worker2","mohamed said","4 Nov" ,"10 km"));
+        list.add(new Ads("worker3","mohamed said","4 Nov" ,"10 km"));
+        list.add(new Ads("worker4","mohamed said","4 Nov" ,"10 km"));
+        list.add(new Ads("worker5","mohamed said","4 Nov" ,"10 km"));
+        list.add(new Ads("worker6","mohamed said","4 Nov" ,"10 km"));
+        list.add(new Ads("worker7","mohamed said","4 Nov" ,"10 km"));
+        list.add(new Ads("worker8","mohamed said","4 Nov" ,"10 km"));
+
+        favAdsMutableLiveData.setValue(list);
+        return  favAdsMutableLiveData;
+    }
+
     public AdsRepository(Application application){
         this.application = application;
         adsMutableLiveData = new MutableLiveData<>();
+        favAdsMutableLiveData =new MutableLiveData<>();
 
     }
 

@@ -15,9 +15,9 @@ import java.util.List;
 public class User implements Parcelable {
     private String uId ;
     private  String username;
-
     private Location location;
 
+    private ArrayList <String> favoriteAds;
     @SuppressWarnings("WeakerAccess")
     private  String email;
     private String phone ;
@@ -32,29 +32,35 @@ public class User implements Parcelable {
     boolean isNew , isCreated;
 
     public User() {
+        this.favoriteAds = new ArrayList<>();
     }
 
     public User(String username, String email, String phone) {
         this.username = username;
         this.email = email;
         this.phone = phone;
+        this.favoriteAds = new ArrayList<>();
     }
 
     public User(String uId, String email) {
         this.uId = uId;
         this.email = email;
+        this.favoriteAds = new ArrayList<>();
     }
     public User(String uId, String username, String email, String phone) {
         this.uId = uId;
         this.username = username;
         this.email = email;
         this.phone = phone;
+        this.favoriteAds = new ArrayList<>();
     }
+
 
     protected User(Parcel in) {
         uId = in.readString();
         username = in.readString();
         location = in.readParcelable(Location.class.getClassLoader());
+        favoriteAds = in.createStringArrayList();
         email = in.readString();
         phone = in.readString();
         aboutYou = in.readString();
@@ -165,6 +171,20 @@ public class User implements Parcelable {
         this.location = location;
     }
 
+    public ArrayList<String> getFavoriteAds() {
+        return favoriteAds;
+    }
+    public void addOneAdToFavorite(String ad) {
+        this.favoriteAds.add(ad);
+    }
+    public void removeOneAdFromFavorite(String ad) {
+        this.favoriteAds.remove(ad);
+    }
+    public void setFavoriteAds(ArrayList<String> favoriteAds) {
+        this.favoriteAds = favoriteAds;
+    }
+
+
 
     @Override
     public int describeContents() {
@@ -176,6 +196,7 @@ public class User implements Parcelable {
         dest.writeString(uId);
         dest.writeString(username);
         dest.writeParcelable(location, flags);
+        dest.writeStringList(favoriteAds);
         dest.writeString(email);
         dest.writeString(phone);
         dest.writeString(aboutYou);

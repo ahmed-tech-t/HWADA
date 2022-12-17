@@ -17,15 +17,17 @@ import java.util.ArrayList;
 public class AdsViewModel extends AndroidViewModel {
     AdsRepository repository ;
     public LiveData<ArrayList<Ads>> adsLiveData;
+    public LiveData<ArrayList<Ads>> favAdsLiveData;
 
 
     public void getAllAds(){
         adsLiveData = repository.getAllAds();
     }
 
+    public void getFavAds(User user){favAdsLiveData = repository.getFavAds(user);}
+
     public AdsViewModel(@NonNull Application application) {
         super(application);
-
         repository = new AdsRepository(application);
     }
 }

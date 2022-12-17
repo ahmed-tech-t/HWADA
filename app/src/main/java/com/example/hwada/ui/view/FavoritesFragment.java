@@ -1,66 +1,97 @@
 package com.example.hwada.ui.view;
 
+import static androidx.fragment.app.FragmentManager.TAG;
+
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
+import com.example.hwada.Model.Ads;
+import com.example.hwada.Model.User;
 import com.example.hwada.R;
+import com.example.hwada.adapter.FavoritesAdapter;
+import com.example.hwada.adapter.HomeAdapter;
+import com.example.hwada.viewmodel.AdsViewModel;
+import com.example.hwada.viewmodel.UserViewModel;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link FavoritesFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class FavoritesFragment extends Fragment {
+import java.util.ArrayList;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+public class FavoritesFragment extends Fragment implements FavoritesAdapter.OnItemListener {
 
-    public FavoritesFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment FavoritesFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static FavoritesFragment newInstance(String param1, String param2) {
-        FavoritesFragment fragment = new FavoritesFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
+    UserViewModel userViewModel ;
+    User user;
+    FavoritesAdapter adapter;
+    AdsViewModel viewModel;
+    RecyclerView mainRecycler;
+    ArrayList<Ads> adsList;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_favorites, container, false);
+        View v= inflater.inflate(R.layout.fragment_favorites, container, false);
+        mainRecycler = v.findViewById(R.id.main_recycler);
+        return  v;
+    }
+
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        //get user from Main activity
+        user = getArguments().getParcelable("user");
+
+        userViewModel = ViewModelProviders.of(getActivity()).get(UserViewModel.class);
+        ViewModelProviders.of(getActivity()).get(UserViewModel.class).getUser().observe(getActivity(), new Observer<User>() {
+            @Override
+            public void onChanged(User u) {
+                user = u;
+            }
+        });
+
+        viewModel = new ViewModelProvider(this, (ViewModelProvider.Factory) ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(AdsViewModel.class);
+        setAdsToList();
+    }
+
+    public void setAdsToList() {
+        adapter = new FavoritesAdapter();
+        try {
+            mainRecycler.setAdapter(adapter);
+            viewModel.getFavAds(user);
+            viewModel.favAdsLiveData.observe(getActivity(), ads -> {
+                adsList = ads;
+                adapter.setList(ads,this);
+            });
+            mainRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void getItemPosition(int position) {
+
+    }
+
+    @Override
+    public void getFavItemPosition(int position, ImageView imageView) {
+        imageView.setImageResource(R.drawable.fav_uncheck_icon);
+        user.removeOneAdFromFavorite(adsList.get(position).getId());
+        userViewModel.setUser(user);
+        adapter.removeOneItem(position);
     }
 }

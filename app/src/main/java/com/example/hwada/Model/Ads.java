@@ -1,11 +1,21 @@
 package com.example.hwada.Model;
 
 public class Ads {
+
+
+    private String id;
     private String jop;
     private String fullName;
     private String date ;
     private String distance ;
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
     public String getJop() {
         return jop;
     }
