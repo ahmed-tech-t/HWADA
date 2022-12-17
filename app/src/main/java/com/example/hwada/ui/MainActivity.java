@@ -268,8 +268,13 @@ public class MainActivity extends AppCompatActivity {
         Bundle bundle = new Bundle();
         bundle.putParcelable("user", user);
         fragment.setArguments(bundle);
+
+
         fragmentManager = getSupportFragmentManager();
-        fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction = fragmentManager.beginTransaction()
+                .setCustomAnimations(R.anim.to_up,R.anim.to_down);
+        //set Animation
+
         fragmentTransaction.replace(R.id.main_fragment_container, fragment,tag);
         fragmentTransaction.commit();
     }
