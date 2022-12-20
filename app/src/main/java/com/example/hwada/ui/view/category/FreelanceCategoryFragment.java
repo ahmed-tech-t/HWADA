@@ -10,14 +10,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
+import com.example.hwada.ui.CategoryActivity;
 import com.example.hwada.ui.MainActivity;
 
 public class FreelanceCategoryFragment extends Fragment implements View.OnClickListener {
 
     ImageView arrow ;
+    TextView ride ,delivery;
     User user;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -27,7 +30,11 @@ public class FreelanceCategoryFragment extends Fragment implements View.OnClickL
         user = getArguments().getParcelable("user");
 
         arrow = v.findViewById(R.id.arrow_freelance_category);
+        ride =v.findViewById(R.id.ride_tv);
+        delivery =v.findViewById(R.id.delivery_tv);
         arrow.setOnClickListener(this);
+        ride.setOnClickListener(this);
+        delivery.setOnClickListener(this);
         return v ;
     }
 
@@ -35,6 +42,10 @@ public class FreelanceCategoryFragment extends Fragment implements View.OnClickL
     public void onClick(View v) {
         if(v.getId()==arrow.getId()){
             callMainActivity();
+        }else if (v.getId()==ride.getId()){
+            ((CategoryActivity) getActivity()).callRideFragment();
+        }else if (v.getId()==delivery.getId()){
+            ((CategoryActivity) getActivity()).callDeliveryFragment();
         }
     }
 

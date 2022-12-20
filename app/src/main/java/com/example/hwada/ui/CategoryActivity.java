@@ -14,7 +14,9 @@ import com.example.hwada.Model.User;
 import com.example.hwada.R;
 import com.example.hwada.databinding.ActivityCategoryBinding;
 import com.example.hwada.databinding.ActivityMainBinding;
+import com.example.hwada.ui.view.category.DeliveryFragment;
 import com.example.hwada.ui.view.category.FreelanceCategoryFragment;
+import com.example.hwada.ui.view.category.RideFragment;
 import com.example.hwada.ui.view.category.WorkerCategoryFragment;
 
 public class CategoryActivity extends AppCompatActivity {
@@ -67,6 +69,8 @@ public class CategoryActivity extends AppCompatActivity {
         //set Animation
 
         fragmentTransaction.replace(R.id.category_fragment_container, fragment,tag);
+
+        //TODO on back pressed from fragment
         fragmentTransaction.commit();
     }
     private void callMainActivity(){
@@ -76,9 +80,21 @@ public class CategoryActivity extends AppCompatActivity {
         startActivity(intent,b);
         finish();
     }
+    public void callRideFragment(){
+        binding.topIcons.setVisibility(View.VISIBLE);
+        binding.leftImage.setImageResource(R.drawable.car_image_background);
+        binding.rightImage.setImageResource(R.drawable.bus_image_background);
+        callFragment(new RideFragment(),"ride");
+    }
+    public void callDeliveryFragment(){
+        binding.topIcons.setVisibility(View.VISIBLE);
+        binding.leftImage.setImageResource(R.drawable.car_image_background);
+        binding.rightImage.setImageResource(R.drawable.cycle_image_background);
+        callFragment(new DeliveryFragment(),"delivery");
+    }
 
     @Override
     public void onBackPressed() {
-        callMainActivity();
+      callMainActivity();
     }
 }

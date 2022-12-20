@@ -52,4 +52,12 @@
     <string name="nurse">Nurse</string>
     <string name="delivery">Delivery</string>
     <string name="ride">Ride</string>
+    <string name="car">Car</string>
+    <string name="bus">Bus</string>
+    <string name="on_foot">On foot</string>
+    <string name="cycle">Cycle</string>
+    <string name="motorcycle">Motorcycle</string>
+    <string name="tricycle">Tricycle</string>
+    <string name="mini_van">Mini van</string>
+    <string name="van">van</string>
 </resources>
