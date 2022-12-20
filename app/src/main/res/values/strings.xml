@@ -30,4 +30,26 @@
     <string name="account">account</string>
     <string name="chat">chat</string>
     <string name="favorites">favorites</string>
+    <string name="myAds">My Ads</string>
+    <string name="helpAndSupport">Help \&amp; support  </string>
+    <string name="language">Language</string>
+    <string name="joinBlueMemberShip">Join blue Membership</string>
+    <string name="cancelSubscription">Cancel subscription</string>
+    <string name="logOut">Log out</string>
+    <string name="viewAndEditProfile"><font size="18"><u>View and edit profile</u></font></string>
+    <string name="blue">Blue</string>
+    <string name="electrical">Electrical</string>
+    <string name="ceramic_Worker">Ceramic worker</string>
+    <string name="upholsterers">Upholsterers</string>
+    <string name="builder">Builder</string>
+    <string name="carpenter">Carpenter</string>
+    <string name="painter">Painter</string>
+    <string name="plasterer">Plasterer</string>
+    <string name="technical">Technical</string>
+    <string name="plumber">Plumber</string>
+    <string name="other">other</string>
+    <string name="maid">Maid</string>
+    <string name="nurse">Nurse</string>
+    <string name="delivery">Delivery</string>
+    <string name="ride">Ride</string>
 </resources>

@@ -102,10 +102,6 @@ private FirebaseAuth auth ;
     }
 
 
-    public MutableLiveData<Boolean> getUserLoggedMutableLiveData() {
-        return userLoggedMutableLiveData;
-    }
-
     public MutableLiveData<User> signUpWithEmail(User user , String password){
         Log.e(TAG, "signUpWithEmail: "+ user.getEmail());
         auth.createUserWithEmailAndPassword(user.getEmail(),password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -155,7 +151,6 @@ private FirebaseAuth auth ;
 
     public void logout(){
         auth.signOut();
-        userLoggedMutableLiveData.postValue(true);
     }
 
 }

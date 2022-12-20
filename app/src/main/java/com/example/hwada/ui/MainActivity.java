@@ -1,7 +1,5 @@
 package com.example.hwada.ui;
 
-import static androidx.fragment.app.FragmentManager.TAG;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -9,7 +7,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.Manifest;
@@ -22,14 +19,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Looper;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -38,10 +32,10 @@ import android.view.WindowManager;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
 import com.example.hwada.databinding.ActivityMainBinding;
-import com.example.hwada.ui.view.AccountFragment;
-import com.example.hwada.ui.view.ChatFragment;
-import com.example.hwada.ui.view.FavoritesFragment;
-import com.example.hwada.ui.view.HomeFragment;
+import com.example.hwada.ui.view.main.AccountFragment;
+import com.example.hwada.ui.view.main.ChatFragment;
+import com.example.hwada.ui.view.main.FavoritesFragment;
+import com.example.hwada.ui.view.main.HomeFragment;
 import com.example.hwada.viewmodel.UserViewModel;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -50,10 +44,6 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.location.FusedLocationProviderClient;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
 
 
 public class MainActivity extends AppCompatActivity {

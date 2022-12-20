@@ -17,19 +17,15 @@ import java.net.PortUnreachableException;
 
 public class AuthViewModel extends AndroidViewModel {
     AuthenticationRepository repository ;
-    MutableLiveData<Boolean> loggedStatus;
     public LiveData<User> authenticatedUserLiveData;
     public LiveData<User> createdUserLiveData;
 
 
-    public MutableLiveData<Boolean> getLoggedStatus() {
-        return loggedStatus;
-    }
 
     public AuthViewModel(@NonNull Application application) {
         super(application);
         repository = new AuthenticationRepository(application);
-        loggedStatus = repository.getUserLoggedMutableLiveData();
+
     }
 
     public void signUpWithEmail (User user ,String password ){

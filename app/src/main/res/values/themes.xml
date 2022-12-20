@@ -17,6 +17,12 @@
       <!--  <item name="android:windowTranslucentNavigation">true</item>-->
 
         <item name="android:navigationBarColor">@color/nav_color</item>
+        
+        <!-- Enable Activity Transition -->
+        
+        <item name="android:windowActivityTransitions">true</item>
+        <item name="android:windowEnterTransition">@transition/trans_anim_in</item>
+        <item name="android:windowExitTransition">@transition/trans_anim_out</item>
 
     </style>
 
@@ -35,4 +41,8 @@
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
 
+    <style name="roundedImageViewRounded">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
 </resources>

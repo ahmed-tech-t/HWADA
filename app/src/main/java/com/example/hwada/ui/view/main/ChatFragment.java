@@ -1,4 +1,4 @@
-package com.example.hwada.ui.view;
+package com.example.hwada.ui.view.main;
 
 import android.os.Bundle;
 
