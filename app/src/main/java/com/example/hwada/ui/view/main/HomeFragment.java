@@ -1,10 +1,6 @@
 package com.example.hwada.ui.view.main;
 
-import static androidx.fragment.app.FragmentManager.TAG;
-
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.ActivityOptions;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
@@ -13,15 +9,11 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,8 +24,9 @@ import android.widget.LinearLayout;
 import com.example.hwada.Model.Ads;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
-import com.example.hwada.adapter.HomeAdapter;
+import com.example.hwada.adapter.AdsAdapter;
 import com.example.hwada.ui.CategoryActivity;
+import com.example.hwada.ui.AdsActivity;
 import com.example.hwada.ui.MapActivity;
 import com.example.hwada.viewmodel.AdsViewModel;
 import com.example.hwada.viewmodel.UserViewModel;
@@ -43,11 +36,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class HomeFragment extends Fragment implements View.OnClickListener , HomeAdapter.OnItemListener {
+public class HomeFragment extends Fragment implements View.OnClickListener , AdsAdapter.OnItemListener {
     AdsViewModel viewModel;
-    HomeAdapter adapter;
-    EditText userAddress ;
+
+    AdsAdapter adapter;
     RecyclerView mainRecycler;
+
+    EditText userAddress ;
     UserViewModel userViewModel ;
 
     private User user;
@@ -72,11 +67,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Hom
 
 
     public void setAdsToList() {
-        adapter = new HomeAdapter();
+        adapter = new AdsAdapter();
         try {
             mainRecycler.setAdapter(adapter);
-            viewModel.getAllAds();
-            viewModel.adsLiveData.observe(getActivity(), ads -> {
+            viewModel.getAllWorkersAds();
+            viewModel.workerAdsLiveData.observe(getActivity(), ads -> {
                 adsList = ads;
                 if(user!=null) {
                     adapter.setList(user,ads,this);
@@ -96,13 +91,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Hom
             intent.putExtra("user", user);
             startActivity(intent);
         }else if (v.getId() == foodCategory.getId()){
-            callCategoryActivity("food");
+            callAdsActivity("homeFood","");
         }else if (v.getId()==workerCategory.getId()){
             callCategoryActivity("worker");
         }else if (v.getId()==freelanceCategory.getId()){
             callCategoryActivity("freelance");
         }else if (v.getId()==handcraftCategory.getId()){
-            callCategoryActivity("handcraft");
+            callAdsActivity("handcraft","");
         }
     }
     public String getUserAddress(Location location){
@@ -131,7 +126,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Hom
                     if(isAdded()) userAddress.setText(getUserAddress(user.getLocation()));
                 }
             });
-            viewModel = new ViewModelProvider(this, (ViewModelProvider.Factory) ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(AdsViewModel.class);
+        viewModel = ViewModelProviders.of(getActivity()).get(AdsViewModel.class);
         setAdsToList();
     }
 
@@ -174,8 +169,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Hom
         Intent intent = new Intent(getActivity(), CategoryActivity.class);
         intent.putExtra("user",user);
         intent.putExtra("tag",tag);
-        Bundle b = ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle();
-        startActivity(intent,b);
+        startActivity(intent);
+       // getActivity().overridePendingTransition(R.anim.to_down,R.anim.to_up);
+    }
+    public void callAdsActivity(String category,String subCategory){
+        Intent intent = new Intent(getActivity(), AdsActivity.class);
+        intent.putExtra("user",user);
+        intent.putExtra("category",category);
+        intent.putExtra("subCategory",subCategory);
+        startActivity(intent);
     }
 
 }

@@ -16,12 +16,28 @@ import java.util.ArrayList;
 
 public class AdsViewModel extends AndroidViewModel {
     AdsRepository repository ;
-    public LiveData<ArrayList<Ads>> adsLiveData;
+    public LiveData<ArrayList<Ads>> workerAdsLiveData;
+    public LiveData<ArrayList<Ads>> homeFoodAdsLiveData;
+    public LiveData<ArrayList<Ads>> handcraftAdsLiveData;
+    public LiveData<ArrayList<Ads>> freelanceAdsLiveData;
+
     public LiveData<ArrayList<Ads>> favAdsLiveData;
 
 
-    public void getAllAds(){
-        adsLiveData = repository.getAllAds();
+    public void getAllFreelanceAds(String subCategory){
+        freelanceAdsLiveData = repository.getAllFreelanceAds(subCategory);
+    }
+
+    public void getAllWorkersAds(){
+        workerAdsLiveData = repository.getAllWorkersAds();
+    }
+
+    public void getAllHandcraftAds(){
+        handcraftAdsLiveData = repository.getAllHandcraftAds();
+    }
+
+    public void getAllHomeFoodAds(){
+        homeFoodAdsLiveData = repository.getAllHomeFoodAds();
     }
 
     public void getFavAds(User user){favAdsLiveData = repository.getFavAds(user);}

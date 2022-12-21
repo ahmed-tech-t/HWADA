@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:layout_marginTop="60dp"
     android:background="@drawable/white_background"
-    tools:context=".ui.view.category.WorkerCategoryFragment">
+    tools:context=".ui.view.category.worker.WorkerCategoryFragment">
 
     <LinearLayout
         android:id="@+id/linearLayout"

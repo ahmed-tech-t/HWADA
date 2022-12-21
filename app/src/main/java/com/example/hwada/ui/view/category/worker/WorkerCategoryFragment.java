@@ -1,4 +1,4 @@
-package com.example.hwada.ui.view.category;
+package com.example.hwada.ui.view.category.worker;
 
 import static androidx.fragment.app.FragmentManager.TAG;
 

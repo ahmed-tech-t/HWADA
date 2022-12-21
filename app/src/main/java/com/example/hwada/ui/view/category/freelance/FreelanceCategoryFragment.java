@@ -1,4 +1,4 @@
-package com.example.hwada.ui.view.category;
+package com.example.hwada.ui.view.category.freelance;
 
 import android.app.ActivityOptions;
 import android.content.Intent;
@@ -20,8 +20,9 @@ import com.example.hwada.ui.MainActivity;
 public class FreelanceCategoryFragment extends Fragment implements View.OnClickListener {
 
     ImageView arrow ;
-    TextView ride ,delivery;
+    TextView ride ,delivery ,nurse , maid ,other;
     User user;
+    String category = "freelance";
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -29,31 +30,38 @@ public class FreelanceCategoryFragment extends Fragment implements View.OnClickL
         View v =  inflater.inflate(R.layout.fragment_freelance_category, container, false);
         user = getArguments().getParcelable("user");
 
-        arrow = v.findViewById(R.id.arrow_freelance_category);
-        ride =v.findViewById(R.id.ride_tv);
-        delivery =v.findViewById(R.id.delivery_tv);
-        arrow.setOnClickListener(this);
-        ride.setOnClickListener(this);
-        delivery.setOnClickListener(this);
+        initVarAndSetListener(v);
         return v ;
     }
 
     @Override
     public void onClick(View v) {
         if(v.getId()==arrow.getId()){
-            callMainActivity();
+            ((CategoryActivity) getActivity()).callMainActivity();
         }else if (v.getId()==ride.getId()){
             ((CategoryActivity) getActivity()).callRideFragment();
         }else if (v.getId()==delivery.getId()){
             ((CategoryActivity) getActivity()).callDeliveryFragment();
+        }else if(v.getId()==nurse.getId()){
+            ((CategoryActivity) getActivity()).callAdsActivity(category,"nurse");
+        }else if(v.getId()==maid.getId()){
+            ((CategoryActivity) getActivity()).callAdsActivity(category,"maid");
+        }else if(v.getId()==other.getId()){
+            ((CategoryActivity) getActivity()).callAdsActivity(category,"other");
         }
     }
-
-    private void callMainActivity(){
-        Intent intent = new Intent(getActivity(), MainActivity.class);
-        intent.putExtra("user",user);
-        Bundle b = ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle();
-        startActivity(intent,b);
-        getActivity().finish();
+    private void initVarAndSetListener(View v){
+        arrow = v.findViewById(R.id.arrow_freelance_category);
+        ride =v.findViewById(R.id.ride_tv);
+        delivery =v.findViewById(R.id.delivery_tv);
+        nurse =v.findViewById(R.id.nurse_tv);
+        maid = v.findViewById(R.id.maid_tv);
+        other= v.findViewById(R.id.other_tv);
+        arrow.setOnClickListener(this);
+        ride.setOnClickListener(this);
+        delivery.setOnClickListener(this);
+        nurse.setOnClickListener(this);
+        maid.setOnClickListener(this);
+        other.setOnClickListener(this);
     }
 }

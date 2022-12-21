@@ -1,9 +1,6 @@
 package com.example.hwada.adapter;
 
 
-import static androidx.fragment.app.FragmentManager.TAG;
-
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +16,7 @@ import com.example.hwada.R;
 
 import java.util.ArrayList;
 
-public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder> {
+public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> {
     private ArrayList<Ads> list = new ArrayList();
     private User user ;
     OnItemListener pOnItemListener;

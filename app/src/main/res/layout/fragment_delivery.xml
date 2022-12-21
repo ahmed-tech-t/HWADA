@@ -4,7 +4,7 @@ xmlns:tools="http://schemas.android.com/tools"
 android:layout_width="match_parent"
 android:layout_height="match_parent"
 android:background="@drawable/white_background"
-tools:context=".ui.view.category.DeliveryFragment">
+tools:context=".ui.view.category.freelance.DeliveryFragment">
 
 <LinearLayout
     android:id="@+id/linearLayout"
@@ -14,7 +14,7 @@ tools:context=".ui.view.category.DeliveryFragment">
     android:orientation="vertical">
 
     <ImageView
-        android:id="@+id/arrow_ride_category"
+        android:id="@+id/arrow_delivery_category"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"

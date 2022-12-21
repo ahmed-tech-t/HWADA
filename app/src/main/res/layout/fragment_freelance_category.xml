@@ -4,7 +4,7 @@ xmlns:tools="http://schemas.android.com/tools"
 android:layout_width="match_parent"
 android:layout_height="match_parent"
 android:background="@drawable/white_background"
-tools:context=".ui.view.category.FreelanceCategoryFragment">
+tools:context=".ui.view.category.freelance.FreelanceCategoryFragment">
 
 <LinearLayout
     android:id="@+id/linearLayout"

@@ -19,12 +19,17 @@
         <item name="android:navigationBarColor">@color/nav_color</item>
         
         <!-- Enable Activity Transition -->
-        
-        <item name="android:windowActivityTransitions">true</item>
-        <item name="android:windowEnterTransition">@transition/trans_anim_in</item>
-        <item name="android:windowExitTransition">@transition/trans_anim_out</item>
-
+      <!--  <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>-->
     </style>
+<!--
+    <style name="CustomActivityAnimation" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/to_up</item>
+        <item name="android:activityOpenExitAnimation">@anim/to_up</item>
+        <item name="android:activityCloseEnterAnimation">@anim/to_down</item>
+        <item name="android:activityCloseExitAnimation">@anim/to_down</item>
+    </style>
+
+    -->
 
     <style name="Button.background" parent="ThemeOverlay.AppCompat">
         <item name="android:background">@drawable/button_background</item>
