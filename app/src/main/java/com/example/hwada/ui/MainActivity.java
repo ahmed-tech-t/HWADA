@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        finish();
     }
 
     @Override
@@ -268,4 +268,5 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.replace(R.id.main_fragment_container, fragment,tag);
         fragmentTransaction.commit();
     }
+
 }
