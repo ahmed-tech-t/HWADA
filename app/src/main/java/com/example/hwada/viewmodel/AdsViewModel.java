@@ -6,22 +6,20 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
-import com.example.hwada.Model.Ads;
+import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.User;
 import com.example.hwada.repository.AdsRepository;
-
-import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
 
 public class AdsViewModel extends AndroidViewModel {
     AdsRepository repository ;
-    public LiveData<ArrayList<Ads>> workerAdsLiveData;
-    public LiveData<ArrayList<Ads>> homeFoodAdsLiveData;
-    public LiveData<ArrayList<Ads>> handcraftAdsLiveData;
-    public LiveData<ArrayList<Ads>> freelanceAdsLiveData;
+    public LiveData<ArrayList<Ad>> workerAdsLiveData;
+    public LiveData<ArrayList<Ad>> homeFoodAdsLiveData;
+    public LiveData<ArrayList<Ad>> handcraftAdsLiveData;
+    public LiveData<ArrayList<Ad>> freelanceAdsLiveData;
 
-    public LiveData<ArrayList<Ads>> favAdsLiveData;
+    public LiveData<ArrayList<Ad>> favAdsLiveData;
 
 
     public void getAllFreelanceAds(String subCategory){

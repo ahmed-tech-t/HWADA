@@ -60,4 +60,7 @@
     <string name="tricycle">Tricycle</string>
     <string name="mini_van">Mini van</string>
     <string name="van">van</string>
+    <string name="comments"><b>Comments</b></string>
+    <string name="AddAComment">Add a comment...</string>
+    <string name="username">username</string>
 </resources>

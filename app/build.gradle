@@ -75,5 +75,7 @@ dependencies {
 
     implementation "androidx.recyclerview:recyclerview:1.2.1"
 
+    //read more
+    implementation 'com.borjabravo:readmoretextview:2.1.0'
 
 }

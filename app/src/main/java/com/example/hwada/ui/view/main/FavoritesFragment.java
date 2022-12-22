@@ -15,7 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.example.hwada.Model.Ads;
+import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
 import com.example.hwada.adapter.FavoritesAdapter;
@@ -32,7 +32,7 @@ public class FavoritesFragment extends Fragment implements FavoritesAdapter.OnIt
     FavoritesAdapter adapter;
     AdsViewModel viewModel;
     RecyclerView mainRecycler;
-    ArrayList<Ads> adsList;
+    ArrayList<Ad> adsList;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -85,7 +85,7 @@ public class FavoritesFragment extends Fragment implements FavoritesAdapter.OnIt
     @Override
     public void getFavItemPosition(int position, ImageView imageView) {
         imageView.setImageResource(R.drawable.fav_uncheck_icon);
-        user.removeOneAdFromFavorite(adsList.get(position).getId());
+        user.removeAdFromAdsFavList(position);
         userViewModel.setUser(user);
         adapter.removeOneItem(position);
     }

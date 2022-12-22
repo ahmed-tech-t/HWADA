@@ -81,12 +81,19 @@
         app:layout_constraintStart_toEndOf="@+id/item_user_image"
         app:layout_constraintTop_toBottomOf="@+id/item_username" />
 
-    <ImageView
+    <RatingBar
         android:id="@+id/item_user_rating"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:src="@drawable/star_bar"
+        android:rating="3.3"
+        android:numStars="5"
+        android:stepSize="0.1"
+        android:progressTint="@color/yellow"
+        android:secondaryProgressTint="@android:color/transparent"
+
+        android:elevation="0dp"
+        style="?android:attr/ratingBarStyleSmall"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/item_user_image"
         app:layout_constraintTop_toBottomOf="@+id/view2" />

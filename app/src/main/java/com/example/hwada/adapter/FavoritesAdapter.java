@@ -9,13 +9,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.hwada.Model.Ads;
+import com.example.hwada.Model.Ad;
 import com.example.hwada.R;
 
 import java.util.ArrayList;
 
 public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.FavoritesViewHolder> {
-    private ArrayList<Ads> list = new ArrayList();
+    private ArrayList<Ad> list = new ArrayList();
     OnItemListener pOnItemListener;
 
     @NonNull
@@ -26,8 +26,8 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
 
     @Override
     public void onBindViewHolder(@NonNull FavoritesViewHolder holder, int position) {
-        holder.jop.setText(list.get(position).getJop());
-        holder.fullName.setText(list.get(position).getFullName());
+        holder.jop.setText(list.get(position).getTitle());
+        holder.fullName.setText(list.get(position).getAuthorName());
         holder.distance.setText(list.get(position).getDistance());
         holder.date.setText(list.get(position).getDate());
         holder.favImage.setImageResource(R.drawable.fav_checked_icon);
@@ -38,7 +38,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
         return list.size();
     }
 
-    public void setList(ArrayList<Ads> list, OnItemListener onItemListener) {
+    public void setList(ArrayList<Ad> list, OnItemListener onItemListener) {
         this.list = list;
         this.pOnItemListener = onItemListener;
         notifyDataSetChanged();

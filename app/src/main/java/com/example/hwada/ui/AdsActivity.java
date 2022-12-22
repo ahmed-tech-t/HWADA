@@ -1,19 +1,25 @@
 package com.example.hwada.ui;
 
+import static androidx.fragment.app.FragmentManager.TAG;
+
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.LiveData;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import com.example.hwada.Model.Ads;
+
+import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
 import com.example.hwada.adapter.AdsAdapter;
-import com.example.hwada.databinding.ActivityHomeFoodBinding;
+import com.example.hwada.databinding.ActivityAdsBinding;
+import com.example.hwada.ui.view.AdvertiserFragment;
 import com.example.hwada.viewmodel.AdsViewModel;
 
 import java.util.ArrayList;
@@ -21,22 +27,26 @@ import java.util.ArrayList;
 public class AdsActivity extends AppCompatActivity implements View.OnClickListener , AdsAdapter.OnItemListener {
 
     AdsAdapter adapter;
-    ArrayList<Ads> adsList;
+    ArrayList<Ad> adsList;
 
     AdsViewModel viewModel;
     User user;
     String category;
     String subCategory;
 
-    ActivityHomeFoodBinding binding;
+    FragmentManager fragmentManager;
+    FragmentTransaction fragmentTransaction;
+
+    ActivityAdsBinding binding;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityHomeFoodBinding.inflate(getLayoutInflater());
+        binding = ActivityAdsBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
         Intent intent = getIntent();
         user = intent.getParcelableExtra("user");
+
         category = intent.getStringExtra("category");
         subCategory = intent.getStringExtra("subCategory");
         viewModel = ViewModelProviders.of(this).get(AdsViewModel.class);
@@ -75,6 +85,11 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
 
     @Override
     public void getItemPosition(int position) {
+        AdvertiserFragment fragment = new AdvertiserFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("user", user);
+        fragment.setArguments(bundle);
+        fragment.show(getSupportFragmentManager(),fragment.getTag());
 
     }
 
@@ -82,15 +97,15 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
     public void getFavItemPosition(int position, ImageView favImage) {
         String adId = String.valueOf(position);
         if(adIsInFavList(adId)){
-            user.removeOneAdFromFavorite(adId);
+            user.removeAdFromAdsFavList(position);
             favImage.setImageResource(R.drawable.fav_uncheck_icon);
         }else if(!adIsInFavList(adId))  {
-            user.addOneAdToFavorite(adId);
+            user.setAdToFavAdsList(adsList.get(position));
             favImage.setImageResource(R.drawable.fav_checked_icon);
         }
     }
     private boolean adIsInFavList(String id){
-        return user.getFavoriteAds().contains(id);
+        return false;
     }
 
     private void getWorkersAds(){
@@ -129,5 +144,4 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
             }
         });
     }
-
 }

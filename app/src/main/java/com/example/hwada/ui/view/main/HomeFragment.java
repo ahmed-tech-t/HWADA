@@ -1,5 +1,7 @@
 package com.example.hwada.ui.view.main;
 
+import static androidx.fragment.app.FragmentManager.TAG;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.location.Address;
@@ -14,6 +16,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +24,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.example.hwada.Model.Ads;
+import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
 import com.example.hwada.adapter.AdsAdapter;
@@ -46,7 +49,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
     UserViewModel userViewModel ;
 
     private User user;
-    ArrayList<Ads> adsList;
+    ArrayList<Ad> adsList;
     LinearLayout foodCategory , workerCategory, freelanceCategory , handcraftCategory ;
 
 
@@ -140,17 +143,18 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
     public void getFavItemPosition(int position , ImageView favImage) {
         String adId = String.valueOf(position);
         if(adIsInFavList(adId)){
-            user.removeOneAdFromFavorite(adId);
+            user.removeAdFromAdsFavList(position);
             userViewModel.setUser(user);
             favImage.setImageResource(R.drawable.fav_uncheck_icon);
         }else if(!adIsInFavList(adId))  {
-            user.addOneAdToFavorite(adId);
+            if(user.getFavAds() == null) user.initFavAdsList();
+            user.setAdToFavAdsList(adsList.get(position));
             userViewModel.setUser(user);
             favImage.setImageResource(R.drawable.fav_checked_icon);
         }
     }
     private boolean adIsInFavList(String id){
-        return user.getFavoriteAds().contains(id);
+        return false;
     }
 
     private void initCategoryLayout(View v){

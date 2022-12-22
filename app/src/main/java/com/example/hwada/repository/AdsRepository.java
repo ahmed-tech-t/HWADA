@@ -2,97 +2,101 @@ package com.example.hwada.repository;
 
 
 import android.app.Application;
+import android.location.Location;
 
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.hwada.Model.Ads;
+import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.User;
 
 import java.util.ArrayList;
 
 public class AdsRepository {
     private Application application ;
-    MutableLiveData<ArrayList<Ads>> workerAdsMutableLiveData;
-    MutableLiveData<ArrayList<Ads>> homeFoodAdsMutableLiveData;
-    MutableLiveData<ArrayList<Ads>> handcraftAdsMutableLiveData;
-    MutableLiveData<ArrayList<Ads>> freeLanceAdsMutableLiveData;
+    MutableLiveData<ArrayList<Ad>> workerAdsMutableLiveData;
+    MutableLiveData<ArrayList<Ad>> homeFoodAdsMutableLiveData;
+    MutableLiveData<ArrayList<Ad>> handcraftAdsMutableLiveData;
+    MutableLiveData<ArrayList<Ad>> freeLanceAdsMutableLiveData;
 
-    MutableLiveData<ArrayList<Ads>> favAdsMutableLiveData;
+    MutableLiveData<ArrayList<Ad>> favAdsMutableLiveData;
 
-    public MutableLiveData<ArrayList<Ads>> getAllWorkersAds(){
-        ArrayList<Ads> list = new ArrayList<>();
+    public MutableLiveData<ArrayList<Ad>> getAllWorkersAds(){
+        ArrayList<Ad> list = new ArrayList<>();
+        Location authorLocation =null;
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
 
-        list.add(new Ads("worker1","mohamed said","4 Nov" ,"10 km"));
-        list.add(new Ads("worker2","mohamed said","4 Nov" ,"10 km"));
-        list.add(new Ads("worker3","mohamed said","4 Nov" ,"10 km"));
-        list.add(new Ads("worker4","mohamed said","4 Nov" ,"10 km"));
-        list.add(new Ads("worker5","mohamed said","4 Nov" ,"10 km"));
-        list.add(new Ads("worker6","mohamed said","4 Nov" ,"10 km"));
-        list.add(new Ads("worker7","mohamed said","4 Nov" ,"10 km"));
-        list.add(new Ads("worker8","mohamed said","4 Nov" ,"10 km"));
 
         workerAdsMutableLiveData.setValue(list);
         return  workerAdsMutableLiveData;
     }
-    public MutableLiveData<ArrayList<Ads>> getAllFreelanceAds(String subCategory){
-        ArrayList<Ads> list = new ArrayList<>();
+    public MutableLiveData<ArrayList<Ad>> getAllFreelanceAds(String subCategory){
+        ArrayList<Ad> list = new ArrayList<>();
 
-        list.add(new Ads("nurse1","mohamed said","4 Nov" ,"10 km"));
-        list.add(new Ads("driver2","mohamed said","4 Nov" ,"10 km"));
-        list.add(new Ads("nurse3","mohamed said","4 Nov" ,"10 km"));
-        list.add(new Ads("driver4","mohamed said","4 Nov" ,"10 km"));
-        list.add(new Ads("nurse5","mohamed said","4 Nov" ,"10 km"));
-        list.add(new Ads("driver6","mohamed said","4 Nov" ,"10 km"));
-        list.add(new Ads("nurse7","mohamed said","4 Nov" ,"10 km"));
-        list.add(new Ads("driver8","mohamed said","4 Nov" ,"10 km"));
+        Location authorLocation =null;
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+
 
         freeLanceAdsMutableLiveData.setValue(list);
         return  freeLanceAdsMutableLiveData;
     }
 
 
-    public MutableLiveData<ArrayList<Ads>> getAllHomeFoodAds(){
-        ArrayList<Ads> list = new ArrayList<>();
+    public MutableLiveData<ArrayList<Ad>> getAllHomeFoodAds(){
+        ArrayList<Ad> list = new ArrayList<>();
+        Location authorLocation =null;
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
 
-        list.add(new Ads("chef1","mohamed said","4 Nov" ,"10 km"));
-        list.add(new Ads("chef2","mohamed said","4 Nov" ,"10 km"));
-        list.add(new Ads("chef3","mohamed said","4 Nov" ,"10 km"));
-        list.add(new Ads("chef4","mohamed said","4 Nov" ,"10 km"));
-        list.add(new Ads("chef5","mohamed said","4 Nov" ,"10 km"));
-        list.add(new Ads("chef6","mohamed said","4 Nov" ,"10 km"));
-        list.add(new Ads("chef7","mohamed said","4 Nov" ,"10 km"));
-        list.add(new Ads("chef8","mohamed said","4 Nov" ,"10 km"));
 
         homeFoodAdsMutableLiveData.setValue(list);
         return  homeFoodAdsMutableLiveData;
     }
 
-    public MutableLiveData<ArrayList<Ads>> getFavAds(User user){
-        ArrayList<Ads> list = new ArrayList<>();
+    public MutableLiveData<ArrayList<Ad>> getFavAds(User user){
+        ArrayList<Ad> list = new ArrayList<>();
 
-        list.add(new Ads("worker1","mohamed said","4 Nov" ,"10 km"));
-        list.add(new Ads("worker2","mohamed said","4 Nov" ,"10 km"));
-        list.add(new Ads("worker3","mohamed said","4 Nov" ,"10 km"));
-        list.add(new Ads("worker4","mohamed said","4 Nov" ,"10 km"));
-        list.add(new Ads("worker5","mohamed said","4 Nov" ,"10 km"));
-        list.add(new Ads("worker6","mohamed said","4 Nov" ,"10 km"));
-        list.add(new Ads("worker7","mohamed said","4 Nov" ,"10 km"));
-        list.add(new Ads("worker8","mohamed said","4 Nov" ,"10 km"));
+        Location authorLocation =null;
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+
 
         favAdsMutableLiveData.setValue(list);
         return  favAdsMutableLiveData;
     }
 
-    public MutableLiveData<ArrayList<Ads>> getAllHandcraftAds(){
-        ArrayList<Ads> list = new ArrayList<>();
-        list.add(new Ads("ad1","mohamed said","4 Nov" ,"10 km"));
-        list.add(new Ads("ad2","mohamed said","4 Nov" ,"10 km"));
-        list.add(new Ads("ad3","mohamed said","4 Nov" ,"10 km"));
-        list.add(new Ads("ad4","mohamed said","4 Nov" ,"10 km"));
-        list.add(new Ads("ad5","mohamed said","4 Nov" ,"10 km"));
-        list.add(new Ads("ad6","mohamed said","4 Nov" ,"10 km"));
-        list.add(new Ads("ad7","mohamed said","4 Nov" ,"10 km"));
-        list.add(new Ads("ad8","mohamed said","4 Nov" ,"10 km"));
+    public MutableLiveData<ArrayList<Ad>> getAllHandcraftAds(){
+        ArrayList<Ad> list = new ArrayList<>();
+        Location authorLocation =null;
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+
 
         handcraftAdsMutableLiveData.setValue(list);
         return  handcraftAdsMutableLiveData;

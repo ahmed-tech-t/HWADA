@@ -8,22 +8,23 @@ import androidx.annotation.NonNull;
 
 import com.google.firebase.database.Exclude;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+
 public class User implements Parcelable {
     private String uId ;
     private  String username;
     private Location location;
+    private ArrayList<Ad>favAds;
+    private ArrayList<Ad>ads;
 
-    private ArrayList <String> favoriteAds;
-    @SuppressWarnings("WeakerAccess")
+
+
+    private double rating;
+    private ArrayList<MyReview> myReviews;
+
     private  String email;
     private String phone ;
     private  String aboutYou;
-
-
     private String image;
     private  String gender;
     @Exclude
@@ -31,28 +32,36 @@ public class User implements Parcelable {
     @Exclude
     boolean isNew , isCreated;
 
-    public User() {
-        this.favoriteAds = new ArrayList<>();
-    }
 
+    public User(){
+        this.favAds =new ArrayList<>();
+        this.ads =new ArrayList<>();
+        this.myReviews=new ArrayList<>();
+    }
     public User(String username, String email, String phone) {
         this.username = username;
         this.email = email;
         this.phone = phone;
-        this.favoriteAds = new ArrayList<>();
+        this.favAds =new ArrayList<>();
+        this.ads =new ArrayList<>();
+        this.myReviews=new ArrayList<>();
     }
 
     public User(String uId, String email) {
         this.uId = uId;
         this.email = email;
-        this.favoriteAds = new ArrayList<>();
+        this.favAds =new ArrayList<>();
+        this.ads =new ArrayList<>();
+        this.myReviews=new ArrayList<>();
     }
     public User(String uId, String username, String email, String phone) {
         this.uId = uId;
         this.username = username;
         this.email = email;
         this.phone = phone;
-        this.favoriteAds = new ArrayList<>();
+        this.favAds =new ArrayList<>();
+        this.ads =new ArrayList<>();
+        this.myReviews=new ArrayList<>();
     }
 
 
@@ -60,7 +69,7 @@ public class User implements Parcelable {
         uId = in.readString();
         username = in.readString();
         location = in.readParcelable(Location.class.getClassLoader());
-        favoriteAds = in.createStringArrayList();
+        rating = in.readDouble();
         email = in.readString();
         phone = in.readString();
         aboutYou = in.readString();
@@ -83,6 +92,13 @@ public class User implements Parcelable {
         }
     };
 
+    public double getRating() {
+        return rating;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
+    }
     public String getuId() {
         return uId;
     }
@@ -171,21 +187,51 @@ public class User implements Parcelable {
         this.location = location;
     }
 
-    public ArrayList<String> getFavoriteAds() {
-        return favoriteAds;
+    public void setAdToFavAdsList(Ad ad){
+        this.favAds.add(ad);
     }
-    public void addOneAdToFavorite(String ad) {
-        this.favoriteAds.add(ad);
+    public void setAdToAdsList(Ad ad){
+        this.ads.add(ad);
     }
-    public void removeOneAdFromFavorite(String ad) {
-        this.favoriteAds.remove(ad);
+    public void setReviewToMyReviewsList(MyReview review){
+        this.myReviews.add(review);
     }
-    public void setFavoriteAds(ArrayList<String> favoriteAds) {
-        this.favoriteAds = favoriteAds;
+    public void removeAdFromAdsFavList(int pos){
+        this.favAds.remove(pos);
+    }
+    public void removeAdFromAdsList(int pos){
+        this.ads.remove(pos);
     }
 
+    public ArrayList<Ad> getFavAds() {
+        return favAds;
+    }
 
+    public void setFavAds(ArrayList<Ad> favAds) {
+        this.favAds = favAds;
+    }
 
+    public ArrayList<Ad> getAds() {
+        return ads;
+    }
+
+    public void setAds(ArrayList<Ad> ads) {
+        this.ads = ads;
+    }
+
+    public ArrayList<MyReview> getMyReviews() {
+        return myReviews;
+    }
+
+    public void setMyReviews(ArrayList<MyReview> myReviews) {
+        this.myReviews = myReviews;
+    }
+
+    public void removeAdFromMyReviewList(int pos){
+        this.myReviews.remove(pos);
+    }
+
+    public void initFavAdsList(){ favAds=new ArrayList<>();}
     @Override
     public int describeContents() {
         return 0;
@@ -196,7 +242,7 @@ public class User implements Parcelable {
         dest.writeString(uId);
         dest.writeString(username);
         dest.writeParcelable(location, flags);
-        dest.writeStringList(favoriteAds);
+        dest.writeDouble(rating);
         dest.writeString(email);
         dest.writeString(phone);
         dest.writeString(aboutYou);
