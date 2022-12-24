@@ -17,10 +17,11 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="yourAddress"><font size="15">your address</font></string>
     <string name="whatDoYouWant"><font size="15">what do you want</font></string>
-    <string name="homeFood"><font size="12">home food</font></string>
-    <string name="worker"><font size="12">worker</font></string>
-    <string name="freelance"><font size="12">freelance</font></string>
-    <string name="handcraft"><font size="12">handcraft</font></string>
+    <string name="homeFood"><font size="12">Home food</font></string>
+    <string name="worker"><font size="12">Worker</font></string>
+    <string name="freelance"><font size="12">Freelance</font></string>
+    <string name="handcraft"><font size="12">Handcraft</font></string>
+
     <string name="jop"><font size="18">jop</font></string>
     <string name="away"><font size="10">away</font></string>
     <string name="title_activity_map">Map</string>

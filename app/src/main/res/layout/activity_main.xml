@@ -52,8 +52,8 @@
 
         android:backgroundTint="@color/white"
         app:layout_anchor="@id/bottom_app_bar"
-
         app:backgroundTint="#F2F2F2"
+
 
         />
 

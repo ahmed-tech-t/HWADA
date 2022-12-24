@@ -1,7 +1,9 @@
 package com.example.hwada.ui.view.main;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -9,18 +11,25 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
 import com.example.hwada.adapter.FavoritesAdapter;
+import com.example.hwada.adapter.TabLayoutAdapter;
+import com.example.hwada.ui.MainActivity;
+import com.example.hwada.ui.view.AdvertiserFragment;
 import com.example.hwada.viewmodel.AdsViewModel;
 import com.example.hwada.viewmodel.UserViewModel;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 
@@ -33,13 +42,16 @@ public class FavoritesFragment extends Fragment implements FavoritesAdapter.OnIt
     AdsViewModel viewModel;
     RecyclerView mainRecycler;
     ArrayList<Ad> adsList;
+    String category ;
 
+    String TAG = "FavoritesFragment";
+    @SuppressLint("MissingInflatedId")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v= inflater.inflate(R.layout.fragment_favorites, container, false);
-        mainRecycler = v.findViewById(R.id.main_recycler);
+         mainRecycler = v.findViewById(R.id.main_recycler);
         return  v;
     }
 
@@ -48,8 +60,6 @@ public class FavoritesFragment extends Fragment implements FavoritesAdapter.OnIt
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         //get user from Main activity
-        user = getArguments().getParcelable("user");
-
         userViewModel = ViewModelProviders.of(getActivity()).get(UserViewModel.class);
         ViewModelProviders.of(getActivity()).get(UserViewModel.class).getUser().observe(getActivity(), new Observer<User>() {
             @Override
@@ -57,7 +67,6 @@ public class FavoritesFragment extends Fragment implements FavoritesAdapter.OnIt
                 user = u;
             }
         });
-
         viewModel = new ViewModelProvider(this, (ViewModelProvider.Factory) ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(AdsViewModel.class);
         setAdsToList();
     }
@@ -79,6 +88,12 @@ public class FavoritesFragment extends Fragment implements FavoritesAdapter.OnIt
 
     @Override
     public void getItemPosition(int position) {
+        AdvertiserFragment fragment = new AdvertiserFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("user", user);
+        bundle.putParcelable("ad",adsList.get(position));
+        fragment.setArguments(bundle);
+        fragment.show((getActivity()).getSupportFragmentManager(),fragment.getTag());
 
     }
 
@@ -88,5 +103,18 @@ public class FavoritesFragment extends Fragment implements FavoritesAdapter.OnIt
         user.removeAdFromAdsFavList(position);
         userViewModel.setUser(user);
         adapter.removeOneItem(position);
+    }
+
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        category = getArguments().getString("category");
+        user = getArguments().getParcelable("user");
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        category = getArguments().getString("category");
+        user = getArguments().getParcelable("user");
     }
 }

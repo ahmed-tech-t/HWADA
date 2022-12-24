@@ -6,6 +6,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -29,14 +30,13 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.LinearLayout;
 
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
 import com.example.hwada.databinding.ActivityMainBinding;
+import com.example.hwada.ui.view.main.FavTapLayoutFragment;
 import com.example.hwada.ui.view.main.AccountFragment;
 import com.example.hwada.ui.view.main.ChatFragment;
-import com.example.hwada.ui.view.main.FavoritesFragment;
 import com.example.hwada.ui.view.main.HomeFragment;
 import com.example.hwada.viewmodel.UserViewModel;
 import com.google.android.gms.location.LocationCallback;
@@ -240,8 +240,8 @@ public class MainActivity extends AppCompatActivity {
                       callFragment(new ChatFragment(),"chat");
                         break;
                     case R.id.favorites:
-                     callFragment(new FavoritesFragment(),"fav");
-                             break;
+                     callFragment(new FavTapLayoutFragment(),"fav");
+                        break;
                     case R.id.account:
                       callFragment(new AccountFragment(),"account");
                         break;
@@ -261,8 +261,10 @@ public class MainActivity extends AppCompatActivity {
 
 
         fragmentManager = getSupportFragmentManager();
+
         fragmentTransaction = fragmentManager.beginTransaction()
                 .setCustomAnimations(R.anim.to_up,R.anim.to_down);
+
         //set Animation
 
         fragmentTransaction.replace(R.id.main_fragment_container, fragment,tag);

@@ -61,4 +61,10 @@
     <style name="CustomBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@drawable/white_background</item>
     </style>
+
+    //tapLayout
+
+    <style name="TabLayoutStyle" parent="Base.Widget.Design.TabLayout">
+        <item name="android:textSize">11sp</item>
+    </style>
 </resources>
