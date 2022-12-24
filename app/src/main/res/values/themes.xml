@@ -15,6 +15,7 @@
         <!-- remove notification color -->
         <item name="android:windowTranslucentStatus">true</item>
       <!--  <item name="android:windowTranslucentNavigation">true</item>-->
+        <item name="android:windowActionBarOverlay">true</item>
 
         <item name="android:navigationBarColor">@color/nav_color</item>
         

@@ -109,148 +109,171 @@
                 </LinearLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
-            <RelativeLayout
-                android:id="@+id/constraintLayout"
+
+            <androidx.coordinatorlayout.widget.CoordinatorLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:gravity="bottom"
-                    android:orientation="horizontal"
-                    android:padding="5dp"
-                   android:layout_alignParentLeft="true">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:src="@drawable/location_icon" />
-
-            <TextView
-                android:id="@+id/item_user_distance"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="3 km"
-                android:textSize="10dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="3dp"
-                android:layout_marginRight="3dp"
-                android:text="@string/away" />
-        </LinearLayout>
-                <TextView
-                    android:id="@+id/item_date"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="20dp"
-                    android:padding="5dp"
-                    android:text="4 sep"
-                    android:textSize="10dp"
-                    android:layout_alignParentRight="true"/>
-    </RelativeLayout>
-            <LinearLayout
+                android:layout_height="match_parent">
+            <com.google.android.material.appbar.AppBarLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:padding="5dp"
-                android:orientation="vertical"
-                >
+                android:background="@color/transparent">
+            <com.google.android.material.appbar.CollapsingToolbarLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed|snap">
+              <LinearLayout
+                  android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:orientation="vertical">
+                  <RelativeLayout
+                      android:id="@+id/constraintLayout"
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content">
+                      <LinearLayout
+                          android:layout_width="wrap_content"
+                          android:layout_height="wrap_content"
+                          android:layout_marginStart="8dp"
+                          android:gravity="bottom"
+                          android:orientation="horizontal"
+                          android:padding="5dp"
+                          android:layout_alignParentLeft="true">
 
-                <TextView
+                          <ImageView
+                              android:layout_width="wrap_content"
+                              android:layout_height="wrap_content"
+                              android:layout_marginLeft="10dp"
+                              android:layout_marginRight="10dp"
+                              android:src="@drawable/location_icon" />
+
+                          <TextView
+                              android:id="@+id/item_user_distance"
+                              android:layout_width="wrap_content"
+                              android:layout_height="wrap_content"
+                              android:text="3 km"
+                              android:textSize="10dp" />
+
+                          <TextView
+                              android:layout_width="wrap_content"
+                              android:layout_height="wrap_content"
+                              android:layout_marginLeft="3dp"
+                              android:layout_marginRight="3dp"
+                              android:text="@string/away" />
+                      </LinearLayout>
+                      <TextView
+                          android:id="@+id/item_date"
+                          android:layout_width="wrap_content"
+                          android:layout_height="wrap_content"
+                          android:layout_marginEnd="20dp"
+                          android:padding="5dp"
+                          android:text="4 sep"
+                          android:textSize="10dp"
+                          android:layout_alignParentRight="true"/>
+                  </RelativeLayout>
+                  <LinearLayout
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:layout_margin="10dp"
+                      android:padding="5dp"
+                      android:orientation="vertical"
+                      >
+
+                      <TextView
+                          android:layout_width="match_parent"
+                          android:layout_height="wrap_content"
+                          android:text="description"
+                          android:textColor="@color/black"
+                          android:textSize="18dp" />
+
+                      <com.borjabravo.readmoretextview.ReadMoreTextView
+                          android:id="@+id/item_description"
+                          android:layout_width="match_parent"
+                          android:layout_height="wrap_content"
+                          app:trimExpandedText="@string/read_less"
+                          app:trimCollapsedText="@string/read_more"
+                          android:text="This is Expandable text this is a simple text, this is a testing text"
+                          app:trimLength="50"
+                          app:trimMode="trimModeLength"
+                          app:colorClickableText="@color/background"
+
+                          />
+
+                  </LinearLayout>
+                  <androidx.constraintlayout.widget.ConstraintLayout
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content">
+
+                      <TextView
+                          android:id="@+id/textView3"
+                          android:layout_width="wrap_content"
+                          android:layout_height="wrap_content"
+                          android:layout_alignParentLeft="true"
+                          android:padding="15dp"
+                          android:text="@string/comments"
+                          android:textColor="@color/black"
+                          android:textSize="20dp"
+                          app:layout_constraintBottom_toBottomOf="parent"
+                          app:layout_constraintStart_toStartOf="parent"
+                          app:layout_constraintTop_toTopOf="parent" />
+
+                      <RatingBar
+                          android:id="@+id/item_user_rating"
+                          style="?android:attr/ratingBarStyleIndicator"
+                          android:layout_width="wrap_content"
+                          android:layout_height="wrap_content"
+                          android:layout_gravity="right"
+                          android:elevation="0dp"
+                          android:numStars="5"
+                          android:progressTint="@color/yellow"
+                          android:rating="4.4"
+                          android:secondaryProgressTint="@android:color/transparent"
+                          android:stepSize="0.1"
+                          android:scaleX=".7"
+                          android:scaleY=".7"
+                          app:layout_constraintBottom_toBottomOf="parent"
+                          app:layout_constraintEnd_toEndOf="parent"
+                          app:layout_constraintTop_toTopOf="parent" />
+                  </androidx.constraintlayout.widget.ConstraintLayout>
+                  <LinearLayout
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:orientation="horizontal">
+                      <de.hdodenhof.circleimageview.CircleImageView
+                          android:id="@+id/user_image_ad_review"
+                          android:layout_width="50dp"
+                          android:layout_height="50dp"
+                          android:paddingLeft="10dp"
+                          android:paddingRight="10dp"
+                          android:src="@drawable/user_account_icon">
+                      </de.hdodenhof.circleimageview.CircleImageView>
+                      <TextView
+                          android:id="@+id/addComment_tv"
+                          android:layout_width="0dp"
+                          android:layout_height="match_parent"
+                          android:gravity="center_vertical"
+                          android:layout_weight="1"
+
+                          android:layout_gravity="center"
+                          android:text="@string/AddAComment"/>
+
+                  </LinearLayout>
+                  <View
+                      android:layout_width="match_parent"
+                      android:layout_height="1dp"
+                      android:background="@color/white_gray"
+                      />
+
+              </LinearLayout>
+
+            </com.google.android.material.appbar.CollapsingToolbarLayout>
+            </com.google.android.material.appbar.AppBarLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/review_recycler"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="description"
-                    android:textColor="@color/black"
-                    android:textSize="18dp" />
-
-                <com.borjabravo.readmoretextview.ReadMoreTextView
-                    android:id="@+id/item_description"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:trimExpandedText="@string/read_less"
-                    app:trimCollapsedText="@string/read_more"
-                    android:text="This is Expandable text this is a simple text, this is a testing text"
-                    app:trimLength="50"
-                    app:trimMode="trimModeLength"
-                    app:colorClickableText="@color/background"
-
-                    />
-
-            </LinearLayout>
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <TextView
-            android:id="@+id/textView3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:padding="15dp"
-            android:text="@string/comments"
-            android:textColor="@color/black"
-            android:textSize="20dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <RatingBar
-            android:id="@+id/item_user_rating"
-            style="?android:attr/ratingBarStyleIndicator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:elevation="0dp"
-            android:numStars="5"
-            android:progressTint="@color/yellow"
-            android:rating="4.4"
-            android:secondaryProgressTint="@android:color/transparent"
-            android:stepSize="0.1"
-            android:scaleX=".7"
-            android:scaleY=".7"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/user_image_ad_review"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:src="@drawable/user_account_icon">
-        </de.hdodenhof.circleimageview.CircleImageView>
-        <TextView
-            android:id="@+id/addComment_tv"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:layout_weight="1"
-
-            android:layout_gravity="center"
-            android:text="@string/AddAComment"/>
-
-    </LinearLayout>
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/white_gray"
-        />
-
-<androidx.recyclerview.widget.RecyclerView
-    android:id="@+id/review_recycler"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"/>
+                    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                    android:orientation="vertical"/>
+            </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </LinearLayout>
     </ScrollView>
