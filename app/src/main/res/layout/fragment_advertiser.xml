@@ -6,9 +6,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="60dp"
     android:background="@drawable/white_background"
     android:orientation="vertical"
+    android:layout_marginTop="60dp"
     android:id="@+id/bottom_sheet_advertiser"
     tools:context=".ui.view.AdvertiserFragment">
 
@@ -42,8 +42,8 @@
                     android:layout_width="103dp"
                     android:layout_height="109dp"
                     android:layout_margin="10dp"
-                    android:background="@color/white_gray"
                     android:padding="10dp"
+                    android:background="@drawable/frame_gray"
                     android:src="@drawable/worker_item_icon"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -53,6 +53,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="5dp"
+                    android:layout_marginRight="20dp"
                     android:src="@drawable/fav_uncheck_icon"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -80,12 +81,6 @@
                         android:textColor="@color/black"
                         android:textSize="18dp" />
 
-                    <View
-                        android:id="@+id/view2"
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginTop="5dp"
-                        android:background="@color/black" />
 
                     <TextView
                         android:id="@+id/item_jop_title"
@@ -98,14 +93,6 @@
                         android:textColor="@color/black"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
-
-                    <View
-                        android:id="@+id/view"
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/black" />
-
-
                 </LinearLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -136,6 +123,7 @@
                           android:gravity="bottom"
                           android:orientation="horizontal"
                           android:padding="5dp"
+
                           android:layout_alignParentLeft="true">
 
                           <ImageView

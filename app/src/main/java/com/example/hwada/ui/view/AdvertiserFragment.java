@@ -103,12 +103,10 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
 
     private void setBottomSheet(View view){
         bottomSheetBehavior = BottomSheetBehavior.from((View)view.getParent());
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-        LinearLayout layout = dialog.findViewById(R.id.bottom_sheet_advertiser);
-        assert layout != null;
-        layout.setMinimumHeight(Resources.getSystem().getDisplayMetrics().heightPixels-100);
-
-
+       // bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+         //LinearLayout layout = dialog.findViewById(R.id.bottom_sheet_advertiser);
+        //assert layout != null;
+        //layout.setMinimumHeight(Resources.getSystem().getDisplayMetrics().heightPixels-100);
     }
 
     @Override
