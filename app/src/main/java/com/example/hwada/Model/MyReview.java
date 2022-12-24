@@ -9,19 +9,39 @@ public class MyReview implements Parcelable {
     String id;
     String addId;
     String category;
-    String SubCategory;
+    String subCategory;
+    String subSubCategory;
 
-    public MyReview(String addId, String category, String subCategory) {
+
+
+    public MyReview(String addId, String category, String subCategory, String subSubCategory) {
         this.addId = addId;
         this.category = category;
-        SubCategory = subCategory;
+        this.subCategory = subCategory;
+        this.subSubCategory =subSubCategory;
     }
+
 
     protected MyReview(Parcel in) {
         id = in.readString();
         addId = in.readString();
         category = in.readString();
-        SubCategory = in.readString();
+        subCategory = in.readString();
+        subSubCategory = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(addId);
+        dest.writeString(category);
+        dest.writeString(subCategory);
+        dest.writeString(subSubCategory);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<MyReview> CREATOR = new Creator<MyReview>() {
@@ -61,24 +81,18 @@ public class MyReview implements Parcelable {
     }
 
     public String getSubCategory() {
-        return SubCategory;
+        return subCategory;
     }
 
     public void setSubCategory(String subCategory) {
-        SubCategory = subCategory;
+        subCategory = subCategory;
+    }
+    public String getSubSubCategory() {
+        return subSubCategory;
     }
 
-
-    @Override
-    public int describeContents() {
-        return 0;
+    public void setSubSubCategory(String subSubCategory) {
+        this.subSubCategory = subSubCategory;
     }
 
-    @Override
-    public void writeToParcel(@NonNull Parcel dest, int flags) {
-        dest.writeString(id);
-        dest.writeString(addId);
-        dest.writeString(category);
-        dest.writeString(SubCategory);
-    }
 }

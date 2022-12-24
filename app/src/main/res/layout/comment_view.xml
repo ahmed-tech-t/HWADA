@@ -20,7 +20,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/user_image_comment"
             android:layout_width="30dp"
             android:layout_height="30dp"
@@ -54,10 +54,9 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.borjabravo.readmoretextview.ReadMoreTextView
-        android:id="@+id/item_description"
+        android:id="@+id/comment_body"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
         android:padding="10dp"
         android:text="comment"
         app:trimCollapsedText="@string/read_more"

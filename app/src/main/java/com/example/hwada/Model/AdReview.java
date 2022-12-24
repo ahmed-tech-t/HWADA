@@ -13,12 +13,12 @@ public class AdReview implements Parcelable {
     private String authorId;
     private String authorName;
     private String authorImage;
-    private double rating;
+    private float rating;
     private String body;
 
     public AdReview(){}
 
-    public AdReview(String date, String authorId, String authorName, String authorImage, double rating, String body) {
+    public AdReview(String date, String authorId, String authorName, String authorImage, float rating, String body) {
         this.date = date;
         this.authorId = authorId;
         this.authorName = authorName;
@@ -34,7 +34,7 @@ public class AdReview implements Parcelable {
         authorId = in.readString();
         authorName = in.readString();
         authorImage = in.readString();
-        rating = in.readDouble();
+        rating = in.readFloat();
         body = in.readString();
     }
 
@@ -90,11 +90,11 @@ public class AdReview implements Parcelable {
         this.authorImage = authorImage;
     }
 
-    public double getRating() {
+    public float getRating() {
         return rating;
     }
 
-    public void setRating(double rating) {
+    public void setRating(float rating) {
         this.rating = rating;
     }
 
@@ -119,7 +119,7 @@ public class AdReview implements Parcelable {
         dest.writeString(authorId);
         dest.writeString(authorName);
         dest.writeString(authorImage);
-        dest.writeDouble(rating);
+        dest.writeFloat(rating);
         dest.writeString(body);
     }
 }

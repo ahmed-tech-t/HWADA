@@ -30,7 +30,9 @@ import com.example.hwada.R;
 import com.example.hwada.adapter.AdsAdapter;
 import com.example.hwada.ui.CategoryActivity;
 import com.example.hwada.ui.AdsActivity;
+import com.example.hwada.ui.MainActivity;
 import com.example.hwada.ui.MapActivity;
+import com.example.hwada.ui.view.AdvertiserFragment;
 import com.example.hwada.viewmodel.AdsViewModel;
 import com.example.hwada.viewmodel.UserViewModel;
 
@@ -135,8 +137,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
 
     @Override
     public void getItemPosition(int position) {
-
-
+        AdvertiserFragment fragment = new AdvertiserFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("user", user);
+        bundle.putParcelable("ad",adsList.get(position));
+        fragment.setArguments(bundle);
+        fragment.show(((MainActivity)getActivity()).getSupportFragmentManager(),fragment.getTag());
     }
 
     @Override

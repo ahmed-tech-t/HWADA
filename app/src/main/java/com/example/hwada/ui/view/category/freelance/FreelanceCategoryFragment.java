@@ -43,11 +43,11 @@ public class FreelanceCategoryFragment extends Fragment implements View.OnClickL
         }else if (v.getId()==delivery.getId()){
             ((CategoryActivity) getActivity()).callDeliveryFragment();
         }else if(v.getId()==nurse.getId()){
-            ((CategoryActivity) getActivity()).callAdsActivity(category,"nurse");
+            ((CategoryActivity) getActivity()).callAdsActivity(category,"nurse","");
         }else if(v.getId()==maid.getId()){
-            ((CategoryActivity) getActivity()).callAdsActivity(category,"maid");
+            ((CategoryActivity) getActivity()).callAdsActivity(category,"maid","");
         }else if(v.getId()==other.getId()){
-            ((CategoryActivity) getActivity()).callAdsActivity(category,"other");
+            ((CategoryActivity) getActivity()).callAdsActivity(category,"other","");
         }
     }
     private void initVarAndSetListener(View v){

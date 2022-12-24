@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import com.example.hwada.Model.User;
@@ -25,7 +26,7 @@ public class CategoryActivity extends AppCompatActivity {
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
     User user;
-
+    String TAG = "CategoryActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,8 +70,8 @@ public class CategoryActivity extends AppCompatActivity {
     public void callMainActivity(){
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra("user",user);
-        //Bundle b = ActivityOptions.makeSceneTransitionAnimation(this).toBundle();
         startActivity(intent);
+        Log.e(TAG, "callMainActivity: " );
         finish();
     }
 
@@ -92,20 +93,25 @@ public class CategoryActivity extends AppCompatActivity {
         binding.rightImage.setImageResource(R.drawable.maid_image_background);
         callFragment(new FreelanceCategoryFragment(),"freelance");
     }
-    public void callAdsActivity(String category,String subCategory){
+    public void callAdsActivity(String category,String subCategory ,String subSubCategory){
         Intent intent = new Intent(this, AdsActivity.class);
         intent.putExtra("user",user);
         intent.putExtra("category",category);
         intent.putExtra("subCategory",subCategory);
+        intent.putExtra("subSubCategory",subSubCategory);
+
         startActivity(intent);
     }
     @Override
     public void onBackPressed() {
         Fragment fragment = fragmentManager.findFragmentById(R.id.category_fragment_container);
         if(fragment instanceof FreelanceCategoryFragment || fragment instanceof WorkerCategoryFragment){
-            callMainActivity();
+            super.onBackPressed();
         }else if (fragment instanceof RideFragment || fragment instanceof DeliveryFragment){
             callMainFreelanceFragment();
-        }else super.onBackPressed();
+        }else {
+            super.onBackPressed();
+        }
     }
+
 }

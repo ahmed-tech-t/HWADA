@@ -3,6 +3,7 @@ package com.example.hwada.ui;
 import static androidx.fragment.app.FragmentManager.TAG;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
@@ -88,9 +89,9 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
         AdvertiserFragment fragment = new AdvertiserFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelable("user", user);
+        bundle.putParcelable("ad",adsList.get(position));
         fragment.setArguments(bundle);
         fragment.show(getSupportFragmentManager(),fragment.getTag());
-
     }
 
     @Override
@@ -143,5 +144,10 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
                 adapter.setList(user,ads,this);
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+      super.onBackPressed();
     }
 }

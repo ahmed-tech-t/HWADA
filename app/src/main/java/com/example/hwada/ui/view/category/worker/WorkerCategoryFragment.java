@@ -49,25 +49,25 @@ public class WorkerCategoryFragment extends Fragment implements View.OnClickList
         if (v.getId()==arrow.getId()) {
             callMainActivity();
         }else if(v.getId()== plumber.getId()){
-            ((CategoryActivity) getActivity()).callAdsActivity(category,"plumber");
+            ((CategoryActivity) getActivity()).callAdsActivity(category,"plumber","");
         }else if(v.getId()== technical.getId()){
-            ((CategoryActivity) getActivity()).callAdsActivity(category,"technical");
+            ((CategoryActivity) getActivity()).callAdsActivity(category,"technical","");
         }else if(v.getId()== plaster.getId()){
-            ((CategoryActivity) getActivity()).callAdsActivity(category,"plaster");
+            ((CategoryActivity) getActivity()).callAdsActivity(category,"plaster","");
         }else if(v.getId()== painter.getId()){
-            ((CategoryActivity) getActivity()).callAdsActivity(category,"painter");
+            ((CategoryActivity) getActivity()).callAdsActivity(category,"painter","");
         }else if(v.getId()== electrical.getId()){
-            ((CategoryActivity) getActivity()).callAdsActivity(category,"electrical");
+            ((CategoryActivity) getActivity()).callAdsActivity(category,"electrical","");
         }else if(v.getId()== carpenter.getId()){
-            ((CategoryActivity) getActivity()).callAdsActivity(category,"carpenter");
+            ((CategoryActivity) getActivity()).callAdsActivity(category,"carpenter","");
         }else if(v.getId()== builder.getId()){
-            ((CategoryActivity) getActivity()).callAdsActivity(category,"builder");
+            ((CategoryActivity) getActivity()).callAdsActivity(category,"builder","");
         }else if(v.getId()== upholsterers.getId()){
-            ((CategoryActivity) getActivity()).callAdsActivity(category,"upholsterers");
+            ((CategoryActivity) getActivity()).callAdsActivity(category,"upholsterers","");
         }else if(v.getId()== ceramicWorker.getId()){
-            ((CategoryActivity) getActivity()).callAdsActivity(category,"ceramicWorker");
+            ((CategoryActivity) getActivity()).callAdsActivity(category,"ceramicWorker","");
         }else if(v.getId()== other.getId()){
-            ((CategoryActivity) getActivity()).callAdsActivity(category,"other");
+            ((CategoryActivity) getActivity()).callAdsActivity(category,"other","");
         }
     }
 

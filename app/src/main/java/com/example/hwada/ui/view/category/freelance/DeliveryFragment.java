@@ -19,6 +19,7 @@ public class DeliveryFragment extends Fragment implements View.OnClickListener {
     ImageView arrow;
     TextView onFoot , cycle , motorcycle, tricycle, car, miniVan,van,other;
     String category = "freelance";
+    String subCategory = "delivery";
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -38,21 +39,21 @@ public class DeliveryFragment extends Fragment implements View.OnClickListener {
         if (v.getId()==arrow.getId()){
             ((CategoryActivity)getActivity()).callMainFreelanceFragment();
         }else if (v.getId()==onFoot.getId()){
-            ((CategoryActivity)getActivity()).callAdsActivity(category,"onFoot");
+            ((CategoryActivity)getActivity()).callAdsActivity(category,subCategory,"onFoot");
         }else if (v.getId()==cycle.getId()){
-            ((CategoryActivity)getActivity()).callAdsActivity(category,"cycle");
+            ((CategoryActivity)getActivity()).callAdsActivity(category,subCategory,"cycle");
         }else if (v.getId()==motorcycle.getId()){
-            ((CategoryActivity)getActivity()).callAdsActivity(category,"motorcycle");
+            ((CategoryActivity)getActivity()).callAdsActivity(category,subCategory,"motorcycle");
         }else if (v.getId()==tricycle.getId()){
-            ((CategoryActivity)getActivity()).callAdsActivity(category,"tricycle");
+            ((CategoryActivity)getActivity()).callAdsActivity(category,subCategory,"tricycle");
         }else if (v.getId()==car.getId()){
-            ((CategoryActivity)getActivity()).callAdsActivity(category,"car");
+            ((CategoryActivity)getActivity()).callAdsActivity(category,subCategory,"car");
         }else if (v.getId()==miniVan.getId()){
-            ((CategoryActivity)getActivity()).callAdsActivity(category,"miniVan");
+            ((CategoryActivity)getActivity()).callAdsActivity(category,subCategory,"miniVan");
         }else if (v.getId()==van.getId()){
-            ((CategoryActivity)getActivity()).callAdsActivity(category,"van");
+            ((CategoryActivity)getActivity()).callAdsActivity(category,subCategory,"van");
         }else if (v.getId()==other.getId()){
-            ((CategoryActivity)getActivity()).callAdsActivity(category,"other");
+            ((CategoryActivity)getActivity()).callAdsActivity(category,subCategory,"other");
         }
     }
 

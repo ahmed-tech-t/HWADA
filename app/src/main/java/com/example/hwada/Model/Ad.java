@@ -24,6 +24,11 @@ public class Ad implements Parcelable {
     private double rating;
     private String category;
     private String subCategory;
+
+
+
+    private String subSubCategory;
+
     private ArrayList<AdReview> adReviews;
 
 
@@ -31,7 +36,7 @@ public class Ad implements Parcelable {
         this.adReviews =new ArrayList<>();
     }
 
-    public Ad(String authorId, String authorName, Location authorLocation, String title, String description, String date, String category, String subCategory) {
+    public Ad(String authorId, String authorName, Location authorLocation, String title, String description, String date, String category, String subCategory ,String subSubCategory) {
         this.authorId = authorId;
         this.authorName = authorName;
         this.authorLocation = authorLocation;
@@ -40,9 +45,11 @@ public class Ad implements Parcelable {
         this.date = date;
         this.category = category;
         this.subCategory = subCategory;
+        this.subSubCategory = subSubCategory;
         this.adReviews =new ArrayList<>();
 
     }
+
 
     protected Ad(Parcel in) {
         id = in.readString();
@@ -56,6 +63,7 @@ public class Ad implements Parcelable {
         rating = in.readDouble();
         category = in.readString();
         subCategory = in.readString();
+        subSubCategory = in.readString();
         adReviews = in.createTypedArrayList(AdReview.CREATOR);
     }
 
@@ -166,9 +174,18 @@ public class Ad implements Parcelable {
     public void setAdToReviewsList(AdReview adReview) {
         adReviews.add(adReview);
     }
+    public String getSubSubCategory() {
+        return subSubCategory;
+    }
 
+    public void setSubSubCategory(String subSubCategory) {
+        this.subSubCategory = subSubCategory;
+    }
     public void removeAdFromReviewsList(int pos) {
         adReviews.remove(pos);
+    }
+    public void initAdReviewsList(){
+        this.adReviews =new ArrayList<>();
     }
 
     @Override
@@ -189,6 +206,7 @@ public class Ad implements Parcelable {
         dest.writeDouble(rating);
         dest.writeString(category);
         dest.writeString(subCategory);
+        dest.writeString(subSubCategory);
         dest.writeTypedList(adReviews);
     }
 }

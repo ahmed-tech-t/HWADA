@@ -23,13 +23,14 @@ public class AdsRepository {
     public MutableLiveData<ArrayList<Ad>> getAllWorkersAds(){
         ArrayList<Ad> list = new ArrayList<>();
         Location authorLocation =null;
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
 
 
         workerAdsMutableLiveData.setValue(list);
@@ -39,13 +40,14 @@ public class AdsRepository {
         ArrayList<Ad> list = new ArrayList<>();
 
         Location authorLocation =null;
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
 
 
         freeLanceAdsMutableLiveData.setValue(list);
@@ -56,13 +58,13 @@ public class AdsRepository {
     public MutableLiveData<ArrayList<Ad>> getAllHomeFoodAds(){
         ArrayList<Ad> list = new ArrayList<>();
         Location authorLocation =null;
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
 
 
         homeFoodAdsMutableLiveData.setValue(list);
@@ -73,13 +75,14 @@ public class AdsRepository {
         ArrayList<Ad> list = new ArrayList<>();
 
         Location authorLocation =null;
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
 
 
         favAdsMutableLiveData.setValue(list);
@@ -89,13 +92,13 @@ public class AdsRepository {
     public MutableLiveData<ArrayList<Ad>> getAllHandcraftAds(){
         ArrayList<Ad> list = new ArrayList<>();
         Location authorLocation =null;
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
+        list.add(new Ad("authorId","authorName",authorLocation,"title","description","date","category","subCategory","subSubCategory"));
 
 
         handcraftAdsMutableLiveData.setValue(list);

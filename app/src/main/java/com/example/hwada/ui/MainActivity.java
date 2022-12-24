@@ -24,10 +24,12 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Looper;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
 
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
@@ -44,6 +46,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -55,9 +58,9 @@ public class MainActivity extends AppCompatActivity {
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
     private UserViewModel userViewModel ;
-
+    private BottomSheetBehavior bottomSheetBehavior;
     FusedLocationProviderClient mFusedLocationClient;
-
+    String TAG = "MainActivity";
     @SuppressLint("RestrictedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,10 +117,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    public void onBackPressed() {
-        finish();
-    }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-       // Log.e(TAG, "onResume: " );
+        Log.e(TAG, "onResume: " );
         if(user.getLocation()==null){
             if(isLocationEnabled()){
                 setLocationDialog();
@@ -268,5 +268,10 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.replace(R.id.main_fragment_container, fragment,tag);
         fragmentTransaction.commit();
     }
+    @Override
+    public void onBackPressed() {
+       finish();
+    }
+
 
 }

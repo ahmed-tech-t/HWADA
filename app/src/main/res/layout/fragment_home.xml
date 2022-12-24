@@ -26,15 +26,16 @@
             android:layout_marginLeft="20dp"
             android:layout_marginTop="20dp"
             android:layout_marginRight="20dp"
-            android:background="@drawable/frame"
+            android:background="@drawable/frame_gray"
 
             android:clickable="true"
+            android:focusable="false"
+
 
             android:drawableLeft="@drawable/location_icon"
 
             android:drawableRight="@drawable/arrow_right"
             android:drawablePadding="10dp"
-            android:focusable="false"
 
             android:hint="@string/yourAddress"
 
@@ -46,7 +47,7 @@
 
             android:paddingTop="2dp"
             android:paddingRight="10dp"
-
+            android:elevation="5dp"
             android:paddingBottom="2dp"
             android:textColorHint="@color/gray"
 
@@ -69,15 +70,18 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="10dp"
-
+                android:elevation="5dp"
                 android:layout_weight="1"
-                android:background="@drawable/frame"
+                android:background="@drawable/frame_gray"
 
                 android:drawableLeft="@drawable/search_icon"
 
                 android:drawablePadding="10dp"
 
                 android:hint="@string/whatDoYouWant"
+
+                android:clickable="true"
+                android:focusable="false"
 
                 android:inputType="text"
                 android:maxLines="1"
@@ -103,7 +107,8 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="6dp"
+            android:layout_height="1dp"
+            android:elevation="2dp"
             android:layout_marginTop="15dp"
             android:background="@color/white_gray" />
 
@@ -233,7 +238,8 @@
         </LinearLayout>
         <View
             android:layout_width="match_parent"
-            android:layout_height="6dp"
+            android:layout_height="1dp"
+            android:elevation="2dp"
             android:layout_marginTop="15dp"
             android:background="@color/white_gray" />
 
