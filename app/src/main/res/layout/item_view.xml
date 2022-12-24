@@ -4,8 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="10dp"
-    android:background="@drawable/item_frame">
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
+    android:background="@color/nav_color"
+    android:layout_marginTop="10dp"
+    android:elevation="2dp"
+  >
 
 
     <ImageView
@@ -23,8 +27,8 @@
         android:layout_width="103dp"
         android:layout_height="109dp"
         android:layout_margin="10dp"
-        android:background="@color/white_gray"
         android:padding="10dp"
+        android:background="@drawable/frame_gray"
         android:src="@drawable/worker_item_icon"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -41,19 +45,6 @@
         app:layout_constraintStart_toEndOf="@+id/item_user_image"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <View
-        android:id="@+id/view"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="5dp"
-
-        android:layout_marginEnd="40dp"
-        android:background="@color/black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/item_user_image"
-        app:layout_constraintTop_toBottomOf="@+id/item_jop_title" />
-
 
     <TextView
         android:id="@+id/item_username"
@@ -66,20 +57,8 @@
         android:paddingLeft="5dp"
         android:textColor="@color/black"
         app:layout_constraintStart_toEndOf="@+id/item_user_image"
-        app:layout_constraintTop_toBottomOf="@+id/view" />
+        app:layout_constraintTop_toBottomOf="@+id/item_jop_title" />
 
-    <View
-        android:id="@+id/view2"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="5dp"
-
-        android:layout_marginEnd="40dp"
-        android:background="@color/black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/item_user_image"
-        app:layout_constraintTop_toBottomOf="@+id/item_username" />
 
     <RatingBar
         android:id="@+id/item_user_rating"
@@ -96,7 +75,7 @@
         style="?android:attr/ratingBarStyleSmall"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/item_user_image"
-        app:layout_constraintTop_toBottomOf="@+id/view2" />
+        app:layout_constraintTop_toBottomOf="@+id/item_username" />
 
     <LinearLayout
         android:layout_width="wrap_content"
