@@ -234,6 +234,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 switch (item.getItemId()){
                     case R.id.home:
+
                         callFragment(new HomeFragment(),"home");
                         break;
                     case R.id.chat:
