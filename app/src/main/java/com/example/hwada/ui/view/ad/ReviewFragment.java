@@ -1,4 +1,4 @@
-package com.example.hwada.ui.view;
+package com.example.hwada.ui.view.ad;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;

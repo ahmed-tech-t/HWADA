@@ -11,25 +11,19 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager.widget.ViewPager;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
 import com.example.hwada.adapter.FavoritesAdapter;
-import com.example.hwada.adapter.TabLayoutAdapter;
-import com.example.hwada.ui.MainActivity;
-import com.example.hwada.ui.view.AdvertiserFragment;
+import com.example.hwada.ui.view.ad.AdvertiserFragment;
 import com.example.hwada.viewmodel.AdsViewModel;
 import com.example.hwada.viewmodel.UserViewModel;
-import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 

@@ -6,7 +6,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -34,6 +33,7 @@ import android.view.WindowManager;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
 import com.example.hwada.databinding.ActivityMainBinding;
+import com.example.hwada.ui.view.category.CategoryFragment;
 import com.example.hwada.ui.view.main.FavTapLayoutFragment;
 import com.example.hwada.ui.view.main.AccountFragment;
 import com.example.hwada.ui.view.main.ChatFragment;
@@ -47,9 +47,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     ActivityMainBinding binding;
     Dialog locationDialog;
@@ -60,6 +61,9 @@ public class MainActivity extends AppCompatActivity {
     private UserViewModel userViewModel ;
     private BottomSheetBehavior bottomSheetBehavior;
     FusedLocationProviderClient mFusedLocationClient;
+
+
+
     String TAG = "MainActivity";
     @SuppressLint("RestrictedApi")
     @Override
@@ -73,7 +77,8 @@ public class MainActivity extends AppCompatActivity {
         user = (User) intent.getParcelableExtra("user");
 
         // ##############
-
+            binding.addFloatActionBar.setOnClickListener(this);
+        //****************
         callFragment(new HomeFragment(),"home");
         navBarOnSelected();
         userViewModel= ViewModelProviders.of(this).get(UserViewModel.class);
@@ -133,7 +138,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.e(TAG, "onResume: " );
         if(user.getLocation()==null){
             if(isLocationEnabled()){
                 setLocationDialog();
@@ -255,26 +259,57 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void callFragment(Fragment fragment,String tag){
+    public void callFragment(Fragment fragment,String tag){
         Bundle bundle = new Bundle();
         bundle.putParcelable("user", user);
         fragment.setArguments(bundle);
-
-
         fragmentManager = getSupportFragmentManager();
-
         fragmentTransaction = fragmentManager.beginTransaction()
                 .setCustomAnimations(R.anim.to_up,R.anim.to_down);
-
         //set Animation
-
         fragmentTransaction.replace(R.id.main_fragment_container, fragment,tag);
         fragmentTransaction.commit();
     }
-    @Override
-    public void onBackPressed() {
-       finish();
+    public void callAddNewAdActivity(String category ,String subCategory , String subSubCategory){
+        Intent intent = new Intent(this, AddNewAdActivity.class);
+        intent.putExtra("user",user);
+        intent.putExtra("category",category);
+        intent.putExtra("subCategory",subCategory);
+        intent.putExtra("subSubCategory",subSubCategory);
+        startActivity(intent);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        if(v.getId()==binding.addFloatActionBar.getId()){
+            callBottomSheet(new CategoryFragment());
+        }
+    }
+    public void callBottomSheet(BottomSheetDialogFragment fragment){
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("user", user);
+        fragment.setArguments(bundle);
+        fragment.show(getSupportFragmentManager(),fragment.getTag());
+    }
+    public void callCategoryActivity(String tag,String target){
+        Intent intent = new Intent(this, CategoryActivity.class);
+        intent.putExtra("user",user);
+        intent.putExtra("tag",tag);
+        intent.putExtra("target",target);
+        startActivity(intent);
+    }
+    public void callAdsActivity(String category,String subCategory){
+        Intent intent = new Intent(this, AdsActivity.class);
+        intent.putExtra("user",user);
+        intent.putExtra("category",category);
+        intent.putExtra("subCategory",subCategory);
+        startActivity(intent);
+    }
 
 }

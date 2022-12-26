@@ -1,20 +1,12 @@
-package com.example.hwada.ui.view;
-
-import static androidx.fragment.app.FragmentManager.TAG;
+package com.example.hwada.ui.view.ad;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.res.Resources;
 import android.os.Bundle;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,20 +16,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.AdReview;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
-import com.example.hwada.adapter.AdsAdapter;
 import com.example.hwada.adapter.ReviewAdapter;
-import com.example.hwada.ui.AdsActivity;
-import com.example.hwada.ui.MainActivity;
-import com.example.hwada.viewmodel.AdsViewModel;
-import com.example.hwada.viewmodel.UserViewModel;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
@@ -83,7 +68,7 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        setBottomSheet(view);
+        bottomSheetBehavior = BottomSheetBehavior.from((View)view.getParent());
     }
 
     @Override
@@ -99,14 +84,6 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         user = getArguments().getParcelable("user");
         ad = getArguments().getParcelable("ad");
         setReviewsToRecycler();
-    }
-
-    private void setBottomSheet(View view){
-        bottomSheetBehavior = BottomSheetBehavior.from((View)view.getParent());
-       // bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-         //LinearLayout layout = dialog.findViewById(R.id.bottom_sheet_advertiser);
-        //assert layout != null;
-        //layout.setMinimumHeight(Resources.getSystem().getDisplayMetrics().heightPixels-100);
     }
 
     @Override
@@ -137,7 +114,6 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
             public boolean onKey(DialogInterface dialogInterface, int keyCode, KeyEvent keyEvent) {
                 // getAction to make sure this doesn't double fire
                 if (keyCode == KeyEvent.KEYCODE_BACK && keyEvent.getAction() == KeyEvent.ACTION_UP) {
-                    Log.e(TAG, "onKey: " );
                     bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
                     return true; // Capture onKey
                 }

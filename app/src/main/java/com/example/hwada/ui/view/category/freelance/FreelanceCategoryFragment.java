@@ -4,6 +4,7 @@ import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -19,35 +20,52 @@ import com.example.hwada.ui.MainActivity;
 
 public class FreelanceCategoryFragment extends Fragment implements View.OnClickListener {
 
+    String target;
+    String adsActivityTarget = "toAdsActivity";
+    String adNewAdTarget ="toAdNewAd";
+
     ImageView arrow ;
     TextView ride ,delivery ,nurse , maid ,other;
-    User user;
     String category = "freelance";
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v =  inflater.inflate(R.layout.fragment_freelance_category, container, false);
-        user = getArguments().getParcelable("user");
-
         initVarAndSetListener(v);
         return v ;
     }
 
     @Override
     public void onClick(View v) {
-        if(v.getId()==arrow.getId()){
-            ((CategoryActivity) getActivity()).callMainActivity();
-        }else if (v.getId()==ride.getId()){
-            ((CategoryActivity) getActivity()).callRideFragment();
-        }else if (v.getId()==delivery.getId()){
-            ((CategoryActivity) getActivity()).callDeliveryFragment();
-        }else if(v.getId()==nurse.getId()){
-            ((CategoryActivity) getActivity()).callAdsActivity(category,"nurse","");
-        }else if(v.getId()==maid.getId()){
-            ((CategoryActivity) getActivity()).callAdsActivity(category,"maid","");
-        }else if(v.getId()==other.getId()){
-            ((CategoryActivity) getActivity()).callAdsActivity(category,"other","");
+        if(target.equals(adsActivityTarget)) {
+            if (v.getId() == arrow.getId()) {
+                ((CategoryActivity) getActivity()).callMainActivity();
+            } else if (v.getId() == ride.getId()) {
+                ((CategoryActivity) getActivity()).callRideFragment(target);
+            } else if (v.getId() == delivery.getId()) {
+                ((CategoryActivity) getActivity()).callDeliveryFragment(target);
+            } else if (v.getId() == nurse.getId()) {
+                ((CategoryActivity) getActivity()).callAdsActivity(category, "nurse", "");
+            } else if (v.getId() == maid.getId()) {
+                ((CategoryActivity) getActivity()).callAdsActivity(category, "maid", "");
+            } else if (v.getId() == other.getId()) {
+                ((CategoryActivity) getActivity()).callAdsActivity(category, "other", "");
+            }
+        }else if(target.equals(adNewAdTarget)){
+            if (v.getId() == arrow.getId()) {
+                ((CategoryActivity) getActivity()).callMainActivity();
+            } else if (v.getId() == ride.getId()) {
+                ((CategoryActivity) getActivity()).callRideFragment(target);
+            } else if (v.getId() == delivery.getId()) {
+                ((CategoryActivity) getActivity()).callDeliveryFragment(target);
+            } else if (v.getId() == nurse.getId()) {
+                ((CategoryActivity) getActivity()).callAddNewAdActivity(category, "nurse", "");
+            } else if (v.getId() == maid.getId()) {
+                ((CategoryActivity) getActivity()).callAddNewAdActivity(category, "maid", "");
+            } else if (v.getId() == other.getId()) {
+                ((CategoryActivity) getActivity()).callAddNewAdActivity(category, "other", "");
+            }
         }
     }
     private void initVarAndSetListener(View v){
@@ -63,5 +81,10 @@ public class FreelanceCategoryFragment extends Fragment implements View.OnClickL
         nurse.setOnClickListener(this);
         maid.setOnClickListener(this);
         other.setOnClickListener(this);
+    }
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        target =getArguments().getString("target");
     }
 }

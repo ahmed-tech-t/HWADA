@@ -1,7 +1,5 @@
 package com.example.hwada.ui.view.main;
 
-import static androidx.fragment.app.FragmentManager.TAG;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.location.Address;
@@ -16,7 +14,6 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +29,7 @@ import com.example.hwada.ui.CategoryActivity;
 import com.example.hwada.ui.AdsActivity;
 import com.example.hwada.ui.MainActivity;
 import com.example.hwada.ui.MapActivity;
-import com.example.hwada.ui.view.AdvertiserFragment;
+import com.example.hwada.ui.view.ad.AdvertiserFragment;
 import com.example.hwada.viewmodel.AdsViewModel;
 import com.example.hwada.viewmodel.UserViewModel;
 
@@ -49,6 +46,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
 
     EditText userAddress ;
     UserViewModel userViewModel ;
+
+    String target = "toAdsActivity";
 
     private User user;
     ArrayList<Ad> adsList;
@@ -96,13 +95,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
             intent.putExtra("user", user);
             startActivity(intent);
         }else if (v.getId() == foodCategory.getId()){
-            callAdsActivity("homeFood","");
+            ((MainActivity)getActivity()).callAdsActivity("homeFood","");
         }else if (v.getId()==workerCategory.getId()){
-            callCategoryActivity("worker");
+            ((MainActivity)getActivity()).callCategoryActivity("worker",target);
         }else if (v.getId()==freelanceCategory.getId()){
-            callCategoryActivity("freelance");
+            ((MainActivity)getActivity()).callCategoryActivity("freelance",target);
         }else if (v.getId()==handcraftCategory.getId()){
-            callAdsActivity("handcraft","");
+            ((MainActivity)getActivity()).callAdsActivity("handcraft","");
         }
     }
     public String getUserAddress(Location location){
@@ -142,7 +141,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
         bundle.putParcelable("user", user);
         bundle.putParcelable("ad",adsList.get(position));
         fragment.setArguments(bundle);
-        fragment.show(((MainActivity)getActivity()).getSupportFragmentManager(),fragment.getTag());
+        fragment.show((getActivity()).getSupportFragmentManager(),fragment.getTag());
     }
 
     @Override
@@ -175,19 +174,5 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
     }
 
 
-    private void callCategoryActivity(String tag){
-        Intent intent = new Intent(getActivity(), CategoryActivity.class);
-        intent.putExtra("user",user);
-        intent.putExtra("tag",tag);
-        startActivity(intent);
-       // getActivity().overridePendingTransition(R.anim.to_down,R.anim.to_up);
-    }
-    public void callAdsActivity(String category,String subCategory){
-        Intent intent = new Intent(getActivity(), AdsActivity.class);
-        intent.putExtra("user",user);
-        intent.putExtra("category",category);
-        intent.putExtra("subCategory",subCategory);
-        startActivity(intent);
-    }
 
 }

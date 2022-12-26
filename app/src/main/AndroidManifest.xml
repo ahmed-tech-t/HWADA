@@ -19,6 +19,13 @@
         android:theme="@style/Theme.HWADA"
         tools:targetApi="31">
         <activity
+            android:name=".ui.AddNewAdActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".ui.AdsActivity"
             android:exported="false">
             <meta-data
@@ -70,8 +77,8 @@
             android:exported="true" />
         <activity
             android:name=".ui.MainActivity"
-            android:windowSoftInputMode="adjustPan"
-            android:exported="true" />
+            android:exported="true"
+            android:windowSoftInputMode="adjustPan" />
     </application>
 
 </manifest>
