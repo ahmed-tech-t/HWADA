@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/white_background"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/arrow_add_image_bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:padding="5dp"
+        android:src="@drawable/arrow_down" />
+
+        <TextView
+        android:id="@+id/remove_bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/remove"
+        android:clickable="true"
+        android:background="?android:attr/selectableItemBackground"
+        android:textSize="18dp"
+        android:padding="10dp"
+        android:layout_margin="5dp"
+        android:textColor="@color/black"/>
+
+
+</LinearLayout>

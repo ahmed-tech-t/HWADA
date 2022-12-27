@@ -80,7 +80,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
 
     public void removeOneItem(int position){
         list.remove(position);
-        notifyDataSetChanged();
-
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position,list.size());
     }
 }

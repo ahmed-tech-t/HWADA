@@ -80,4 +80,8 @@ dependencies {
     implementation 'com.borjabravo:readmoretextview:2.1.0'
     implementation 'de.hdodenhof:circleimageview:3.1.0'
 
+    def activity_version = "1.6.1"
+
+    // Java language implementation
+    implementation "androidx.activity:activity:$activity_version"
 }

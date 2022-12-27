@@ -1,6 +1,7 @@
 package com.example.hwada.Model;
 
 import android.location.Location;
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -9,6 +10,7 @@ import androidx.annotation.NonNull;
 import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Ad implements Parcelable {
 
@@ -21,22 +23,28 @@ public class Ad implements Parcelable {
     private String description;
     private String date ;
     private String distance ;
-    private double rating;
+    private float rating;
     private String category;
     private String subCategory;
-
-
-
     private String subSubCategory;
-
     private ArrayList<AdReview> adReviews;
 
+    private double price;
+    private daysSchedule daysSchedule ;
+
+
+
+
+
+    private List<Uri> imagesList;
 
     public Ad(){
         this.adReviews =new ArrayList<>();
+        this.imagesList = new ArrayList<>();
+        this.daysSchedule =new daysSchedule();
     }
 
-    public Ad(String authorId, String authorName, Location authorLocation, String title, String description, String date, String category, String subCategory ,String subSubCategory) {
+    public Ad(String authorId, String authorName, Location authorLocation, String title, String description, double price,String date, String category, String subCategory ,String subSubCategory) {
         this.authorId = authorId;
         this.authorName = authorName;
         this.authorLocation = authorLocation;
@@ -47,6 +55,9 @@ public class Ad implements Parcelable {
         this.subCategory = subCategory;
         this.subSubCategory = subSubCategory;
         this.adReviews =new ArrayList<>();
+        this.imagesList = new ArrayList<>();
+        this.daysSchedule =new daysSchedule();
+        this.price =price;
 
     }
 
@@ -60,11 +71,14 @@ public class Ad implements Parcelable {
         description = in.readString();
         date = in.readString();
         distance = in.readString();
-        rating = in.readDouble();
+        rating = in.readFloat();
         category = in.readString();
         subCategory = in.readString();
         subSubCategory = in.readString();
         adReviews = in.createTypedArrayList(AdReview.CREATOR);
+        price = in.readDouble();
+        daysSchedule = in.readParcelable(com.example.hwada.Model.daysSchedule.class.getClassLoader());
+        imagesList = in.createTypedArrayList(Uri.CREATOR);
     }
 
     public static final Creator<Ad> CREATOR = new Creator<Ad>() {
@@ -159,11 +173,11 @@ public class Ad implements Parcelable {
         this.distance = distance;
     }
 
-    public double getRating() {
+    public float getRating() {
         return rating;
     }
 
-    public void setRating(double rating) {
+    public void setRating(float rating) {
         this.rating = rating;
     }
 
@@ -187,6 +201,41 @@ public class Ad implements Parcelable {
     public void initAdReviewsList(){
         this.adReviews =new ArrayList<>();
     }
+    public void setAdReviews(ArrayList<AdReview> adReviews) {
+        this.adReviews = adReviews;
+    }
+
+    public void removeImageFromImagesList(int pos) {
+        imagesList.remove(pos);
+    }
+    public void setImageToImagesList(Uri image) {
+        imagesList.add(image);
+    }
+
+
+    public List<Uri> getImagesList() {
+        return imagesList;
+    }
+
+    public void setImagesList(List<Uri> imagesList) {
+        this.imagesList = imagesList;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public com.example.hwada.Model.daysSchedule getDaysSchedule() {
+        return daysSchedule;
+    }
+
+    public void setDaysSchedule(com.example.hwada.Model.daysSchedule daysSchedule) {
+        this.daysSchedule = daysSchedule;
+    }
 
     @Override
     public int describeContents() {
@@ -203,10 +252,13 @@ public class Ad implements Parcelable {
         dest.writeString(description);
         dest.writeString(date);
         dest.writeString(distance);
-        dest.writeDouble(rating);
+        dest.writeFloat(rating);
         dest.writeString(category);
         dest.writeString(subCategory);
         dest.writeString(subSubCategory);
         dest.writeTypedList(adReviews);
+        dest.writeDouble(price);
+        dest.writeParcelable(daysSchedule, flags);
+        dest.writeTypedList(imagesList);
     }
 }

@@ -2,6 +2,7 @@ package com.example.hwada.ui.view.category.freelance;
 
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.hwada.Model.User;
 import com.example.hwada.R;
 import com.example.hwada.ui.CategoryActivity;
 
@@ -20,6 +22,10 @@ public class RideFragment extends Fragment implements View.OnClickListener {
     TextView car ,bus ,other;
     String category = "freelance";
     String subCategory = "ride";
+    String target;
+    String adsActivityTarget = "toAdsActivity";
+    String adNewAdTarget ="toAdNewAd";
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -32,14 +38,27 @@ public class RideFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        if (v.getId()==arrow.getId()){
-            ((CategoryActivity)getActivity()).callMainFreelanceFragment();
-        }else if(v.getId()==car.getId()){
-            ((CategoryActivity)getActivity()).callAdsActivity(category,subCategory,"car");
-        }else if(v.getId()==bus.getId()){
-            ((CategoryActivity)getActivity()).callAdsActivity(category,subCategory,"bus");
-        }else if(v.getId()==other.getId()){
-            ((CategoryActivity)getActivity()).callAdsActivity(category,subCategory,"other");
+
+        if(target.equals(adsActivityTarget)) {
+            if (v.getId() == arrow.getId()) {
+                ((CategoryActivity) getActivity()).callMainFreelanceFragment();
+            } else if (v.getId() == car.getId()) {
+                ((CategoryActivity) getActivity()).callAdsActivity(category, subCategory, "car");
+            } else if (v.getId() == bus.getId()) {
+                ((CategoryActivity) getActivity()).callAdsActivity(category, subCategory, "bus");
+            } else if (v.getId() == other.getId()) {
+                ((CategoryActivity) getActivity()).callAdsActivity(category, subCategory, "other");
+            }
+        }else if(target.equals(adNewAdTarget)){
+            if (v.getId() == arrow.getId()) {
+                ((CategoryActivity) getActivity()).callMainFreelanceFragment();
+            } else if (v.getId() == car.getId()) {
+                ((CategoryActivity) getActivity()).callAddNewAdActivity(category, subCategory, "car");
+            } else if (v.getId() == bus.getId()) {
+                ((CategoryActivity) getActivity()).callAddNewAdActivity(category, subCategory, "bus");
+            } else if (v.getId() == other.getId()) {
+                ((CategoryActivity) getActivity()).callAddNewAdActivity(category, subCategory, "other");
+            }
         }
     }
 
@@ -55,5 +74,11 @@ public class RideFragment extends Fragment implements View.OnClickListener {
 
         arrow.setOnClickListener(this);
 
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        target =getArguments().getString("target");
     }
 }

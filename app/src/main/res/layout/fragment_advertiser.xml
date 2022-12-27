@@ -259,6 +259,7 @@
                     android:id="@+id/review_recycler"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@color/white"
                     app:layout_behavior="@string/appbar_scrolling_view_behavior"
                     android:orientation="vertical"/>
             </androidx.coordinatorlayout.widget.CoordinatorLayout>

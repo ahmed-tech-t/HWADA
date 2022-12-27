@@ -1,9 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
+<selector xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="NamespaceTypo"
     android:shape="rectangle">
 
-    <stroke android:width="1dip" android:color="#D6D7D8"/>
+    <item android:state_focused="false" >
+        <shape>
+            <stroke android:width="1dip" android:color="@color/white_gray"/>
+            <corners android:radius="5dp"/>
+        </shape>
+    </item>
+    <item android:state_focused="true" >
+        <shape>
+            <stroke android:width="1dip" android:color="@color/background"/>
+            <corners android:radius="5dp"/>
+        </shape>
+    </item>
 
-</shape>
+</selector>

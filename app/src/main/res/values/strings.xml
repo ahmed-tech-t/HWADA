@@ -67,4 +67,26 @@
     <string name="AddAComment">Add a comment...</string>
     <string name="username">username</string>
     <string name="what_are_you_offering">What are you offering</string>
+    <string name="uploadUpTo10Photos">UPLOAD UP TO 10 PHOTOS</string>
+    <string name="addImages">Add images</string>
+    <string name="tabOnIMages">tap on images to edit them or press , hold and move for reordering</string>
+    <string name="remove">Remove</string>
+    <string name="cancel">cancel</string>
+    <string name="limitReached">Limit reached</string>
+    <string name="alertLimitReached">You can only upload 10 images</string>
+    <string name="price">Price *</string>
+    <string name="adTitle">Ad Title *</string>
+    <string name="adDescription">Ad Description *</string>
+    <string name="workingTime">Working Time *</string>
+    <string name="saturday">Saturday</string>
+    <string name="sunday">Sunday</string>
+    <string name="monday">Monday</string>
+    <string name="tuesday">Tuesday</string>
+    <string name="wednesday">Wednesday</string>
+    <string name="thursday">Thursday</string>
+    <string name="friday">Friday</string>
+    <string name="from">from</string>
+    <string name="to">to</string>
+    <string name="emptyText"><u>        </u></string>
+
 </resources>

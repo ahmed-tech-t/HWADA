@@ -3,6 +3,7 @@ package com.example.hwada.ui.view.category.freelance;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -20,6 +21,9 @@ public class DeliveryFragment extends Fragment implements View.OnClickListener {
     TextView onFoot , cycle , motorcycle, tricycle, car, miniVan,van,other;
     String category = "freelance";
     String subCategory = "delivery";
+    String target;
+    String adsActivityTarget = "toAdsActivity";
+    String adNewAdTarget ="toAdNewAd";
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -36,25 +40,48 @@ public class DeliveryFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        if (v.getId()==arrow.getId()){
-            ((CategoryActivity)getActivity()).callMainFreelanceFragment();
-        }else if (v.getId()==onFoot.getId()){
-            ((CategoryActivity)getActivity()).callAdsActivity(category,subCategory,"onFoot");
-        }else if (v.getId()==cycle.getId()){
-            ((CategoryActivity)getActivity()).callAdsActivity(category,subCategory,"cycle");
-        }else if (v.getId()==motorcycle.getId()){
-            ((CategoryActivity)getActivity()).callAdsActivity(category,subCategory,"motorcycle");
-        }else if (v.getId()==tricycle.getId()){
-            ((CategoryActivity)getActivity()).callAdsActivity(category,subCategory,"tricycle");
-        }else if (v.getId()==car.getId()){
-            ((CategoryActivity)getActivity()).callAdsActivity(category,subCategory,"car");
-        }else if (v.getId()==miniVan.getId()){
-            ((CategoryActivity)getActivity()).callAdsActivity(category,subCategory,"miniVan");
-        }else if (v.getId()==van.getId()){
-            ((CategoryActivity)getActivity()).callAdsActivity(category,subCategory,"van");
-        }else if (v.getId()==other.getId()){
-            ((CategoryActivity)getActivity()).callAdsActivity(category,subCategory,"other");
-        }
+      if(target.equals(adsActivityTarget)) {
+
+          if (v.getId() == arrow.getId()) {
+              ((CategoryActivity) getActivity()).callMainFreelanceFragment();
+          } else if (v.getId() == onFoot.getId()) {
+              ((CategoryActivity) getActivity()).callAdsActivity(category, subCategory, "onFoot");
+          } else if (v.getId() == cycle.getId()) {
+              ((CategoryActivity) getActivity()).callAdsActivity(category, subCategory, "cycle");
+          } else if (v.getId() == motorcycle.getId()) {
+              ((CategoryActivity) getActivity()).callAdsActivity(category, subCategory, "motorcycle");
+          } else if (v.getId() == tricycle.getId()) {
+              ((CategoryActivity) getActivity()).callAdsActivity(category, subCategory, "tricycle");
+          } else if (v.getId() == car.getId()) {
+              ((CategoryActivity) getActivity()).callAdsActivity(category, subCategory, "car");
+          } else if (v.getId() == miniVan.getId()) {
+              ((CategoryActivity) getActivity()).callAdsActivity(category, subCategory, "miniVan");
+          } else if (v.getId() == van.getId()) {
+              ((CategoryActivity) getActivity()).callAdsActivity(category, subCategory, "van");
+          } else if (v.getId() == other.getId()) {
+              ((CategoryActivity) getActivity()).callAdsActivity(category, subCategory, "other");
+          }
+      }else if(target.equals(adNewAdTarget)){
+          if (v.getId() == arrow.getId()) {
+              ((CategoryActivity) getActivity()).callMainFreelanceFragment();
+          } else if (v.getId() == onFoot.getId()) {
+              ((CategoryActivity) getActivity()).callAddNewAdActivity(category, subCategory, "onFoot");
+          } else if (v.getId() == cycle.getId()) {
+              ((CategoryActivity) getActivity()).callAddNewAdActivity(category, subCategory, "cycle");
+          } else if (v.getId() == motorcycle.getId()) {
+              ((CategoryActivity) getActivity()).callAddNewAdActivity(category, subCategory, "motorcycle");
+          } else if (v.getId() == tricycle.getId()) {
+              ((CategoryActivity) getActivity()).callAddNewAdActivity(category, subCategory, "tricycle");
+          } else if (v.getId() == car.getId()) {
+              ((CategoryActivity) getActivity()).callAddNewAdActivity(category, subCategory, "car");
+          } else if (v.getId() == miniVan.getId()) {
+              ((CategoryActivity) getActivity()).callAddNewAdActivity(category, subCategory, "miniVan");
+          } else if (v.getId() == van.getId()) {
+              ((CategoryActivity) getActivity()).callAddNewAdActivity(category, subCategory, "van");
+          } else if (v.getId() == other.getId()) {
+              ((CategoryActivity) getActivity()).callAddNewAdActivity(category, subCategory, "other");
+          }
+      }
     }
 
     private void initVarAndSetListener(View v){
@@ -78,6 +105,10 @@ public class DeliveryFragment extends Fragment implements View.OnClickListener {
         miniVan.setOnClickListener(this);
         van.setOnClickListener(this);
         other.setOnClickListener(this);
-
+    }
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        target =getArguments().getString("target");
     }
 }
