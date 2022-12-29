@@ -59,7 +59,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
     private UserViewModel userViewModel ;
-    private BottomSheetBehavior bottomSheetBehavior;
     FusedLocationProviderClient mFusedLocationClient;
 
 

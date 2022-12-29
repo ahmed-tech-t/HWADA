@@ -87,6 +87,19 @@
     <string name="friday">Friday</string>
     <string name="from">from</string>
     <string name="to">to</string>
-    <string name="emptyText"><u>        </u></string>
-
+    <string name="next">Next</string>
+    <string name="emptyFieldWarning">field can\'t be empty </string>
+    <string name="toShortWarning">to short</string>
+    <string name="invalidData">Invalid data</string>
+    <string name="imagesListEmptyWarning">you must choose at least one image </string>
+    <string name="instructionsWorkTime">select working days , Add available working hours </string>
+    <string name="edit">edit</string>
+    <string name="add">add</string>
+    <string name="addPeriod">add period</string>
+    <string name="workingTimeMaxError">you can\'t add more than 3 periods</string>
+    <string name="applyTo">Apply to :</string>
+    <string name="failed">Failed</string>
+    <string name="checkBoxError">you must at least select one day</string>
+    <string name="periodError">you must at least add on period</string>
+    <string name="pickTimeEmptyError">period can\'t be empty please click on the empty oval button and pick a time</string>
 </resources>

@@ -19,7 +19,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -28,26 +27,20 @@ import com.example.hwada.Model.User;
 import com.example.hwada.Model.WorkingTime;
 import com.example.hwada.R;
 import com.example.hwada.adapter.ImagesAdapter;
-import com.example.hwada.adapter.WorkingTimeAdapter;
 import com.example.hwada.databinding.ActivityAddNewAdBinding;
+import com.example.hwada.ui.view.WorkTimeEditFragment;
+import com.example.hwada.ui.view.WorkTimePreviewFragment;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter.OnItemListener , View.OnClickListener , WorkingTimeAdapter.OnItemListener {
+public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter.OnItemListener , View.OnClickListener  {
     User user ;
     ActivityAddNewAdBinding binding ;
-    String category ,subCategory ,subSubCategory;
     ImagesAdapter imagesAdapter;
-
-    WorkingTimeAdapter workingTimeAdapterForSaturday ;
-    WorkingTimeAdapter workingTimeAdapterForSunday ;
-    WorkingTimeAdapter workingTimeAdapterForMonday ;
-    WorkingTimeAdapter workingTimeAdapterForTuesday ;
-    WorkingTimeAdapter workingTimeAdapterForWednesday ;
-    WorkingTimeAdapter workingTimeAdapterForThursday ;
-    WorkingTimeAdapter workingTimeAdapterForFriday ;
 
     Ad newAd;
     String TAG ="AddNewAdActivity";
@@ -61,17 +54,19 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
         // get user data
         Intent intent = getIntent();
         user = (User) intent.getParcelableExtra("user");
+         initAd(intent);
+        //******************
+        binding.addNewImage.setOnClickListener(this);
+        binding.nextButtonAddNewAd.setOnClickListener(this);
+    }
+    private void initAd(Intent intent){
         newAd = new Ad();
         newAd.setAuthorId(user.getuId());
         newAd.setAuthorName(user.getUsername());
+        newAd.setAuthorLocation(user.getLocation());
         newAd.setCategory(intent.getStringExtra("category"));
         newAd.setSubCategory(intent.getStringExtra("subCategory"));
         newAd.setSubSubCategory(intent.getStringExtra("subSubCategory"));
-
-        //******************
-        binding.addNewImage.setOnClickListener(this);
-
-        setWorkTimeToAdapter();
     }
     public void setImagesToList(List<Uri> list) {
         imagesAdapter = new ImagesAdapter();
@@ -121,9 +116,44 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
            }else {
                 requestPermissions();
             }
+        }else if (v.getId() == binding.nextButtonAddNewAd.getId()){
+            setFieldsWarning();
+            if(checkIfFieldsAreValid()){
+                newAd.setPrice(Double.parseDouble(binding.adPrice.getText().toString()));
+                newAd.setTitle(binding.adTitle.getText().toString());
+                newAd.setDescription(binding.adDescription.getText().toString());
+            }
+            callBottomSheet(new WorkTimePreviewFragment());
+
+        }
+    }
+    private boolean checkIfFieldsAreValid(){
+        return binding.adTitle.getError()==null &&  binding.adDescription.getError()==null && newAd.getImagesList().size()>0;
+    }
+    private void setFieldsWarning(){
+        if(binding.adTitle.getText().length() ==0){
+            binding.adTitle.setError(getString(R.string.emptyFieldWarning));
+        } else if (binding.adDescription.getText().length() < 50){
+            if (binding.adDescription.getText().length() ==0){
+                binding.adDescription.setError(getString(R.string.emptyFieldWarning));
+            }else  binding.adDescription.setError(getString(R.string.toShortWarning));
+        }else if(newAd.getImagesList().size()==0){
+            showDialog(getString(R.string.invalidData),getString(R.string.imagesListEmptyWarning));
+        }else if (binding.adPrice.getText().length()==0){
+            binding.adPrice.setText("0");
         }
     }
 
+    private void showDialog(String title ,String body){
+        new AlertDialog.Builder(this)
+                .setTitle(title)
+                .setMessage(body)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .show();
+    }
     //Pick Images From Galary
     ActivityResultLauncher<PickVisualMediaRequest> pickMultipleMedia = registerForActivityResult(new ActivityResultContracts.PickMultipleVisualMedia(10), uris -> {
 
@@ -172,18 +202,13 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
 
     private void pickImagesHandler(){
         if (newAd.getImagesList().size() >= 10) {
-            new AlertDialog.Builder(this)
-                    .setTitle(getString(R.string.limitReached))
-                    .setMessage(getString(R.string.alertLimitReached))
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                        }
-                    })
-                    .show();
+            showDialog(getString(R.string.limitReached),getString(R.string.alertLimitReached));
         }else{
-            pickMultipleMedia.launch(new PickVisualMediaRequest.Builder()
-                    .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
-                    .build());
+            ActivityResultContracts.PickVisualMedia.VisualMediaType mediaType = (ActivityResultContracts.PickVisualMedia.VisualMediaType) ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE;
+            PickVisualMediaRequest request = new PickVisualMediaRequest.Builder()
+                    .setMediaType(mediaType)
+                    .build();
+            pickMultipleMedia.launch(request);
         }
     }
 
@@ -206,124 +231,11 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
         }
     }
 
-
-
-    public void setWorkTimeToAdapter() {
-         workingTimeAdapterForSaturday =new WorkingTimeAdapter();
-         workingTimeAdapterForSunday  =new WorkingTimeAdapter();
-         workingTimeAdapterForMonday  =new WorkingTimeAdapter();
-         workingTimeAdapterForTuesday  =new WorkingTimeAdapter();
-         workingTimeAdapterForWednesday  =new WorkingTimeAdapter();
-         workingTimeAdapterForThursday =new WorkingTimeAdapter();
-         workingTimeAdapterForFriday  =new WorkingTimeAdapter();
-        try {
-            binding.recyclerSaturday.setAdapter(workingTimeAdapterForSaturday);
-            binding.recyclerSunday.setAdapter(workingTimeAdapterForSunday);
-            binding.recyclerMonday.setAdapter(workingTimeAdapterForMonday);
-            binding.recyclerTuesday.setAdapter(workingTimeAdapterForTuesday);
-            binding.recyclerWednesday.setAdapter(workingTimeAdapterForWednesday);
-            binding.recyclerThursday.setAdapter(workingTimeAdapterForThursday);
-            binding.recyclerFriday.setAdapter(workingTimeAdapterForFriday);
-
-            workingTimeAdapterForSaturday.setList(newAd.getDaysSchedule().getSaturday(),this);
-            workingTimeAdapterForSunday.setList(newAd.getDaysSchedule().getSunday(),this);
-            workingTimeAdapterForMonday.setList(newAd.getDaysSchedule().getMonday(),this);
-            workingTimeAdapterForTuesday.setList(newAd.getDaysSchedule().getTuesday(),this);
-            workingTimeAdapterForWednesday.setList(newAd.getDaysSchedule().getWednesday(),this);
-            workingTimeAdapterForThursday.setList(newAd.getDaysSchedule().getThursday(),this);
-            workingTimeAdapterForFriday.setList(newAd.getDaysSchedule().getFriday(),this);
-
-            binding.recyclerSaturday.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
-            binding.recyclerSunday.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
-            binding.recyclerMonday.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
-            binding.recyclerTuesday.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
-            binding.recyclerWednesday.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
-            binding.recyclerThursday.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
-            binding.recyclerFriday.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
-            handleSwitches();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+    public void callBottomSheet(BottomSheetDialogFragment fragment){
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("ad", newAd);
+        fragment.setArguments(bundle);
+        fragment.show(getSupportFragmentManager(),fragment.getTag());
     }
 
-
-    private void handleSwitches(){
-        WorkingTime tempWorkingTime = new WorkingTime();
-        binding.switchSaturday.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                    workingTimeAdapterForSaturday.addItem(tempWorkingTime);
-                }else workingTimeAdapterForSaturday.clearList();
-            }
-        });
-        binding.switchSunday.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                    workingTimeAdapterForSunday.addItem(tempWorkingTime);
-                }else workingTimeAdapterForSunday.clearList();
-            }
-        });
-        binding.switchMonday.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                    workingTimeAdapterForMonday.addItem(tempWorkingTime);
-                }else workingTimeAdapterForMonday.clearList();
-            }
-        });
-        binding.switchTuesday.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                    workingTimeAdapterForTuesday.addItem(tempWorkingTime);
-                }else workingTimeAdapterForTuesday.clearList();
-            }
-        });
-        binding.switchWednesday.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                    workingTimeAdapterForWednesday.addItem(tempWorkingTime);
-                }else workingTimeAdapterForWednesday.clearList();
-            }
-        });
-        binding.switchThursday.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                    workingTimeAdapterForThursday.addItem(tempWorkingTime);
-                }else workingTimeAdapterForThursday.clearList();
-            }
-        });
-        binding.switchFriday.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                    workingTimeAdapterForFriday.addItem(tempWorkingTime);
-                }else workingTimeAdapterForFriday.clearList();
-            }
-        });
-    }
-
-    @Override
-    public void fromTimeListener(int pos) {
-
-    }
-
-    @Override
-    public void toTimeListener(int pos) {
-
-    }
-
-    @Override
-    public void addTimeListener(int pos) {
-
-    }
-
-    @Override
-    public void removeTimeListener(int pos) {
-
-    }
 }

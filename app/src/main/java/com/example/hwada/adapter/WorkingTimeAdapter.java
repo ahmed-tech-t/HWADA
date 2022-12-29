@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -37,7 +38,7 @@ public class WorkingTimeAdapter extends RecyclerView.Adapter<WorkingTimeAdapter.
         return list.size();
     }
 
-    public void setList(ArrayList<WorkingTime> list, OnItemListener onItemListener) {
+    public void setList(ArrayList<WorkingTime> list, OnItemListener onItemListener ) {
         this.list = list;
         this.pOnItemListener = onItemListener;
         notifyDataSetChanged();
@@ -46,12 +47,11 @@ public class WorkingTimeAdapter extends RecyclerView.Adapter<WorkingTimeAdapter.
     public class WorkingTimeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         OnItemListener onItemListener;
-        ImageView add, remove;
-        TextView from, to;
+        ImageView remove;
+        Button from, to;
 
         public WorkingTimeViewHolder(@NonNull View v, OnItemListener onItemListener) {
             super(v);
-            add = v.findViewById(R.id.button_add_time);
             remove = v.findViewById(R.id.button_remove_time);
             from = v.findViewById(R.id.from_working_time);
             to = v.findViewById(R.id.to_working_time);
@@ -59,26 +59,21 @@ public class WorkingTimeAdapter extends RecyclerView.Adapter<WorkingTimeAdapter.
 
             from.setOnClickListener(this);
             to.setOnClickListener(this);
-            add.setOnClickListener(this);
             remove.setOnClickListener(this);
 
         }
 
         @Override
         public void onClick(View v) {
-            if (v.getId() == from.getId()) onItemListener.fromTimeListener(getAdapterPosition());
-            else if (v.getId() == to.getId()) onItemListener.toTimeListener(getAdapterPosition());
-            else if (v.getId() == add.getId()) onItemListener.addTimeListener(getAdapterPosition());
-            else if (v.getId() == remove.getId())
-                onItemListener.removeTimeListener(getAdapterPosition());
+            if (v.getId() == from.getId()) onItemListener.fromTimeListener(getAdapterPosition(),from);
+            else if (v.getId() == to.getId()) onItemListener.toTimeListener(getAdapterPosition(),to);
+            else if (v.getId() == remove.getId()) onItemListener.removeTimeListener(getAdapterPosition());
         }
     }
     public interface OnItemListener {
-        void fromTimeListener(int pos);
+        void fromTimeListener(int pos,Button button);
 
-        void toTimeListener(int pos);
-
-        void addTimeListener(int pos);
+        void toTimeListener(int pos ,Button button);
 
         void removeTimeListener(int pos);
 
@@ -91,7 +86,7 @@ public class WorkingTimeAdapter extends RecyclerView.Adapter<WorkingTimeAdapter.
 
     public void addItem(WorkingTime w){
         list.add(w);
-        notifyDataSetChanged();
+        notifyItemInserted(list.size() - 1);
     }
     public void clearList(){
         list.clear();

@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_marginTop="60dp"
+    android:id="@+id/bottom_sheet_work_time_edit"
+    android:background="@drawable/white_background"
+    tools:context=".ui.view.WorkTimeEditFragment">
+    <ImageView
+        android:id="@+id/arrow_edit_work_time"
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/arrow_down"
+        android:padding="5dp" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_margin="10dp"
+        android:padding="10dp">
+        <TextView
+            android:id="@+id/tv_day_work_time_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18dp"
+            android:textColor="@color/black"
+            android:text="Day"/>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_work_time_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"/>
+        <Button
+            android:id="@+id/button_add_work_time_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="@string/addPeriod"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="20dp"
+            android:drawableEnd="@drawable/add_button_time"
+            android:drawablePadding="10dp"
+            android:textAllCaps="false"
+            android:textColor="@color/black"
+            android:layout_gravity="left"
+            android:background="@drawable/button_time_background"
+            />
+
+        <LinearLayout
+            android:id="@+id/ll_apply_to_work_time_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/applyTo"
+                android:textColor="@color/black"
+                />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <CheckBox
+                        android:id="@+id/checkbox_monday"
+                        android:layout_width="wrap_content"
+                        android:text="@string/monday"
+                        android:textSize="12dp"
+                        android:paddingRight="10dp"
+                        android:paddingBottom="10dp"
+                        android:buttonTint="@color/background"
+                        android:paddingTop="10dp"
+                        android:background="@drawable/button_time_square_background"
+                        android:layout_height="wrap_content" />
+                    <CheckBox
+                        android:id="@+id/checkbox_tuesday"
+                        android:layout_width="wrap_content"
+                        android:text="@string/tuesday"
+                        android:textSize="12dp"
+                        android:layout_marginLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:paddingBottom="10dp"
+                        android:paddingTop="10dp"
+                        android:buttonTint="@color/background"
+                        android:background="@drawable/button_time_square_background"
+                        android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <CheckBox
+                        android:id="@+id/checkbox_wednesday"
+                        android:layout_width="wrap_content"
+                        android:text="@string/wednesday"
+                        android:textSize="12dp"
+                        android:buttonTint="@color/background"
+                        android:paddingRight="10dp"
+                        android:paddingBottom="10dp"
+                        android:paddingTop="10dp"
+                        android:background="@drawable/button_time_square_background"
+                        android:layout_height="wrap_content" />
+                    <CheckBox
+                        android:id="@+id/checkbox_thursday"
+                        android:layout_width="wrap_content"
+                        android:text="@string/thursday"
+                        android:textSize="12dp"
+                        android:layout_marginLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:paddingBottom="10dp"
+                        android:buttonTint="@color/background"
+                        android:paddingTop="10dp"
+                        android:background="@drawable/button_time_square_background"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+                    <CheckBox
+                        android:id="@+id/checkbox_friday"
+                        android:layout_width="wrap_content"
+                        android:text="@string/friday"
+                        android:textSize="12dp"
+                        android:paddingRight="10dp"
+                        android:paddingBottom="10dp"
+                        android:paddingTop="10dp"
+                        android:buttonTint="@color/background"
+                        android:background="@drawable/button_time_square_background"
+                        android:layout_height="wrap_content" />
+                    <CheckBox
+                        android:id="@+id/checkbox_saturday"
+                        android:layout_width="wrap_content"
+                        android:text="@string/saturday"
+                        android:textSize="12dp"
+                        android:paddingRight="10dp"
+                        android:buttonTint="@color/background"
+                        android:paddingBottom="10dp"
+                        android:paddingTop="10dp"
+                        android:layout_marginLeft="10dp"
+                        android:background="@drawable/button_time_square_background"
+                        android:layout_height="wrap_content" />
+                    <CheckBox
+                        android:id="@+id/checkbox_sunday"
+                        android:layout_width="wrap_content"
+                        android:text="@string/sunday"
+                        android:textSize="12dp"
+                        android:paddingRight="10dp"
+                        android:paddingBottom="10dp"
+                        android:paddingTop="10dp"
+                        android:buttonTint="@color/background"
+                        android:layout_marginLeft="10dp"
+                        android:background="@drawable/button_time_square_background"
+                        android:layout_height="wrap_content" />
+
+
+                </LinearLayout>
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/button_save_work_time_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/save"
+            android:background="@drawable/button_save_blue"
+            android:textColor="@color/white"
+            android:layout_gravity="right"/>
+
+    </LinearLayout>
+</LinearLayout>

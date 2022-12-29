@@ -10,8 +10,8 @@ public class WorkingTime implements Parcelable {
     String to ;
 
     public WorkingTime(){
-        this.from="_______";
-        this.to = "_______";
+        this.from="";
+        this.to = "";
     }
     protected WorkingTime(Parcel in) {
         from = in.readString();

@@ -83,7 +83,7 @@ public class CategoryFragment extends BottomSheetDialogFragment implements View.
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-       setBottomSheet(view);
+         setBottomSheet(view);
     }
 
 

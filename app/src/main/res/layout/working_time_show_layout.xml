@@ -2,7 +2,6 @@
 
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@color/transparent"
@@ -14,42 +13,31 @@
         android:text="@string/from"
         android:layout_gravity="center_vertical"
         android:textSize="15dp"
-
-        android:textColor="@color/black" />
-    <Button
-        android:id="@+id/from_working_time"
-        android:layout_width="80dp"
-        android:layout_height="30dp"
+        android:textColor="@color/gray" />
+    <TextView
+        android:id="@+id/from_working_time_preview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:clickable="true"
         android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
-        android:background="@drawable/button_time_background" />
-
+        android:textColor="@color/black"
+        android:textSize="15dp"
+        android:layout_marginRight="5dp"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/to"
         android:layout_gravity="center_vertical"
         android:textSize="15dp"
-        android:textColor="@color/black" />
-    <Button
-        android:id="@+id/to_working_time"
-        android:layout_width="80dp"
-        android:layout_height="30dp"
-        android:layout_gravity="center_vertical"
-        android:clickable="true"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
-        android:background="@drawable/button_time_background" />
-
-    <ImageView
-        android:id="@+id/button_remove_time"
+        android:textColor="@color/gray" />
+    <TextView
+        android:id="@+id/to_working_time_preview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_margin="3dp"
-        android:clickable="true"
-        android:background="?android:attr/selectableItemBackground"
-        android:src="@drawable/remove_button_time"/>
+        android:textColor="@color/black"
+        android:textSize="15dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"/>
+
 </LinearLayout>
