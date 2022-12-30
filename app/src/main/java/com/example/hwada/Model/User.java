@@ -252,4 +252,25 @@ public class User implements Parcelable {
         dest.writeByte((byte) (isNew ? 1 : 0));
         dest.writeByte((byte) (isCreated ? 1 : 0));
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "uId='" + uId + '\'' +
+                ", username='" + username + '\'' +
+                ", location=" + location +
+                ", favAds=" + favAds +
+                ", ads=" + ads +
+                ", rating=" + rating +
+                ", myReviews=" + myReviews +
+                ", email='" + email + '\'' +
+                ", phone='" + phone + '\'' +
+                ", aboutYou='" + aboutYou + '\'' +
+                ", image='" + image + '\'' +
+                ", gender='" + gender + '\'' +
+                ", isAuthenticated=" + isAuthenticated +
+                ", isNew=" + isNew +
+                ", isCreated=" + isCreated +
+                '}';
+    }
 }

@@ -16,6 +16,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,16 +34,19 @@ import com.example.hwada.Model.WorkingTime;
 import com.example.hwada.R;
 import com.example.hwada.adapter.ImagesAdapter;
 import com.example.hwada.databinding.ActivityAddNewAdBinding;
+import com.example.hwada.ui.view.MapsFragment;
 import com.example.hwada.ui.view.WorkTimeEditFragment;
 import com.example.hwada.ui.view.WorkTimePreviewFragment;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
-public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter.OnItemListener , View.OnClickListener  {
+public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter.OnItemListener , View.OnClickListener ,MapsFragment.GettingPassedData {
     User user ;
     ActivityAddNewAdBinding binding ;
     ImagesAdapter imagesAdapter;
@@ -58,22 +64,16 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
         Intent intent = getIntent();
         user = (User) intent.getParcelableExtra("user");
          initAd(intent);
-        //getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-
         //******************
+        binding.userAddressMapFragment.setText(getUserAddress(user.getLocation()));
+
         binding.addNewImage.setOnClickListener(this);
         binding.nextButtonAddNewAd.setOnClickListener(this);
         binding.linearLayout.setOnClickListener(this);
         binding.scrollViewAddNewAdd.setOnClickListener(this);
         binding.linearlayoutInner1AddNewItem.setOnClickListener(this);
-
-        binding.adDescription.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-
+        binding.userAddressMapFragment.setOnClickListener(this);
+        binding.arrowAddNewAd.setOnClickListener(this);
     }
     private void initAd(Intent intent){
         newAd = new Ad();
@@ -126,7 +126,9 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
 
     @Override
     public void onClick(View v) {
-        if(v.getId() == binding.addNewImage.getId()) {
+       if(v.getId() ==binding.arrowAddNewAd.getId()) {
+            super.onBackPressed();
+       } else if(v.getId() == binding.addNewImage.getId()) {
             if(checkPermissions()){
                 pickImagesHandler();
            }else {
@@ -142,8 +144,9 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
             }
         }else if (v.getId() == binding.linearLayout.getId() || v.getId() == binding.scrollViewAddNewAdd.getId()
                 ||v.getId() ==binding.linearlayoutInner1AddNewItem.getId()){
-            Log.e(TAG, "onClick: " );
             hideKeyboard();
+        }else if (v.getId()==binding.userAddressMapFragment.getId()){
+            callBottomSheet(new MapsFragment());
         }
     }
     private void hideKeyboard(){
@@ -263,6 +266,33 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
         bundle.putParcelable("user",user);
         fragment.setArguments(bundle);
         fragment.show(getSupportFragmentManager(),fragment.getTag());
+    }
+
+    public String getUserAddress(Location location) {
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+            String address = addresses.get(0).getAddressLine(0);
+            address = address.split(",")[0] + address.split(",")[1];
+
+            return address;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "loading...";
+    }
+
+    @Override
+    public void newLocation(Location location) {
+        newAd.setAuthorLocation(location);
+        binding.userAddressMapFragment.setText(getUserAddress(location));
+    }
+
+    public void callMainActivity(){
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("user",user);
+        startActivity(intent);
+        finish();
     }
 
 }

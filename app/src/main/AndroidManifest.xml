@@ -6,8 +6,10 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
+
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
+
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
@@ -22,12 +24,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.HWADA"
         tools:targetApi="31">
+
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCWZpNk7RjtjCV5OAKfokq-HUsDURcj1Ow" />
+
         <activity
             android:name=".ui.AddNewAdActivity"
             android:exported="false"
             android:windowSoftInputMode="stateUnspecified|adjustResize">
-
-        <meta-data
+            <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
@@ -45,11 +52,6 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
-
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCWZpNk7RjtjCV5OAKfokq-HUsDURcj1Ow" />
-
         <activity
             android:name=".ui.MapActivity"
             android:exported="false"
@@ -84,9 +86,7 @@
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"
-            android:windowSoftInputMode="adjustPan"
-
-            />
-</application>
+            android:windowSoftInputMode="adjustPan" />
+    </application>
 
 </manifest>

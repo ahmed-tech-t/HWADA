@@ -9,6 +9,7 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -29,16 +30,18 @@ import com.example.hwada.ui.CategoryActivity;
 import com.example.hwada.ui.AdsActivity;
 import com.example.hwada.ui.MainActivity;
 import com.example.hwada.ui.MapActivity;
+import com.example.hwada.ui.view.MapsFragment;
 import com.example.hwada.ui.view.ad.AdvertiserFragment;
 import com.example.hwada.viewmodel.AdsViewModel;
 import com.example.hwada.viewmodel.UserViewModel;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class HomeFragment extends Fragment implements View.OnClickListener , AdsAdapter.OnItemListener {
+public class HomeFragment extends Fragment implements View.OnClickListener , AdsAdapter.OnItemListener ,MapsFragment.GettingPassedData{
     AdsViewModel viewModel;
 
     AdsAdapter adapter;
@@ -52,7 +55,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
     private User user;
     ArrayList<Ad> adsList;
     LinearLayout foodCategory , workerCategory, freelanceCategory , handcraftCategory ;
-
 
 
     @SuppressLint("MissingInflatedId")
@@ -91,9 +93,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
     @Override
     public void onClick(View v) {
         if (v.getId() == userAddress.getId()) {
-            Intent intent = new Intent(getActivity(), MapActivity.class);
+            /*Intent intent = new Intent(getActivity(), MapActivity.class);
             intent.putExtra("user", user);
-            startActivity(intent);
+            startActivity(intent);*/
+            callBottomSheet(new MapsFragment());
         }else if (v.getId() == foodCategory.getId()){
             ((MainActivity)getActivity()).callAdsActivity("homeFood","");
         }else if (v.getId()==workerCategory.getId()){
@@ -109,7 +112,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
         try {
             List<Address> addresses =  geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
             String address = addresses.get(0).getAddressLine(0);
-            address = address.split(",")[0]+ address.split(",")[1] ;
+            address = address.split(",")[0] + address.split(",")[1]+address.split(",")[2]+address.split(",")[3];
             return address;
         } catch (IOException e) {
             e.printStackTrace();
@@ -173,6 +176,17 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
         handcraftCategory.setOnClickListener(this);
     }
 
+    public void callBottomSheet(BottomSheetDialogFragment fragment){
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("user",user);
+        fragment.setArguments(bundle);
+        FragmentManager fragmentManager = getChildFragmentManager();
+        fragment.show(fragmentManager,fragment.getTag());
+    }
 
-
+    @Override
+    public void newLocation(Location location) {
+        user.setLocation(location);
+        userAddress.setText(getUserAddress(user.getLocation()));
+    }
 }

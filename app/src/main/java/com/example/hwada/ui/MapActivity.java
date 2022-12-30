@@ -120,10 +120,19 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     public void getUserAddress(Location location) {
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
         try {
+            String address = "loading ....";
             List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-            String address = addresses.get(0).getAddressLine(0);
-            address = address.split(",")[0] + address.split(",")[1];
-            //TODO
+            if(addresses.size()>0) {
+
+                Log.e(TAG, "getUserAddress: "+addresses );
+
+                address = addresses.get(0).getAddressLine(0);
+                address = address.split(",")[0] + address.split(",")[1]+address.split(",")[2]+address.split(",")[3];
+
+
+            }
+
+
             binding.userAddress.setText(address);
         } catch (IOException e) {
             e.printStackTrace();

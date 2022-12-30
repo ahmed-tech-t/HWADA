@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:padding="5dp"
-            android:src="@drawable/arrow_up" />
+            android:src="@drawable/arrow_down" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -133,6 +133,38 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:orientation="vertical">
+                    <EditText
+                        android:id="@+id/user_address_map_fragment"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginRight="20dp"
+                        android:background="@drawable/frame_gray"
+                        android:clickable="true"
+                        android:focusable="false"
+                        android:drawableLeft="@drawable/location_icon"
+
+                        android:drawableRight="@drawable/arrow_right"
+                        android:drawablePadding="10dp"
+
+                        android:hint="@string/yourAddress"
+
+                        android:inputType="text"
+                        android:maxLines="1"
+
+                        android:padding="5dp"
+                        android:paddingLeft="10dp"
+
+                        android:paddingTop="2dp"
+                        android:paddingRight="10dp"
+                        android:elevation="5dp"
+                        android:paddingBottom="2dp"
+                        android:textColorHint="@color/gray"
+
+                        android:textSize="15dp"
+
+                        />
 
                     <TextView
                         android:layout_width="wrap_content"
