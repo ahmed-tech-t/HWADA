@@ -141,7 +141,6 @@ public class WorkTimeEditFragment extends BottomSheetDialogFragment implements W
         workingTimeList = getArguments().getParcelableArrayList("workingTimes");
         tag = getArguments().getString("tag");
         applyTo = new ArrayList<>();
-        Log.e(TAG, "onActivityCreated: "+applyTo.size() );
         setWorkTimeToAdapter();
         setTitle();
         checkBoxListener();

@@ -24,6 +24,7 @@
             android:src="@drawable/arrow_up" />
 
         <ScrollView
+            android:id="@+id/scroll_view_add_new_add"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -31,6 +32,7 @@
             android:isScrollContainer="false">
 
             <LinearLayout
+                android:id="@+id/linearlayout_inner_1_add_new_item"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"

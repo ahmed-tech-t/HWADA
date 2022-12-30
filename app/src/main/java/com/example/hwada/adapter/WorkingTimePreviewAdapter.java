@@ -17,7 +17,8 @@ import java.util.List;
 
 public class WorkingTimePreviewAdapter extends RecyclerView.Adapter<WorkingTimePreviewAdapter.WorkingTimePreviewViewHolder> {
     private ArrayList<WorkingTime> list = new ArrayList();
-    String tag ;
+
+
     @NonNull
     @Override
     public WorkingTimePreviewViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -40,6 +41,11 @@ public class WorkingTimePreviewAdapter extends RecyclerView.Adapter<WorkingTimeP
         notifyDataSetChanged();
     }
 
+    public void clearList(){
+            list.clear();
+            notifyDataSetChanged();
+
+    }
     public class WorkingTimePreviewViewHolder extends RecyclerView.ViewHolder {
         TextView from ,to;
         public WorkingTimePreviewViewHolder(@NonNull View v) {
@@ -49,9 +55,6 @@ public class WorkingTimePreviewAdapter extends RecyclerView.Adapter<WorkingTimeP
         }
     }
 
-    public void clearList(){
-            list.clear();
-            notifyDataSetChanged();
-    }
+
 
 }

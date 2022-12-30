@@ -5,9 +5,13 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import org.checkerframework.checker.units.qual.A;
+
 import java.util.ArrayList;
 
-public class daysSchedule implements Parcelable {
+import kotlin.jvm.internal.SerializedIr;
+
+public class DaysSchedule implements Parcelable {
 
     ArrayList<WorkingTime>saturday ;
     ArrayList<WorkingTime> sunday ;
@@ -17,7 +21,7 @@ public class daysSchedule implements Parcelable {
     ArrayList<WorkingTime> thursday ;
     ArrayList<WorkingTime> friday ;
 
-    public daysSchedule() {
+    public DaysSchedule() {
         saturday =new ArrayList<>();
         sunday =new ArrayList<>();
         monday =new ArrayList<>();
@@ -27,7 +31,7 @@ public class daysSchedule implements Parcelable {
         friday =new ArrayList<>();
     }
 
-    protected daysSchedule(Parcel in) {
+    protected DaysSchedule(Parcel in) {
         saturday = in.createTypedArrayList(WorkingTime.CREATOR);
         sunday = in.createTypedArrayList(WorkingTime.CREATOR);
         monday = in.createTypedArrayList(WorkingTime.CREATOR);
@@ -37,15 +41,15 @@ public class daysSchedule implements Parcelable {
         friday = in.createTypedArrayList(WorkingTime.CREATOR);
     }
 
-    public static final Creator<daysSchedule> CREATOR = new Creator<daysSchedule>() {
+    public static final Creator<DaysSchedule> CREATOR = new Creator<DaysSchedule>() {
         @Override
-        public daysSchedule createFromParcel(Parcel in) {
-            return new daysSchedule(in);
+        public DaysSchedule createFromParcel(Parcel in) {
+            return new DaysSchedule(in);
         }
 
         @Override
-        public daysSchedule[] newArray(int size) {
-            return new daysSchedule[size];
+        public DaysSchedule[] newArray(int size) {
+            return new DaysSchedule[size];
         }
     };
 
@@ -146,7 +150,76 @@ public class daysSchedule implements Parcelable {
     public void removeOneFromFriday(int pos){
         friday.remove(pos);
     }
-
+    public ArrayList<WorkingTime> get(int pos){
+        switch (pos){
+            case 0:
+                return saturday;
+            case 1:
+                return sunday;
+            case 2:
+                return monday;
+            case 3:
+                return tuesday;
+            case 4:
+                return wednesday;
+            case 5:
+                return thursday;
+            case 6:
+                return friday;
+            default:
+                return null;
+        }
+    }
+    public void set(int pos,ArrayList<WorkingTime> list){
+        switch (pos){
+            case 0:
+                 saturday = list;
+                 break;
+            case 1:
+                sunday =list;
+                break;
+            case 2:
+                monday =list;
+                break;
+            case 3:
+                tuesday =list;
+                break;
+            case 4:
+                wednesday =list;
+                break;
+            case 5:
+                thursday =list;
+                break;
+            case 6:
+                friday =list;
+                break;
+        }
+    }
+    public void remove(int pos){
+        switch (pos){
+            case 0:
+                saturday = new ArrayList<>();
+                break;
+            case 1:
+                sunday =new ArrayList<>();
+                break;
+            case 2:
+                monday =new ArrayList<>();
+                break;
+            case 3:
+                tuesday =new ArrayList<>();
+                break;
+            case 4:
+                wednesday =new ArrayList<>();
+                break;
+            case 5:
+                thursday =new ArrayList<>();
+                break;
+            case 6:
+                friday =new ArrayList<>();
+                break;
+        }
+    }
 
     @Override
     public int describeContents() {
@@ -162,5 +235,18 @@ public class daysSchedule implements Parcelable {
         dest.writeTypedList(wednesday);
         dest.writeTypedList(thursday);
         dest.writeTypedList(friday);
+    }
+
+    @Override
+    public String toString() {
+        return "DaysSchedule{" +
+                "saturday=" + saturday +
+                ", sunday=" + sunday +
+                ", monday=" + monday +
+                ", tuesday=" + tuesday +
+                ", wednesday=" + wednesday +
+                ", thursday=" + thursday +
+                ", friday=" + friday +
+                '}';
     }
 }

@@ -1,6 +1,7 @@
 package com.example.hwada.ui.view;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
@@ -30,6 +31,7 @@ import android.widget.TimePicker;
 import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.WorkingTime;
 import com.example.hwada.R;
+import com.example.hwada.adapter.MainWorkingTimeAdapter;
 import com.example.hwada.adapter.WorkingTimeAdapter;
 import com.example.hwada.adapter.WorkingTimePreviewAdapter;
 import com.example.hwada.databinding.FragmentWorkTimePreviewBinding;
@@ -38,9 +40,13 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
-public class WorkTimePreviewFragment extends BottomSheetDialogFragment implements View.OnClickListener , WorkTimeEditFragment.GettingPassedData  {
+public class WorkTimePreviewFragment extends BottomSheetDialogFragment implements View.OnClickListener , WorkTimeEditFragment.GettingPassedData ,MainWorkingTimeAdapter.OnItemListener  {
 
     BottomSheetBehavior bottomSheetBehavior ;
     BottomSheetDialog dialog ;
@@ -48,11 +54,10 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
     String SATURDAY = "saturday" ,SUNDAY ="sunday" ,MONDAY ="monday",TUESDAY ="tuesday"
             ,WEDNESDAY="wednesday",THURSDAY="thursday",FRIDAY="friday";
     
-    WorkingTimePreviewAdapter showAdapterSaturday ,showAdapterSunday,showAdapterMonday,showAdapterTuesday
-            ,showAdapterWednesday,showAdapterThursday, showAdapterFriday;
-    
+    MainWorkingTimeAdapter adapter ;
+    String DAY_TAG ;
     String TAG ="WorkTimeFragment";
-
+    ArrayList<Boolean> switches = new ArrayList<>(Arrays.asList(false,false,false,false,false,false,false));
     Ad newAd ;
     FragmentWorkTimePreviewBinding binding ;
     @SuppressLint("MissingInflatedId")
@@ -62,20 +67,11 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
 
        binding = FragmentWorkTimePreviewBinding.inflate(inflater, container, false);
         newAd = new Ad();
-        initView();
-        setWorkingTimePreviewAdapter();
-        return binding.getRoot();
-    }
 
-    private void initView(){
         binding.arrowWorkTime.setOnClickListener(this);
-        binding.buttonSaturdayWorkTime.setOnClickListener(this);
-        binding.buttonSundayWorkTime.setOnClickListener(this);
-        binding.buttonMondayWorkTime.setOnClickListener(this);
-        binding.buttonTuesdayWorkTime.setOnClickListener(this);
-        binding.buttonWednesdayWorkTime.setOnClickListener(this);
-        binding.buttonThursdayWorkTime.setOnClickListener(this);
-        binding.buttonFridayWorkTime.setOnClickListener(this);
+        binding.saveButtonAddNewAd.setOnClickListener(this);
+        setWorkingTimeMainAdapter();
+        return binding.getRoot();
     }
 
     @NonNull
@@ -147,7 +143,6 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.e(TAG, "onActivityCreated: " );
         newAd = getArguments().getParcelable("ad");
 
     }
@@ -157,20 +152,10 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
     public void onClick(View v) {
         if(v.getId()==binding.arrowWorkTime.getId()){
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-        }else if(v.getId() == binding.buttonSaturdayWorkTime.getId()){
-            callBottomSheet(new WorkTimeEditFragment() ,newAd.getDaysSchedule().getSaturday(),SATURDAY);
-        }else if(v.getId() == binding.buttonSundayWorkTime.getId()){
-            callBottomSheet(new WorkTimeEditFragment() ,newAd.getDaysSchedule().getSunday() , SUNDAY);
-        }else if(v.getId() == binding.buttonMondayWorkTime.getId()){
-            callBottomSheet(new WorkTimeEditFragment() ,newAd.getDaysSchedule().getMonday(), MONDAY);
-        }else if(v.getId() == binding.buttonTuesdayWorkTime.getId()){
-            callBottomSheet(new WorkTimeEditFragment() ,newAd.getDaysSchedule().getTuesday(),  TUESDAY);
-        }else if(v.getId() == binding.buttonWednesdayWorkTime.getId()){
-            callBottomSheet(new WorkTimeEditFragment() ,newAd.getDaysSchedule().getWednesday(), WEDNESDAY);
-        }else if(v.getId() == binding.buttonThursdayWorkTime.getId()){
-            callBottomSheet(new WorkTimeEditFragment() ,newAd.getDaysSchedule().getThursday(), THURSDAY);
-        }else if(v.getId() == binding.buttonFridayWorkTime.getId()){
-            callBottomSheet(new WorkTimeEditFragment() ,newAd.getDaysSchedule().getFriday(), FRIDAY);
+        } else if (v.getId() ==binding.saveButtonAddNewAd.getId()){
+            if(dataValidated()){
+                //todo save To data base ;
+            }
         }
     }
 
@@ -183,175 +168,95 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
         fragment.show(fragmentManager,fragment.getTag());
     }
 
-    private void handleSwitches(){
-        binding.switchSaturday.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                    binding.buttonSaturdayWorkTime.setVisibility(View.VISIBLE);
-                }else {
-                    binding.buttonSaturdayWorkTime.setVisibility(View.GONE);
-                    showAdapterSaturday.clearList();
-                }
 
-            }
-        });
-        binding.switchSunday.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                    Log.e(TAG, "onCheckedChanged: " );
-                    binding.buttonSundayWorkTime.setVisibility(View.VISIBLE);
-                }else {
-                    binding.buttonSundayWorkTime.setVisibility(View.GONE);
-                    showAdapterSunday.clearList();
-                }
-            }
-        });
-        binding.switchMonday.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                    binding.buttonMondayWorkTime.setVisibility(View.VISIBLE);
-                }else {
-                    binding.buttonMondayWorkTime.setVisibility(View.GONE);
-                    showAdapterMonday.clearList();
-                }
-            }
-        });
-        binding.switchTuesday.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                    binding.buttonTuesdayWorkTime.setVisibility(View.VISIBLE);
-                }else {
-                    binding.buttonTuesdayWorkTime.setVisibility(View.GONE);
-                    showAdapterTuesday.clearList();
-                }
-            }
-        });
-        binding.switchWednesday.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                    binding.buttonWednesdayWorkTime.setVisibility(View.VISIBLE);
-                }else {
-                    binding.buttonWednesdayWorkTime.setVisibility(View.GONE);
-                    showAdapterWednesday.clearList();
-                }
-            }
-        });
-        binding.switchThursday.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                    binding.buttonThursdayWorkTime.setVisibility(View.VISIBLE);
-                }else {
-                    binding.buttonThursdayWorkTime.setVisibility(View.GONE);
-                    showAdapterThursday.clearList();
-                }
-            }
-        });
-        binding.switchFriday.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                    binding.buttonFridayWorkTime.setVisibility(View.VISIBLE);
-                }else {
-                    binding.buttonFridayWorkTime.setVisibility(View.GONE);
-                    showAdapterFriday.clearList();
-                }
-            }
-        });
-    }
-
-    private void setWorkingTimePreviewAdapter(){
-        showAdapterSaturday = new WorkingTimePreviewAdapter();
-        showAdapterSunday  = new WorkingTimePreviewAdapter();
-        showAdapterMonday  = new WorkingTimePreviewAdapter();
-        showAdapterTuesday  = new WorkingTimePreviewAdapter();
-        showAdapterWednesday = new WorkingTimePreviewAdapter();
-        showAdapterThursday = new WorkingTimePreviewAdapter();
-        showAdapterFriday  = new WorkingTimePreviewAdapter();
+    private void setWorkingTimeMainAdapter(){
+        adapter = new MainWorkingTimeAdapter();
         try {
-            binding.recyclerSaturday.setAdapter(showAdapterSaturday);
-            binding.recyclerSunday.setAdapter(showAdapterSunday);
-            binding.recyclerMonday.setAdapter(showAdapterMonday);
-            binding.recyclerTuesday.setAdapter(showAdapterTuesday);
-            binding.recyclerWednesday.setAdapter(showAdapterWednesday);
-            binding.recyclerThursday.setAdapter(showAdapterThursday);
-            binding.recyclerFriday.setAdapter(showAdapterFriday);
+            binding.recyclerWorkingTimePreview.setAdapter(adapter);
+            adapter.setList(daysListHeader(),DAY_TAG,getContext(),this);
+            binding.recyclerWorkingTimePreview.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-            showAdapterSaturday.setList(newAd.getDaysSchedule().getSaturday(),SATURDAY);
-            showAdapterSunday.setList(newAd.getDaysSchedule().getSunday(),SUNDAY);
-            showAdapterMonday.setList(newAd.getDaysSchedule().getMonday(),MONDAY);
-            showAdapterTuesday.setList(newAd.getDaysSchedule().getTuesday(),TUESDAY);
-            showAdapterWednesday.setList(newAd.getDaysSchedule().getWednesday(),WEDNESDAY);
-            showAdapterThursday.setList(newAd.getDaysSchedule().getThursday(),THURSDAY);
-            showAdapterFriday.setList(newAd.getDaysSchedule().getFriday(),FRIDAY);
-
-            binding.recyclerSaturday.setLayoutManager(new LinearLayoutManager(getActivity()));
-            binding.recyclerSunday.setLayoutManager(new LinearLayoutManager(getActivity()));
-            binding.recyclerMonday.setLayoutManager(new LinearLayoutManager(getActivity()));
-            binding.recyclerTuesday.setLayoutManager(new LinearLayoutManager(getActivity()));
-            binding.recyclerWednesday.setLayoutManager(new LinearLayoutManager(getActivity()));
-            binding.recyclerThursday.setLayoutManager(new LinearLayoutManager(getActivity()));
-            binding.recyclerFriday.setLayoutManager(new LinearLayoutManager(getActivity()));
-            handleSwitches();
         }catch (Exception e){
             e.printStackTrace();
         }
     }
 
+    private ArrayList<String> daysListHeader(){
+        ArrayList<String> temp =new ArrayList<>();
+        temp.add(getString(R.string.saturday));
+        temp.add(getString(R.string.sunday));
+        temp.add(getString(R.string.monday));
+        temp.add(getString(R.string.tuesday));
+        temp.add(getString(R.string.wednesday));
+        temp.add(getString(R.string.thursday));
+        temp.add(getString(R.string.friday));
+        return temp;
+    }
+    private ArrayList<String> daysListTag(){
+        ArrayList<String> temp =new ArrayList<>();
+        temp.add(SATURDAY);
+        temp.add(SUNDAY);
+        temp.add(MONDAY);
+        temp.add(TUESDAY);
+        temp.add(WEDNESDAY);
+        temp.add(THURSDAY);
+        temp.add(FRIDAY);
+        return temp;
+    }
 
     @Override
     public void passedData(ArrayList<WorkingTime> list, ArrayList<String> applyToList) {
-        Log.e(TAG, "onDataPass: "+applyToList);
+        for (int i = 0 ; i<applyToList.size();i++){
+            int pos = daysListTag().indexOf(applyToList.get(i));
+            newAd.getDaysSchedule().set(pos,list);
+            adapter.updateRecycler(list,pos);
+        }
+        Log.e(TAG, "switchClicked: " +newAd.getDaysSchedule().toString());
+    }
 
-        if(applyToList.contains(SATURDAY)){
-            newAd.getDaysSchedule().setSaturday(list);
-            showAdapterSaturday.setList(list,SATURDAY);
-            binding.switchSaturday.setChecked(true);
-            binding.buttonSaturdayWorkTime.setText(getString(R.string.edit));
-        }
-        if(applyToList.contains(SUNDAY)){
-            Log.e(TAG, "passedData: "+"sunday" );
-            newAd.getDaysSchedule().setSunday(list);
-            showAdapterSunday.setList(list,SUNDAY);
-            binding.switchSunday.setChecked(true);
-            binding.buttonSundayWorkTime.setText(getString(R.string.edit));
-        }
-        if(applyToList.contains(MONDAY)){
-            newAd.getDaysSchedule().setMonday(list);
-            showAdapterMonday.setList(list,MONDAY);
-            binding.switchMonday.setChecked(true);
-            binding.buttonMondayWorkTime.setText(getString(R.string.edit));
-        }
-        if(applyToList.contains(TUESDAY)){
-            newAd.getDaysSchedule().setTuesday(list);
-            showAdapterTuesday.setList(list,TUESDAY);
-            binding.switchTuesday.setChecked(true);
-            binding.buttonTuesdayWorkTime.setText(getString(R.string.edit));
-        }
-        if(applyToList.contains(WEDNESDAY)){
-            newAd.getDaysSchedule().setWednesday(list);
-            showAdapterWednesday.setList(list,WEDNESDAY);
-            binding.switchWednesday.setChecked(true);
-            binding.buttonWednesdayWorkTime.setText(getString(R.string.edit));
-        }
-        if(applyToList.contains(THURSDAY)){
-            newAd.getDaysSchedule().setThursday(list);
-            showAdapterThursday.setList(list,THURSDAY);
-            binding.switchThursday.setChecked(true);
-            binding.buttonThursdayWorkTime.setText(getString(R.string.edit));
-        }
-        if(applyToList.contains(FRIDAY)){
-            newAd.getDaysSchedule().setFriday(list);
-            showAdapterFriday.setList(list,FRIDAY);
-            binding.switchFriday.setChecked(true);
-            binding.buttonFridayWorkTime.setText(getString(R.string.edit));
+    @Override
+    public void rightButtonClicked(int position,String day) {
+        Log.e(TAG, "rightButtonClicked: "+newAd.getDaysSchedule().get(position) );
+        callBottomSheet(new WorkTimeEditFragment(),newAd.getDaysSchedule().get(position),day);
+    }
 
+    @Override
+    public void switchClicked(boolean isChecked, int pos) {
+        if(!isChecked){
+            newAd.getDaysSchedule().remove(pos);
+            switches.set(pos,false);
+        }else switches.set(pos,true);
+
+        Log.e(TAG, "switchClicked: " +newAd.getDaysSchedule().toString());
+    }
+
+
+    private boolean dataValidated(){
+        for (int i = 0; i < switches.size(); i++) {
+            if(switches.get(i) == true ){
+                if(newAd.getDaysSchedule().get(i).size()==0){
+                    showDialog(getString(R.string.failed),getString(R.string.periodError));
+                    return false ;
+                }
+            }
         }
+
+      if (switches.contains(true)){
+          return true;
+      }
+        showDialog(getString(R.string.failed),getString(R.string.workingTimePreviewSwitchesOfError));
+        return false;
+    }
+
+    private void showDialog(String title ,String body){
+        new AlertDialog.Builder(getContext())
+                .setTitle(title)
+                .setMessage(body)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .show();
     }
 
 }

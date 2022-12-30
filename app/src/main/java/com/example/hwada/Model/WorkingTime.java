@@ -6,6 +6,8 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 
 public class WorkingTime implements Parcelable {
+
+
     String from;
     String to ;
 
@@ -60,5 +62,13 @@ public class WorkingTime implements Parcelable {
     public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeString(from);
         dest.writeString(to);
+    }
+
+    @Override
+    public String toString() {
+        return "WorkingTime{" +
+                "from='" + from + '\'' +
+                ", to='" + to + '\'' +
+                '}';
     }
 }

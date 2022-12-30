@@ -7,8 +7,6 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
-import org.checkerframework.checker.units.qual.A;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +28,7 @@ public class Ad implements Parcelable {
     private ArrayList<AdReview> adReviews;
 
     private double price;
-    private daysSchedule daysSchedule ;
+    private DaysSchedule daysSchedule ;
 
 
 
@@ -41,7 +39,7 @@ public class Ad implements Parcelable {
     public Ad(){
         this.adReviews =new ArrayList<>();
         this.imagesList = new ArrayList<>();
-        this.daysSchedule =new daysSchedule();
+        this.daysSchedule =new DaysSchedule();
     }
 
     public Ad(String authorId, String authorName, Location authorLocation, String title, String description, double price,String date, String category, String subCategory ,String subSubCategory) {
@@ -56,7 +54,7 @@ public class Ad implements Parcelable {
         this.subSubCategory = subSubCategory;
         this.adReviews =new ArrayList<>();
         this.imagesList = new ArrayList<>();
-        this.daysSchedule =new daysSchedule();
+        this.daysSchedule =new DaysSchedule();
         this.price =price;
 
     }
@@ -77,7 +75,7 @@ public class Ad implements Parcelable {
         subSubCategory = in.readString();
         adReviews = in.createTypedArrayList(AdReview.CREATOR);
         price = in.readDouble();
-        daysSchedule = in.readParcelable(com.example.hwada.Model.daysSchedule.class.getClassLoader());
+        daysSchedule = in.readParcelable(DaysSchedule.class.getClassLoader());
         imagesList = in.createTypedArrayList(Uri.CREATOR);
     }
 
@@ -229,11 +227,11 @@ public class Ad implements Parcelable {
         this.price = price;
     }
 
-    public com.example.hwada.Model.daysSchedule getDaysSchedule() {
+    public DaysSchedule getDaysSchedule() {
         return daysSchedule;
     }
 
-    public void setDaysSchedule(com.example.hwada.Model.daysSchedule daysSchedule) {
+    public void setDaysSchedule(DaysSchedule daysSchedule) {
         this.daysSchedule = daysSchedule;
     }
 

@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -19,6 +20,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -58,6 +60,9 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
         //******************
         binding.addNewImage.setOnClickListener(this);
         binding.nextButtonAddNewAd.setOnClickListener(this);
+        binding.linearLayout.setOnClickListener(this);
+        binding.scrollViewAddNewAdd.setOnClickListener(this);
+        binding.linearlayoutInner1AddNewItem.setOnClickListener(this);
     }
     private void initAd(Intent intent){
         newAd = new Ad();
@@ -122,9 +127,19 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
                 newAd.setPrice(Double.parseDouble(binding.adPrice.getText().toString()));
                 newAd.setTitle(binding.adTitle.getText().toString());
                 newAd.setDescription(binding.adDescription.getText().toString());
+                callBottomSheet(new WorkTimePreviewFragment());
             }
-            callBottomSheet(new WorkTimePreviewFragment());
-
+        }else if (v.getId() == binding.linearLayout.getId() || v.getId() == binding.scrollViewAddNewAdd.getId()
+                ||v.getId() ==binding.linearlayoutInner1AddNewItem.getId()){
+            Log.e(TAG, "onClick: " );
+            hideKeyboard();
+        }
+    }
+    private void hideKeyboard(){
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
     private boolean checkIfFieldsAreValid(){
@@ -154,7 +169,7 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
                 })
                 .show();
     }
-    //Pick Images From Galary
+    //Pick Images From Gallery
     ActivityResultLauncher<PickVisualMediaRequest> pickMultipleMedia = registerForActivityResult(new ActivityResultContracts.PickMultipleVisualMedia(10), uris -> {
 
         if (!uris.isEmpty()) {

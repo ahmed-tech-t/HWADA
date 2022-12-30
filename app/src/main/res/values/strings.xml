@@ -102,4 +102,6 @@
     <string name="checkBoxError">you must at least select one day</string>
     <string name="periodError">you must at least add on period</string>
     <string name="pickTimeEmptyError">period can\'t be empty please click on the empty oval button and pick a time</string>
+    <string name="workingTimePreviewSwitchesOfError">you must have at least one day</string>
+
 </resources>
