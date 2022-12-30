@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/background_1"
+    android:fitsSystemWindows="true"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".ui.AddNewAdActivity">
 
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_marginTop="60dp"
         android:background="@drawable/white_background"
         android:orientation="vertical">
@@ -23,13 +25,22 @@
             android:padding="5dp"
             android:src="@drawable/arrow_up" />
 
-        <ScrollView
-            android:id="@+id/scroll_view_add_new_add"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:clipToPadding="false">
+
+
+       <ScrollView
+           android:id="@+id/scroll_view_add_new_add"
+           android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_marginTop="10dp"
             android:fillViewport="true"
-            android:isScrollContainer="false">
+            android:isScrollContainer ="true"
+           android:layout_alignParentTop="true"
+           android:layout_above="@id/button_layout"
+           >
 
             <LinearLayout
                 android:id="@+id/linearlayout_inner_1_add_new_item"
@@ -185,29 +196,36 @@
                     <EditText
                         android:id="@+id/ad_description"
                         android:layout_width="match_parent"
-                        android:layout_height="150dp"
+                        android:layout_height="wrap_content"
                         android:background="@drawable/frame_gray"
                         android:gravity="top"
-                        android:inputType="text|textMultiLine"
+                        android:inputType="textMultiLine"
                         android:padding="10dp"
                         android:textSize="15dp" />
 
                 </LinearLayout>
-
-                <Button
-                    android:id="@+id/next_button_add_new_ad"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/next"
-                    android:background="@drawable/button_save_blue"
-                    android:textColor="@color/white"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginBottom="30dp"
-                    android:textSize="18dp"/>
-
                 </LinearLayout>
         </ScrollView>
+            <LinearLayout
+                android:id="@+id/button_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:background="@color/white"
+                android:layout_alignParentBottom="true">
+        <Button
+            android:id="@+id/next_button_add_new_ad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/next"
+            android:background="@drawable/button_save_blue"
+            android:textColor="@color/white"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
+            android:textSize="18dp"/>
+            </LinearLayout>
+        </RelativeLayout>
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

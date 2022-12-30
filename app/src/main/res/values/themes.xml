@@ -3,7 +3,7 @@
     <style name="Theme.HWADA" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/background</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorPrimaryVariant">@color/background</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="fontFamily">@font/heebo</item>
         <!-- Secondary brand color. -->
@@ -15,10 +15,10 @@
         <!-- remove notification color -->
         <item name="android:windowTranslucentStatus">true</item>
       <!--  <item name="android:windowTranslucentNavigation">true</item>-->
-        <item name="android:windowActionBarOverlay">true</item>
+        <item name="android:windowActionBarOverlay">false</item>
 
         <item name="android:navigationBarColor">@color/nav_color</item>
-        
+
         <!-- Enable Activity Transition -->
       <!--  <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>-->
     </style>

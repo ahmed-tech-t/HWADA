@@ -20,6 +20,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -57,12 +58,22 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
         Intent intent = getIntent();
         user = (User) intent.getParcelableExtra("user");
          initAd(intent);
+        //getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+
         //******************
         binding.addNewImage.setOnClickListener(this);
         binding.nextButtonAddNewAd.setOnClickListener(this);
         binding.linearLayout.setOnClickListener(this);
         binding.scrollViewAddNewAdd.setOnClickListener(this);
         binding.linearlayoutInner1AddNewItem.setOnClickListener(this);
+
+        binding.adDescription.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
     }
     private void initAd(Intent intent){
         newAd = new Ad();
@@ -249,6 +260,7 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
     public void callBottomSheet(BottomSheetDialogFragment fragment){
         Bundle bundle = new Bundle();
         bundle.putParcelable("ad", newAd);
+        bundle.putParcelable("user",user);
         fragment.setArguments(bundle);
         fragment.show(getSupportFragmentManager(),fragment.getTag());
     }

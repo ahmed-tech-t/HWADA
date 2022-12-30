@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 
@@ -29,12 +30,15 @@ import android.widget.Switch;
 import android.widget.TimePicker;
 
 import com.example.hwada.Model.Ad;
+import com.example.hwada.Model.User;
 import com.example.hwada.Model.WorkingTime;
 import com.example.hwada.R;
 import com.example.hwada.adapter.MainWorkingTimeAdapter;
 import com.example.hwada.adapter.WorkingTimeAdapter;
 import com.example.hwada.adapter.WorkingTimePreviewAdapter;
 import com.example.hwada.databinding.FragmentWorkTimePreviewBinding;
+import com.example.hwada.ui.AddNewAdActivity;
+import com.example.hwada.ui.MainActivity;
 import com.example.hwada.viewmodel.WorkingTimeViewModel;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -51,6 +55,7 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
     BottomSheetBehavior bottomSheetBehavior ;
     BottomSheetDialog dialog ;
 
+    User user;
     String SATURDAY = "saturday" ,SUNDAY ="sunday" ,MONDAY ="monday",TUESDAY ="tuesday"
             ,WEDNESDAY="wednesday",THURSDAY="thursday",FRIDAY="friday";
     
@@ -144,9 +149,8 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         newAd = getArguments().getParcelable("ad");
-
+        user = getArguments().getParcelable("user");
     }
-
 
     @Override
     public void onClick(View v) {
@@ -155,6 +159,7 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
         } else if (v.getId() ==binding.saveButtonAddNewAd.getId()){
             if(dataValidated()){
                 //todo save To data base ;
+                goToMainActivity();
             }
         }
     }
@@ -258,5 +263,10 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
                 })
                 .show();
     }
-
+    public void goToMainActivity() {
+        Intent intent = new Intent(getContext(), MainActivity.class);
+        intent.putExtra("user", user);
+        startActivity(intent);
+        getActivity().finish();
+    }
 }

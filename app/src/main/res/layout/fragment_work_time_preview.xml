@@ -18,9 +18,16 @@ tools:context=".ui.view.WorkTimePreviewFragment">
     android:src="@drawable/arrow_down"
     android:padding="5dp" />
 
-    <ScrollView
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+
+        android:layout_above="@+id/button_layout_1"
+        >
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -42,23 +49,34 @@ tools:context=".ui.view.WorkTimePreviewFragment">
                 android:id="@+id/recycler_working_time_preview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
-            <Button
-                android:id="@+id/save_button_add_new_ad"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/save"
-                android:background="@drawable/button_save_blue"
-                android:textColor="@color/white"
-                android:layout_marginTop="20dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginBottom="30dp"
-                android:textSize="18dp"/>
+
         </LinearLayout>
 
 
 
     </ScrollView>
+<LinearLayout
+    android:id="@+id/button_layout_1"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    >
+
+    <Button
+        android:id="@+id/save_button_add_new_ad"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/save"
+        android:background="@drawable/button_save_blue"
+        android:textColor="@color/white"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="30dp"
+        android:textSize="18dp"/>
+</LinearLayout>
+
+    </RelativeLayout>
 </LinearLayout>
 
 

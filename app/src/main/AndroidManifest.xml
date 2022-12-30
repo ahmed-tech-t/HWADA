@@ -21,12 +21,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.HWADA"
-        android:windowSoftInputMode="adjustPan|adjustResize"
         tools:targetApi="31">
         <activity
             android:name=".ui.AddNewAdActivity"
-            android:exported="false">
-            <meta-data
+            android:exported="false"
+            android:windowSoftInputMode="stateUnspecified|adjustResize">
+
+        <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
