@@ -3,10 +3,11 @@ package com.example.hwada.ui.view;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,55 +16,54 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.ImageView;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
-import android.widget.Switch;
-import android.widget.TimePicker;
 
 import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.User;
 import com.example.hwada.Model.WorkingTime;
 import com.example.hwada.R;
 import com.example.hwada.adapter.MainWorkingTimeAdapter;
-import com.example.hwada.adapter.WorkingTimeAdapter;
-import com.example.hwada.adapter.WorkingTimePreviewAdapter;
 import com.example.hwada.databinding.FragmentWorkTimePreviewBinding;
-import com.example.hwada.ui.AddNewAdActivity;
 import com.example.hwada.ui.MainActivity;
-import com.example.hwada.viewmodel.WorkingTimeViewModel;
+import com.example.hwada.viewmodel.AdsViewModel;
+import com.example.hwada.viewmodel.ImagesViewModel;
+import com.example.hwada.viewmodel.UserViewModel;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
-import java.lang.reflect.Array;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Calendar;
+import java.util.Date;
 
 public class WorkTimePreviewFragment extends BottomSheetDialogFragment implements View.OnClickListener , WorkTimeEditFragment.GettingPassedData ,MainWorkingTimeAdapter.OnItemListener  {
 
     BottomSheetBehavior bottomSheetBehavior ;
     BottomSheetDialog dialog ;
-
+    Dialog saveDialog;
     User user;
     String SATURDAY = "saturday" ,SUNDAY ="sunday" ,MONDAY ="monday",TUESDAY ="tuesday"
             ,WEDNESDAY="wednesday",THURSDAY="thursday",FRIDAY="friday";
     
     MainWorkingTimeAdapter adapter ;
     String DAY_TAG ;
-    String TAG ="WorkTimeFragment";
+    private static final String TAG = "WorkTimePreviewFragment";
     ArrayList<Boolean> switches = new ArrayList<>(Arrays.asList(false,false,false,false,false,false,false));
     Ad newAd ;
+    UserViewModel userViewModel;
+    AdsViewModel adsViewModel;
+    ImagesViewModel imagesViewModel;
     FragmentWorkTimePreviewBinding binding ;
     @SuppressLint("MissingInflatedId")
     @Override
@@ -142,7 +142,6 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
     @Override
     public void onPause() {
         super.onPause();
-        Log.e(TAG, "onPause: " );
     }
 
     @Override
@@ -150,6 +149,10 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
         super.onActivityCreated(savedInstanceState);
         newAd = getArguments().getParcelable("ad");
         user = getArguments().getParcelable("user");
+        userViewModel = ViewModelProviders.of(getActivity()).get(UserViewModel.class);
+        adsViewModel = ViewModelProviders.of(getActivity()).get(AdsViewModel.class);
+        imagesViewModel = ViewModelProviders.of(getActivity()).get(ImagesViewModel.class);
+
     }
 
     @Override
@@ -158,10 +161,28 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         } else if (v.getId() ==binding.saveButtonAddNewAd.getId()){
             if(dataValidated()){
+                newAd.setDate(getCurrentDate());
+                setSavingDialog();
                 //todo save To data base ;
-                goToMainActivity();
+                saveNewAdd();
             }
         }
+    }
+
+
+    private void saveNewAdd(){
+        adsViewModel.addNewAdd(newAd);
+        adsViewModel.liveDataGetAddId.observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean success) {
+                 if(success){
+                    if(saveDialog.isShowing()) saveDialog.dismiss();
+                    goToMainActivity();
+                 }else {
+                     Log.e(TAG, "onChanged: failed to save new add" );
+                 }
+            }
+        });
     }
 
     public void callBottomSheet(BottomSheetDialogFragment fragment , ArrayList<WorkingTime> workingTimes, String tag){
@@ -216,12 +237,10 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
             newAd.getDaysSchedule().set(pos,list);
             adapter.updateRecycler(list,pos);
         }
-        Log.e(TAG, "switchClicked: " +newAd.getDaysSchedule().toString());
     }
 
     @Override
     public void rightButtonClicked(int position,String day) {
-        Log.e(TAG, "rightButtonClicked: "+newAd.getDaysSchedule().get(position) );
         callBottomSheet(new WorkTimeEditFragment(),newAd.getDaysSchedule().get(position),day);
     }
 
@@ -232,7 +251,6 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
             switches.set(pos,false);
         }else switches.set(pos,true);
 
-        Log.e(TAG, "switchClicked: " +newAd.getDaysSchedule().toString());
     }
 
 
@@ -268,5 +286,23 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
         intent.putExtra("user", user);
         startActivity(intent);
         getActivity().finish();
+    }
+    public void setSavingDialog() {
+        if (saveDialog != null && saveDialog.isShowing()) return;
+        saveDialog = new Dialog(getContext());
+        saveDialog.setContentView(R.layout.dialog_adding_new_add);
+        Window window = saveDialog.getWindow();
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setGravity(Gravity.BOTTOM);
+        saveDialog.setCanceledOnTouchOutside(false);
+        saveDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        saveDialog.setCancelable(false);
+        saveDialog.show();
+    }
+    private String getCurrentDate(){
+        Calendar calendar = Calendar.getInstance();
+        Date date = calendar.getTime();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return  sdf.format(date);
     }
 }

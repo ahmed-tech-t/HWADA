@@ -6,14 +6,14 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.hwada.Model.DebugModel;
 import com.example.hwada.Model.User;
 import com.example.hwada.database.DbHandler;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -28,12 +28,18 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 public class AuthenticationRepository {
 
 private Application application ;
 private MutableLiveData<Boolean> userLoggedMutableLiveData ;
 private FirebaseAuth auth ;
-
+private DebugRepository debugRepository;
 
     MutableLiveData<User> authenticatedUserMutableLiveData;
 
@@ -58,6 +64,7 @@ private FirebaseAuth auth ;
                     authenticatedUserMutableLiveData.setValue(user);
                 }
             } else {
+                reportError(authTask.getException());
                 Toast.makeText(application, authTask.getException().getMessage(), Toast.LENGTH_SHORT).show();
                 Log.e(TAG, "firebaseSignInWithGoogle: "+authTask.getException().getMessage() );
             }
@@ -86,6 +93,7 @@ private FirebaseAuth auth ;
                     newUserMutableLiveData.setValue(authenticatedUser);
                 }
             } else {
+                reportError(uidTask.getException());
                 Toast.makeText(application, uidTask.getException().getMessage(), Toast.LENGTH_SHORT).show();
                 Log.e(TAG, "createUserInFirestoreIfNotExists: "+uidTask.getException().getMessage());
             }
@@ -99,11 +107,11 @@ private FirebaseAuth auth ;
         authenticatedUserMutableLiveData = new MutableLiveData<>();
         userLoggedMutableLiveData =new MutableLiveData<>();
         auth = FirebaseAuth.getInstance();
+        debugRepository = new DebugRepository(application);
     }
 
 
     public MutableLiveData<User> signUpWithEmail(User user , String password){
-        Log.e(TAG, "signUpWithEmail: "+ user.getEmail());
         auth.createUserWithEmailAndPassword(user.getEmail(),password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -120,6 +128,7 @@ private FirebaseAuth auth ;
                             authenticatedUserMutableLiveData.setValue(user);
                          }
                 }else {
+                    reportError(task.getException());
                     Toast.makeText(application, task.getException().getMessage(), Toast.LENGTH_LONG).show();
                     Log.e(TAG, task.getException().getMessage());
                 }
@@ -141,6 +150,7 @@ private FirebaseAuth auth ;
                         authenticatedUserMutableLiveData.setValue(user);
                     }
                 }else {
+                    reportError(task.getException());
                     Toast.makeText(application, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
@@ -153,4 +163,16 @@ private FirebaseAuth auth ;
         auth.signOut();
     }
 
+
+    private void reportError(Exception e){
+        StringWriter sw = new StringWriter();
+        e.printStackTrace(new PrintWriter(sw));
+        debugRepository.reportError(new DebugModel(getCurrentDate(),e.getMessage(),sw.toString(),TAG, Build.VERSION.SDK_INT,false));
+    }
+    private String getCurrentDate(){
+        Calendar calendar = Calendar.getInstance();
+        Date date = calendar.getTime();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return  sdf.format(date);
+    }
 }

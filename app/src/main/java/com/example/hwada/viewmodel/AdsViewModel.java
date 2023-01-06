@@ -18,9 +18,20 @@ public class AdsViewModel extends AndroidViewModel {
     public LiveData<ArrayList<Ad>> homeFoodAdsLiveData;
     public LiveData<ArrayList<Ad>> handcraftAdsLiveData;
     public LiveData<ArrayList<Ad>> freelanceAdsLiveData;
-
     public LiveData<ArrayList<Ad>> favAdsLiveData;
 
+    public LiveData<Boolean>liveDataGetAddId;
+    public LiveData<Boolean>liveDataUpdateImagesSuccess;
+
+
+
+    public void addNewAdd(Ad newAd){
+       liveDataGetAddId =  repository.addNewAdd(newAd);
+    }
+
+    public void updateImages(Ad newAd){
+        liveDataUpdateImagesSuccess = repository.updateImages(newAd);
+    }
 
     public void getAllFreelanceAds(String subCategory){
         freelanceAdsLiveData = repository.getAllFreelanceAds(subCategory);

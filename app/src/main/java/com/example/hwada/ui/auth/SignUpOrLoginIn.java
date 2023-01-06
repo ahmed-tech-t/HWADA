@@ -20,6 +20,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -110,7 +111,7 @@ public class SignUpOrLoginIn extends AppCompatActivity implements View.OnClickLi
             if (authenticatedUser.isNew()) {
                 createNewUser(authenticatedUser);
             } else {
-                goToMainActivity(authenticatedUser);
+                goToSplashActivity(authenticatedUser);
             }
         });
     }
@@ -118,12 +119,12 @@ public class SignUpOrLoginIn extends AppCompatActivity implements View.OnClickLi
         viewModel.createUser(authenticatedUser);
         viewModel.createdUserLiveData.observe(this, user -> {
             if (user.isCreated()) {
-                goToMainActivity(user);
+                goToSplashActivity(user);
             }else Log.e(TAG, "createNewUser: failed" );
         });
     }
-    private void goToMainActivity(User user) {
-        Intent intent = new Intent(SignUpOrLoginIn.this, MainActivity.class);
+    private void goToSplashActivity(User user) {
+        Intent intent = new Intent(SignUpOrLoginIn.this, SplashActivity.class);
         intent.putExtra("user", user);
         startActivity(intent);
         finish();

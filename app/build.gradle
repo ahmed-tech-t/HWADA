@@ -56,6 +56,7 @@ dependencies {
 
     // Import the BoM for the Firebase platform
     implementation platform('com.google.firebase:firebase-bom:31.0.2')
+    implementation 'com.google.firebase:firebase-storage:20.1.0'
 
     // ViewModel and lifecycle
     def lifecycle_version = "2.6.0-alpha03"
@@ -84,4 +85,11 @@ dependencies {
 
     // Java language implementation
     implementation "androidx.activity:activity:$activity_version"
+
+    implementation 'com.squareup.picasso:picasso:2.8'
+    implementation 'com.davemorrissey.labs:subsampling-scale-image-view:3.10.0'
+    implementation 'com.github.denzcoskun:ImageSlideshow:0.1.0'
+    implementation 'com.github.chrisbanes:PhotoView:2.3.0'
+
+
 }

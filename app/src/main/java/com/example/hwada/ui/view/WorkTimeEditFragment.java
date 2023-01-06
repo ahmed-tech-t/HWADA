@@ -149,7 +149,6 @@ public class WorkTimeEditFragment extends BottomSheetDialogFragment implements W
     @Override
     public void onPause() {
         super.onPause();
-        Log.e(TAG, "onPause: " );
     }
 
     public void setWorkTimeToAdapter() {
@@ -209,9 +208,7 @@ public class WorkTimeEditFragment extends BottomSheetDialogFragment implements W
             else if(applyTo.size()==0) showDialog(getString(R.string.failed),getString(R.string.checkBoxError));
             else {
                 if(mListener!=null) {
-                    Log.e(TAG, "onClick: "+applyTo.size());
-                    Log.e(TAG, "onClick: "+applyTo.toString() );
-                    mListener.passedData(workingTimeList, applyTo);
+                                      mListener.passedData(workingTimeList, applyTo);
                     bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
                     dismiss();
                 }
@@ -289,10 +286,8 @@ public class WorkTimeEditFragment extends BottomSheetDialogFragment implements W
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
-                    Log.e(TAG, "onCheckedChanged: checkboxSaturday ** true");
                     applyTo.add(SATURDAY);
                 }else {
-                    Log.e(TAG, "onCheckedChanged: checkboxSaturday ** false");
                     applyTo.remove(SATURDAY);
                 }
             }
@@ -301,10 +296,8 @@ public class WorkTimeEditFragment extends BottomSheetDialogFragment implements W
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
-                    Log.e(TAG, "onCheckedChanged: checkboxSunday ** true");
                     applyTo.add(SUNDAY);
                 }else {
-                    Log.e(TAG, "onCheckedChanged: checkboxSunday ** false");
                     applyTo.remove(SUNDAY);
                 }
             }

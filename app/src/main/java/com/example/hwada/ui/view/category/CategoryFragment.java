@@ -114,14 +114,14 @@ public class CategoryFragment extends BottomSheetDialogFragment implements View.
         if (v.getId()==arrow.getId()){
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         }else if(v.getId() == homeFood.getId()){
-            ((MainActivity)getActivity()).callAddNewAdActivity("homeFood","","");
+            ((MainActivity)getActivity()).callAddNewAdActivity("homeFood","homeFood","");
         }else if(v.getId() == worker.getId()){
             ((MainActivity)getActivity()).callCategoryActivity("worker",adNewAdTarget);
         }else if(v.getId()== freelance.getId()){
             ((MainActivity)getActivity()).callCategoryActivity("freelance",adNewAdTarget);
 
         }else if(v.getId() == handcraft.getId()){
-            ((MainActivity)getActivity()).callAddNewAdActivity("handcraft","","");
+            ((MainActivity)getActivity()).callAddNewAdActivity("handcraft","handcraft","");
         }
     }
 

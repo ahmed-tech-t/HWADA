@@ -32,9 +32,10 @@
             app:layout_constraintTop_toBottomOf="@+id/arrow">
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/user_image"
+                android:id="@+id/user_image_account_fragment"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
+                android:clickable="true"
                 android:src="@drawable/user_account_icon"
                 android:layout_centerHorizontal="true"
                  />
@@ -43,7 +44,7 @@
                 android:id="@+id/membership_background"
                 android:layout_width="128dp"
                 android:layout_height="55dp"
-                android:layout_below="@id/user_image"
+                android:layout_below="@id/user_image_account_fragment"
                 android:layout_marginTop="-25dp"
                 android:background="@drawable/blue_membership_background" />
 
@@ -56,11 +57,11 @@
                 android:textSize="15dp"
                 android:textColor="@color/white"
                 android:layout_centerHorizontal="true"
-                android:layout_below="@id/user_image"
+                android:layout_below="@id/user_image_account_fragment"
                 />
         </RelativeLayout>
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/user_name_account_fragment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="50dp"
@@ -72,16 +73,18 @@
             app:layout_constraintTop_toBottomOf="@+id/arrow" />
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/tv_edit_user_profile_account_fragment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="10dp"
             android:clickable="true"
+            android:paddingEnd="10dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:text="@string/viewAndEditProfile"
             android:textColor="@color/black"
             app:layout_constraintStart_toEndOf="@+id/relative_layout"
-            app:layout_constraintTop_toBottomOf="@+id/textView" />
+            app:layout_constraintTop_toBottomOf="@+id/user_name_account_fragment" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -94,6 +97,7 @@
             app:layout_constraintTop_toBottomOf="@+id/relative_layout">
 
             <TextView
+                android:id="@+id/tv_my_ads"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -220,7 +224,7 @@
                 android:background="@color/white_gray" />
 
             <TextView
-                android:id="@+id/logout_tv"
+                android:id="@+id/tv_logout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"

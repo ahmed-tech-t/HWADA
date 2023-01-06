@@ -103,12 +103,7 @@
                 android:src="@drawable/filter_icon" />
 
         </LinearLayout>
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:elevation="1dp"
-            android:layout_marginTop="10dp"
-            android:background="@color/white_gray" />
+
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
@@ -121,22 +116,21 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed|snap">
-                    <LinearLayout
-                        android:id="@+id/linearLayout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/white_background"
-                        android:orientation="vertical"
-                        app:layout_collapseMode="pin">
+                   <androidx.cardview.widget.CardView
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       android:layout_marginTop="10dp"
 
-
+                       android:layout_marginBottom="10dp">
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="20dp"
                             android:layout_marginTop="10dp"
-                            android:layout_marginRight="20dp"
-                            android:orientation="horizontal">
+                            android:paddingLeft="20dp"
+                            android:paddingRight="20dp"
+                            android:orientation="horizontal"
+                            app:layout_collapseMode="pin">
+
 
                             <LinearLayout
                                 android:id="@+id/home_food_category"
@@ -265,14 +259,8 @@
                                     android:textColor="@color/black" />
 
                             </LinearLayout>
-                        </LinearLayout>
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:elevation="2dp"
-                            android:layout_marginTop="10dp"
-                            android:background="@color/white_gray" />
                     </LinearLayout>
+                   </androidx.cardview.widget.CardView>
                 </com.google.android.material.appbar.CollapsingToolbarLayout>
             </com.google.android.material.appbar.AppBarLayout>
         <androidx.recyclerview.widget.RecyclerView

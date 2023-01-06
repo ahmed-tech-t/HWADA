@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
+    android:background="@drawable/background"
     android:id="@+id/sign_up_main_constraint_layout"
     tools:context=".ui.auth.SignUp">
 

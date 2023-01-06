@@ -18,11 +18,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.denzcoskun.imageslider.constants.ScaleTypes;
+import com.denzcoskun.imageslider.models.SlideModel;
 import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.AdReview;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
 import com.example.hwada.adapter.ReviewAdapter;
+import com.example.hwada.databinding.FragmentAdvertiserBinding;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
@@ -33,26 +36,24 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
 
     BottomSheetBehavior bottomSheetBehavior;
     BottomSheetDialog dialog ;
-    ImageView arrow;
+
     User user;
     Ad ad;
-    TextView addComment;
-    String TAG = "AdvertiserFragment";
-
+    private static final String TAG = "AdvertiserFragment";
     ReviewAdapter adapter;
-    RecyclerView reviewRecycler;
+
+    FragmentAdvertiserBinding binding;
     @SuppressLint("MissingInflatedId")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_advertiser, container, false);
-        arrow = v.findViewById(R.id.arrow_advertiser);
-        reviewRecycler = v.findViewById(R.id.review_recycler);
-        addComment = v.findViewById(R.id.addComment_tv);
-        arrow.setOnClickListener(this);
-        addComment.setOnClickListener(this);
-        return v;
+        binding = FragmentAdvertiserBinding.inflate(inflater, container, false);
+        binding.arrowAdvertiser.setOnClickListener(this);
+        binding.addCommentTv.setOnClickListener(this);
+        setToSlider();
+
+        return binding.getRoot();
     }
 
     @NonNull
@@ -67,7 +68,6 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         bottomSheetBehavior = BottomSheetBehavior.from((View)view.getParent());
     }
 
@@ -88,9 +88,9 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
 
     @Override
     public void onClick(View v) {
-        if(v.getId() == arrow.getId()){
+        if(v.getId() == binding.arrowAdvertiser.getId()){
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-        }else if(v.getId() == addComment.getId()){
+        }else if(v.getId() == binding.addCommentTv.getId()){
             callReviewBottomSheet();
         }
     }
@@ -98,10 +98,10 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
     public void setReviewsToRecycler() {
         adapter = new ReviewAdapter();
         try {
-            reviewRecycler.setAdapter(adapter);
+            binding.reviewRecycler.setAdapter(adapter);
             if (ad.getAdReviews()==null) ad.initAdReviewsList();
             adapter.setList(tempReviewLIst(),this);
-            reviewRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
+            binding.reviewRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -152,4 +152,12 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         fragment.show(getActivity().getSupportFragmentManager(),fragment.getTag());
     }
 
+    private void setToSlider(){
+
+        ArrayList<SlideModel> imageList = new ArrayList<>();
+        imageList.add(new SlideModel(R.drawable.im1, ScaleTypes.CENTER_INSIDE));
+        imageList.add(new SlideModel(R.drawable.im2, ScaleTypes.CENTER_INSIDE));
+        imageList.add(new SlideModel(R.drawable.im3, ScaleTypes.CENTER_INSIDE));
+        binding.imageSlider.setImageList(imageList);
+    }
 }

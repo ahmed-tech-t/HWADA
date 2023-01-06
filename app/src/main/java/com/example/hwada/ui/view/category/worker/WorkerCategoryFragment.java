@@ -29,7 +29,6 @@ import com.example.hwada.R;
 import com.example.hwada.ui.AdsActivity;
 import com.example.hwada.ui.CategoryActivity;
 import com.example.hwada.ui.MainActivity;
-import com.example.hwada.ui.MapActivity;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
@@ -81,7 +80,7 @@ public class WorkerCategoryFragment extends Fragment implements View.OnClickList
           } else if (v.getId() == ceramicWorker.getId()) {
               ((CategoryActivity) getActivity()).callAdsActivity(category, "ceramicWorker", "");
           } else if (v.getId() == other.getId()) {
-              ((CategoryActivity) getActivity()).callAdsActivity(category, "other", "");
+              ((CategoryActivity) getActivity()).callAdsActivity(category, "other", "other");
           }
       }
       else if(target.equals(adNewAdTarget)){

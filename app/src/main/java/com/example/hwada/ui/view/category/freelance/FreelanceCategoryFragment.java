@@ -46,11 +46,11 @@ public class FreelanceCategoryFragment extends Fragment implements View.OnClickL
             } else if (v.getId() == delivery.getId()) {
                 ((CategoryActivity) getActivity()).callDeliveryFragment(target);
             } else if (v.getId() == nurse.getId()) {
-                ((CategoryActivity) getActivity()).callAdsActivity(category, "nurse", "");
+                ((CategoryActivity) getActivity()).callAdsActivity(category, "nurse", "nurse");
             } else if (v.getId() == maid.getId()) {
-                ((CategoryActivity) getActivity()).callAdsActivity(category, "maid", "");
+                ((CategoryActivity) getActivity()).callAdsActivity(category, "maid", "maid");
             } else if (v.getId() == other.getId()) {
-                ((CategoryActivity) getActivity()).callAdsActivity(category, "other", "");
+                ((CategoryActivity) getActivity()).callAdsActivity(category, "other", "other");
             }
         }else if(target.equals(adNewAdTarget)){
             if (v.getId() == arrow.getId()) {
@@ -60,11 +60,11 @@ public class FreelanceCategoryFragment extends Fragment implements View.OnClickL
             } else if (v.getId() == delivery.getId()) {
                 ((CategoryActivity) getActivity()).callDeliveryFragment(target);
             } else if (v.getId() == nurse.getId()) {
-                ((CategoryActivity) getActivity()).callAddNewAdActivity(category, "nurse", "");
+                ((CategoryActivity) getActivity()).callAddNewAdActivity(category, "nurse", "nurse");
             } else if (v.getId() == maid.getId()) {
-                ((CategoryActivity) getActivity()).callAddNewAdActivity(category, "maid", "");
+                ((CategoryActivity) getActivity()).callAddNewAdActivity(category, "maid", "maid");
             } else if (v.getId() == other.getId()) {
-                ((CategoryActivity) getActivity()).callAddNewAdActivity(category, "other", "");
+                ((CategoryActivity) getActivity()).callAddNewAdActivity(category, "other", "other");
             }
         }
     }

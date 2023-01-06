@@ -13,11 +13,9 @@ import java.util.ArrayList;
 public class User implements Parcelable {
     private String uId ;
     private  String username;
-    private Location location;
+    private LocationCustom location;
     private ArrayList<Ad>favAds;
     private ArrayList<Ad>ads;
-
-
 
     private double rating;
     private ArrayList<MyReview> myReviews;
@@ -68,8 +66,11 @@ public class User implements Parcelable {
     protected User(Parcel in) {
         uId = in.readString();
         username = in.readString();
-        location = in.readParcelable(Location.class.getClassLoader());
+        location = in.readParcelable(LocationCustom.class.getClassLoader());
+        favAds = in.createTypedArrayList(Ad.CREATOR);
+        ads = in.createTypedArrayList(Ad.CREATOR);
         rating = in.readDouble();
+        myReviews = in.createTypedArrayList(MyReview.CREATOR);
         email = in.readString();
         phone = in.readString();
         aboutYou = in.readString();
@@ -179,11 +180,11 @@ public class User implements Parcelable {
         this.image = image;
     }
 
-    public Location getLocation() {
+    public LocationCustom getLocation() {
         return location;
     }
 
-    public void setLocation(Location location) {
+    public void setLocation(LocationCustom location) {
         this.location = location;
     }
 
@@ -232,26 +233,6 @@ public class User implements Parcelable {
     }
 
     public void initFavAdsList(){ favAds=new ArrayList<>();}
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(@NonNull Parcel dest, int flags) {
-        dest.writeString(uId);
-        dest.writeString(username);
-        dest.writeParcelable(location, flags);
-        dest.writeDouble(rating);
-        dest.writeString(email);
-        dest.writeString(phone);
-        dest.writeString(aboutYou);
-        dest.writeString(image);
-        dest.writeString(gender);
-        dest.writeByte((byte) (isAuthenticated ? 1 : 0));
-        dest.writeByte((byte) (isNew ? 1 : 0));
-        dest.writeByte((byte) (isCreated ? 1 : 0));
-    }
 
     @Override
     public String toString() {
@@ -272,5 +253,29 @@ public class User implements Parcelable {
                 ", isNew=" + isNew +
                 ", isCreated=" + isCreated +
                 '}';
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeString(uId);
+        dest.writeString(username);
+        dest.writeParcelable(location, flags);
+        dest.writeTypedList(favAds);
+        dest.writeTypedList(ads);
+        dest.writeDouble(rating);
+        dest.writeTypedList(myReviews);
+        dest.writeString(email);
+        dest.writeString(phone);
+        dest.writeString(aboutYou);
+        dest.writeString(image);
+        dest.writeString(gender);
+        dest.writeByte((byte) (isAuthenticated ? 1 : 0));
+        dest.writeByte((byte) (isNew ? 1 : 0));
+        dest.writeByte((byte) (isCreated ? 1 : 0));
     }
 }

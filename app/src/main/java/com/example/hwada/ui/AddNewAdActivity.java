@@ -20,6 +20,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -29,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.hwada.Model.Ad;
+import com.example.hwada.Model.LocationCustom;
 import com.example.hwada.Model.User;
 import com.example.hwada.Model.WorkingTime;
 import com.example.hwada.R;
@@ -52,7 +54,7 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
     ImagesAdapter imagesAdapter;
 
     Ad newAd;
-    String TAG ="AddNewAdActivity";
+    private static final String TAG = "AddNewAdActivity";
     private static final int PICK_IMAGE_REQUEST = 2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,6 +138,7 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
             }
         }else if (v.getId() == binding.nextButtonAddNewAd.getId()){
             setFieldsWarning();
+
             if(checkIfFieldsAreValid()){
                 newAd.setPrice(Double.parseDouble(binding.adPrice.getText().toString()));
                 newAd.setTitle(binding.adTitle.getText().toString());
@@ -242,12 +245,28 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
     }
 
     private void requestPermissions() {
-        ActivityCompat.requestPermissions(this, new String[]{
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE}, PICK_IMAGE_REQUEST);
+
+        Log.e(TAG, "requestPermissions: "+Build.VERSION.SDK_INT );
+        if(Build.VERSION.SDK_INT <= 32){
+            ActivityCompat.requestPermissions(this, new String[]{
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE}, PICK_IMAGE_REQUEST);
+        }else if( Build.VERSION.SDK_INT >=33){
+            ActivityCompat.requestPermissions(this, new String[]{
+                    Manifest.permission.READ_MEDIA_IMAGES
+            }, PICK_IMAGE_REQUEST);
+        }
+
     }
     private boolean checkPermissions() {
-        return ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+        if(Build.VERSION.SDK_INT <=32){
+            return ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+
+        }else if( Build.VERSION.SDK_INT >=33){
+            return ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED ;
+
+        }
+        return false;
     }
 
     @Override
@@ -268,12 +287,12 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
         fragment.show(getSupportFragmentManager(),fragment.getTag());
     }
 
-    public String getUserAddress(Location location) {
+    private String getUserAddress(LocationCustom location) {
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
         try {
             List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
             String address = addresses.get(0).getAddressLine(0);
-            address = address.split(",")[0] + address.split(",")[1];
+            address = address.split(",")[0] + address.split(",")[1]+address.split(",")[2]+address.split(",")[3];
 
             return address;
         } catch (IOException e) {
@@ -284,8 +303,10 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
 
     @Override
     public void newLocation(Location location) {
-        newAd.setAuthorLocation(location);
-        binding.userAddressMapFragment.setText(getUserAddress(location));
+        LocationCustom locationCustom = new LocationCustom(location.getLatitude(),location.getLongitude());
+
+        newAd.setAuthorLocation(locationCustom);
+        binding.userAddressMapFragment.setText(getUserAddress(locationCustom));
     }
 
     public void callMainActivity(){
@@ -294,5 +315,4 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
         startActivity(intent);
         finish();
     }
-
 }

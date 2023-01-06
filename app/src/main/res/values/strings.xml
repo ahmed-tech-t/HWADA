@@ -103,5 +103,17 @@
     <string name="periodError">you must at least add on period</string>
     <string name="pickTimeEmptyError">period can\'t be empty please click on the empty oval button and pick a time</string>
     <string name="workingTimePreviewSwitchesOfError">you must have at least one day</string>
-
+    <string name="yourName">your name *</string>
+    <string name="somethingAboutU">something about you *</string>
+    <string name="gender">gender *</string>
+    <string name="basicInfo"><b>Basic Information</b></string>
+    <string name="contactInfo"><b>Contact Information</b></string>
+    <string name="phoneNumber">phone number *</string>
+    <string name="deleteThisAccount"><b>Delete this account</b> </string>
+    <string name="deleteAcoountWarning">Are you sure you want to delete this account</string>
+    <string name="deleteAccountConfirmation">Yes , delete this account</string>
+    <string name="delete">delete</string>
+    <string name="savingData">Saving data...</string>
+    <string name="savingError">Failed to Update ... please try again</string>
+    <string name="addingNewAd">Adding new add...</string>
 </resources>

@@ -16,7 +16,7 @@ public class Ad implements Parcelable {
     private String id;
     private String authorId;
     private String authorName;
-    private Location authorLocation;
+    private LocationCustom authorLocation;
     private String title;
     private String description;
     private String date ;
@@ -29,11 +29,6 @@ public class Ad implements Parcelable {
 
     private double price;
     private DaysSchedule daysSchedule ;
-
-
-
-
-
     private List<Uri> imagesList;
 
     public Ad(){
@@ -42,7 +37,7 @@ public class Ad implements Parcelable {
         this.daysSchedule =new DaysSchedule();
     }
 
-    public Ad(String authorId, String authorName, Location authorLocation, String title, String description, double price,String date, String category, String subCategory ,String subSubCategory) {
+    public Ad(String authorId, String authorName, LocationCustom authorLocation, String title, String description, double price,String date, String category, String subCategory ,String subSubCategory) {
         this.authorId = authorId;
         this.authorName = authorName;
         this.authorLocation = authorLocation;
@@ -64,7 +59,7 @@ public class Ad implements Parcelable {
         id = in.readString();
         authorId = in.readString();
         authorName = in.readString();
-        authorLocation = in.readParcelable(Location.class.getClassLoader());
+        authorLocation = in.readParcelable(LocationCustom.class.getClassLoader());
         title = in.readString();
         description = in.readString();
         date = in.readString();
@@ -131,11 +126,11 @@ public class Ad implements Parcelable {
         this.authorName = authorName;
     }
 
-    public Location getAuthorLocation() {
+    public LocationCustom getAuthorLocation() {
         return authorLocation;
     }
 
-    public void setAuthorLocation(Location authorLocation) {
+    public void setAuthorLocation(LocationCustom authorLocation) {
         this.authorLocation = authorLocation;
     }
 
@@ -209,7 +204,6 @@ public class Ad implements Parcelable {
     public void setImageToImagesList(Uri image) {
         imagesList.add(image);
     }
-
 
     public List<Uri> getImagesList() {
         return imagesList;

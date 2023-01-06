@@ -21,15 +21,18 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
 
+import com.example.hwada.Model.DebugModel;
+import com.example.hwada.Model.LocationCustom;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
 import com.example.hwada.databinding.ActivityMainBinding;
@@ -38,6 +41,7 @@ import com.example.hwada.ui.view.main.FavTapLayoutFragment;
 import com.example.hwada.ui.view.main.AccountFragment;
 import com.example.hwada.ui.view.main.ChatFragment;
 import com.example.hwada.ui.view.main.HomeFragment;
+import com.example.hwada.viewmodel.DebugViewModel;
 import com.example.hwada.viewmodel.UserViewModel;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -46,8 +50,13 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -60,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     FragmentTransaction fragmentTransaction;
     private UserViewModel userViewModel ;
     FusedLocationProviderClient mFusedLocationClient;
-
+    DebugViewModel debugViewModel;
 
 
     String TAG = "MainActivity";
@@ -81,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         callFragment(new HomeFragment(),"home");
         navBarOnSelected();
         userViewModel= ViewModelProviders.of(this).get(UserViewModel.class);
+        debugViewModel = ViewModelProviders.of(this).get(DebugViewModel.class);
         ViewModelProviders.of(this).get(UserViewModel.class).getUser().observe(this, new Observer<User>() {
             @Override
             public void onChanged(User u) {
@@ -118,7 +128,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         locationDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         locationDialog.setCancelable(false);
         locationDialog.show();
-
     }
 
 
@@ -176,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(user.getLocation()==null) {
             if (checkPermissions()) {
                 if (isLocationEnabled()) {
-                   // Log.e(TAG, "getLastLocation: set location dialog" );
+
                     setLocationDialog();
                     mFusedLocationClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
                         @Override
@@ -186,11 +195,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 requestNewLocationData();
                                // Log.e(TAG, "location = null ");
                             } else {
-                                user.setLocation(location);
-                                userViewModel.setUser(user);
-                                //TODO save to dataBase
-
-                                if(locationDialog.isShowing()) locationDialog.dismiss();
+                                LocationCustom locationCustom = new LocationCustom(location.getLatitude(),location.getLongitude());
+                                //save to database
+                                updateLocation(locationCustom);
                             }
                         }
                     });
@@ -222,14 +229,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private LocationCallback mLocationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
-            Location location = locationResult.getLastLocation();
-            user.setLocation(location);
-            if(locationDialog.isShowing()) locationDialog.dismiss();
-            //TODO save to dataBase
-            userViewModel.setUser(user);
-
-
-        }
+           try {
+               Location location = locationResult.getLastLocation();
+               LocationCustom locationCustom = new LocationCustom(location.getLatitude(),location.getLongitude());
+               //save to database
+               updateLocation(locationCustom);
+           }catch (Exception e){
+             reportError(e);
+           }
+       }
     };
 
     private void navBarOnSelected(){
@@ -252,6 +260,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }catch (Exception e){
                 e.printStackTrace();
+               reportError(e);
             }
             return true;
         });
@@ -310,5 +319,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         intent.putExtra("subCategory",subCategory);
         startActivity(intent);
     }
-
+    private void updateLocation(LocationCustom location) {
+        userViewModel.updateLocationUser(location);
+        userViewModel.updateLocationSuccessLiveData.observe(this, success -> {
+            if(success){
+                user.setLocation(location);
+                userViewModel.setUser(user);
+                if(locationDialog.isShowing()) locationDialog.dismiss();
+            }else {
+                Toast.makeText(this, getText(R.string.savingError), Toast.LENGTH_SHORT).show();
+                updateLocation(location);
+            }
+        });
+    }
+    private void reportError(Exception e){
+        StringWriter sw = new StringWriter();
+        e.printStackTrace(new PrintWriter(sw));
+        debugViewModel.reportError(new DebugModel(getCurrentDate(),e.getMessage(),sw.toString(),TAG, Build.VERSION.SDK_INT,false));
+    }
+    private String getCurrentDate(){
+        Calendar calendar = Calendar.getInstance();
+        Date date = calendar.getTime();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return  sdf.format(date);
+    }
 }

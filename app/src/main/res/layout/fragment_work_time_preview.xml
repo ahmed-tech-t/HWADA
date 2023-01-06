@@ -21,46 +21,52 @@ tools:context=".ui.view.WorkTimePreviewFragment">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-    <ScrollView
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+
+            android:layout_above="@+id/button_layout_1">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:elevation="5dp">
+                <TextView
+                    android:id="@+id/tv_work_time_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/workingTime"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentLeft="true" />
+                <TextView
+                    android:id="@+id/tv_work_time_message"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_below="@+id/tv_work_time_text"
+                    android:layout_alignParentLeft="true"
+                    android:background="@drawable/image_picker_frame"
+                    android:text="@string/instructionsWorkTime"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_working_time_preview"
+                    android:layout_below="@id/tv_work_time_message"
+                    android:layout_alignParentLeft="true"
+                    android:layout_width="match_parent"
+                    android:layout_alignParentBottom="true"
+                    android:paddingBottom="15dp"
+                    android:layout_height="wrap_content"/>
+
+            </RelativeLayout>
+        </ScrollView>
+        <LinearLayout
+        android:id="@+id/button_layout_1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-
-        android:layout_above="@+id/button_layout_1"
-        >
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="10dp"
-            android:elevation="5dp"
-            android:orientation="vertical">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/workingTime"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:background="@drawable/image_picker_frame"
-                android:text="@string/instructionsWorkTime"/>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_working_time_preview"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-        </LinearLayout>
-
-
-
-    </ScrollView>
-<LinearLayout
-    android:id="@+id/button_layout_1"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_alignParentBottom="true"
-    >
+        android:layout_alignParentBottom="true">
 
     <Button
         android:id="@+id/save_button_add_new_ad"
