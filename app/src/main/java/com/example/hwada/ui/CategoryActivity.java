@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
 
+import com.example.hwada.database.DbHandler;
 import com.example.hwada.databinding.ActivityCategoryBinding;
 import com.example.hwada.ui.view.category.freelance.DeliveryFragment;
 import com.example.hwada.ui.view.category.freelance.FreelanceCategoryFragment;
@@ -31,8 +32,7 @@ public class CategoryActivity extends AppCompatActivity {
 
     String target;
 
-
-    String TAG = "CategoryActivity";
+    private static final String TAG = "CategoryActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,10 +51,10 @@ public class CategoryActivity extends AppCompatActivity {
 
     private void handleFragmentsCall(String tag){
         switch (tag){
-            case "worker" :
-                callFragment(new WorkerCategoryFragment(),"worker",target);
+            case DbHandler.WORKER :
+                callFragment(new WorkerCategoryFragment(), DbHandler.WORKER,target);
                 break;
-            case "freelance" :
+            case DbHandler.FREELANCE :
               callMainFreelanceFragment();
               break;
         }
@@ -91,7 +91,7 @@ public class CategoryActivity extends AppCompatActivity {
         Bundle bundle = new Bundle();
         bundle.putString("target",target);
         fragment.setArguments(bundle);
-        callFragment(fragment,"ride",target);
+        callFragment(fragment,DbHandler.RIDE,target);
     }
     public void callDeliveryFragment(String target){
         binding.topIcons.setVisibility(View.VISIBLE);
@@ -101,13 +101,13 @@ public class CategoryActivity extends AppCompatActivity {
         Bundle bundle = new Bundle();
         bundle.putString("target",target);
         fragment.setArguments(bundle);
-        callFragment(fragment,"delivery",target);
+        callFragment(fragment,DbHandler.DELIVERY,target);
     }
     public void callMainFreelanceFragment(){
         binding.topIcons.setVisibility(View.VISIBLE);
         binding.leftImage.setImageResource(R.drawable.nurse_image_background);
         binding.rightImage.setImageResource(R.drawable.maid_image_background);
-        callFragment(new FreelanceCategoryFragment(),"freelance",target);
+        callFragment(new FreelanceCategoryFragment(),DbHandler.FREELANCE,target);
     }
     public void callAdsActivity(String category,String subCategory ,String subSubCategory){
         Intent intent = new Intent(this, AdsActivity.class);

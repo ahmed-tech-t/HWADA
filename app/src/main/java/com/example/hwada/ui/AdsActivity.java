@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -15,6 +16,7 @@ import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
 import com.example.hwada.adapter.AdsAdapter;
+import com.example.hwada.database.DbHandler;
 import com.example.hwada.databinding.ActivityAdsBinding;
 import com.example.hwada.ui.view.ad.AdvertiserFragment;
 import com.example.hwada.viewmodel.AdsViewModel;
@@ -30,10 +32,9 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
     User user;
     String category;
     String subCategory;
+    String subSubCategory;
 
-    FragmentManager fragmentManager;
-    FragmentTransaction fragmentTransaction;
-
+    private static final String TAG = "AdsActivity";
     ActivityAdsBinding binding;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +47,7 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
 
         category = intent.getStringExtra("category");
         subCategory = intent.getStringExtra("subCategory");
+        subSubCategory = intent.getStringExtra("subSubCategory");
         viewModel = ViewModelProviders.of(this).get(AdsViewModel.class);
 
         setAdsToList();
@@ -55,20 +57,11 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
         adapter = new AdsAdapter();
         try {
             binding.homeFoodRecycler.setAdapter(adapter);
-            switch (category){
-                case "homeFood":
-                    getHomeFoodAds();
-                    break;
-                case "worker":
-                    getWorkersAds();
-                    break;
-                case "freelance":
-                    getFreelanceAds();
-                    break;
-                case "handcraft":
-                    getHandcraftAds();
-                    break;
-            }
+
+            if(category.equals(DbHandler.FREELANCE)){
+                getAllAds(category,subCategory,subSubCategory);
+            }else getAllAds(category,subCategory);
+
             binding.homeFoodRecycler.setLayoutManager(new LinearLayoutManager(this));
         }catch (Exception e){
             e.printStackTrace();
@@ -105,36 +98,20 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
         return false;
     }
 
-    private void getWorkersAds(){
-        viewModel.getAllWorkersAds();
-        viewModel.workerAdsLiveData.observe(this, ads -> {
+    private void getAllAds(String category ,String subCategory){
+        viewModel.getAllAds(category,subCategory);
+        viewModel.allAdsLiveData.observe(this, ads -> {
             adsList = ads;
+
             if(user!=null) {
                 adapter.setList(user,ads,this);
             }
         });
     }
-    private void getHandcraftAds(){
-        viewModel.getAllHandcraftAds();
-        viewModel.handcraftAdsLiveData.observe(this, ads -> {
-            adsList = ads;
-            if(user!=null) {
-                adapter.setList(user,ads,this);
-            }
-        });
-    }
-    private void getHomeFoodAds(){
-        viewModel.getAllHomeFoodAds();
-        viewModel.homeFoodAdsLiveData.observe(this, ads -> {
-            adsList = ads;
-            if(user!=null) {
-                adapter.setList(user,ads,this);
-            }
-        });
-    }
-    private void getFreelanceAds(){
-        viewModel.getAllFreelanceAds(subCategory);
-        viewModel.freelanceAdsLiveData.observe(this, ads -> {
+
+    private void getAllAds(String category ,String subCategory, String subSubCategory){
+        viewModel.getAllAds(category,subCategory,subSubCategory);
+        viewModel.allAdsLiveData.observe(this, ads -> {
             adsList = ads;
             if(user!=null) {
                 adapter.setList(user,ads,this);

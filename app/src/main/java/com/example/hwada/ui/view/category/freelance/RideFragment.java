@@ -13,67 +13,59 @@ import android.widget.TextView;
 
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
+import com.example.hwada.database.DbHandler;
+import com.example.hwada.databinding.FragmentRideBinding;
 import com.example.hwada.ui.CategoryActivity;
 
 public class RideFragment extends Fragment implements View.OnClickListener {
 
-
-    ImageView arrow ;
-    TextView car ,bus ,other;
-    String category = "freelance";
-    String subCategory = "ride";
+    String category =  DbHandler.FREELANCE;
+    String subCategory = DbHandler.RIDE;
     String target;
     String adsActivityTarget = "toAdsActivity";
     String adNewAdTarget ="toAdNewAd";
-
+    FragmentRideBinding binding;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v =  inflater.inflate(R.layout.fragment_ride, container, false);
-        initVarAndSetListener(v);
-        return v;
+        binding =  FragmentRideBinding.inflate(inflater, container, false);
+        initVarAndSetListener();
+        return binding.getRoot();
     }
 
     @Override
     public void onClick(View v) {
 
         if(target.equals(adsActivityTarget)) {
-            if (v.getId() == arrow.getId()) {
+            if (v.getId() == binding.arrowRideCategory.getId()) {
                 ((CategoryActivity) getActivity()).callMainFreelanceFragment();
-            } else if (v.getId() == car.getId()) {
-                ((CategoryActivity) getActivity()).callAdsActivity(category, subCategory, "car");
-            } else if (v.getId() == bus.getId()) {
-                ((CategoryActivity) getActivity()).callAdsActivity(category, subCategory, "bus");
-            } else if (v.getId() == other.getId()) {
-                ((CategoryActivity) getActivity()).callAdsActivity(category, subCategory, "other");
+            } else if (v.getId() == binding.carTv.getId()) {
+                ((CategoryActivity) getActivity()).callAdsActivity(category, subCategory, DbHandler.CAR);
+            } else if (v.getId() == binding.busTv.getId()) {
+                ((CategoryActivity) getActivity()).callAdsActivity(category, subCategory, DbHandler.BUS);
+            } else if (v.getId() == binding.otherTv.getId()) {
+                ((CategoryActivity) getActivity()).callAdsActivity(category, subCategory, DbHandler.OTHER);
             }
         }else if(target.equals(adNewAdTarget)){
-            if (v.getId() == arrow.getId()) {
+            if (v.getId() == binding.arrowRideCategory.getId()) {
                 ((CategoryActivity) getActivity()).callMainFreelanceFragment();
-            } else if (v.getId() == car.getId()) {
-                ((CategoryActivity) getActivity()).callAddNewAdActivity(category, subCategory, "car");
-            } else if (v.getId() == bus.getId()) {
-                ((CategoryActivity) getActivity()).callAddNewAdActivity(category, subCategory, "bus");
-            } else if (v.getId() == other.getId()) {
-                ((CategoryActivity) getActivity()).callAddNewAdActivity(category, subCategory, "other");
+            } else if (v.getId() ==binding.carTv.getId()) {
+                ((CategoryActivity) getActivity()).callAddNewAdActivity(category, subCategory, DbHandler.CAR);
+            } else if (v.getId() == binding.busTv.getId()) {
+                ((CategoryActivity) getActivity()).callAddNewAdActivity(category, subCategory, DbHandler.BUS);
+            } else if (v.getId() == binding.otherTv.getId()) {
+                ((CategoryActivity) getActivity()).callAddNewAdActivity(category, subCategory, DbHandler.OTHER);
             }
         }
     }
 
-    private void initVarAndSetListener(View v){
-        arrow = v.findViewById(R.id.arrow_ride_category);
-        car = v.findViewById(R.id.car_tv);
-        bus = v.findViewById(R.id.bus_tv);
-        other = v.findViewById(R.id.other_tv);
-
-        car.setOnClickListener(this);
-        bus.setOnClickListener(this);
-        other.setOnClickListener(this);
-
-        arrow.setOnClickListener(this);
-
+    private void initVarAndSetListener(){
+        binding.carTv.setOnClickListener(this);
+        binding.busTv.setOnClickListener(this);
+        binding.otherTv.setOnClickListener(this);
+        binding.arrowRideCategory.setOnClickListener(this);
     }
 
     @Override

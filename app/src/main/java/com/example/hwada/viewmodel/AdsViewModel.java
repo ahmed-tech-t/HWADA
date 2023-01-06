@@ -1,6 +1,7 @@
 package com.example.hwada.viewmodel;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -14,40 +15,34 @@ import java.util.ArrayList;
 
 public class AdsViewModel extends AndroidViewModel {
     AdsRepository repository ;
-    public LiveData<ArrayList<Ad>> workerAdsLiveData;
-    public LiveData<ArrayList<Ad>> homeFoodAdsLiveData;
-    public LiveData<ArrayList<Ad>> handcraftAdsLiveData;
-    public LiveData<ArrayList<Ad>> freelanceAdsLiveData;
+    private static final String TAG = "AdsViewModel";
+    public LiveData<ArrayList<Ad>> allAdsLiveData;
+
     public LiveData<ArrayList<Ad>> favAdsLiveData;
 
-    public LiveData<Boolean>liveDataGetAddId;
+    public LiveData<Ad> liveDataGetNewAdd;
     public LiveData<Boolean>liveDataUpdateImagesSuccess;
 
 
 
-    public void addNewAdd(Ad newAd){
-       liveDataGetAddId =  repository.addNewAdd(newAd);
+    public void addNewAdd(Ad newAd ){
+        liveDataGetNewAdd =  repository.addNewAdd(newAd);
     }
 
     public void updateImages(Ad newAd){
         liveDataUpdateImagesSuccess = repository.updateImages(newAd);
     }
 
-    public void getAllFreelanceAds(String subCategory){
-        freelanceAdsLiveData = repository.getAllFreelanceAds(subCategory);
+
+
+    public void getAllAds(String category ,String subCategory){
+        allAdsLiveData = repository.getAllAds(category,subCategory);
+
+    }
+    public void getAllAds(String category ,String subCategory,String subSubCategory){
+        allAdsLiveData = repository.getAllAds(category,subCategory,subSubCategory);
     }
 
-    public void getAllWorkersAds(){
-        workerAdsLiveData = repository.getAllWorkersAds();
-    }
-
-    public void getAllHandcraftAds(){
-        handcraftAdsLiveData = repository.getAllHandcraftAds();
-    }
-
-    public void getAllHomeFoodAds(){
-        homeFoodAdsLiveData = repository.getAllHomeFoodAds();
-    }
 
     public void getFavAds(User user){favAdsLiveData = repository.getFavAds(user);}
 

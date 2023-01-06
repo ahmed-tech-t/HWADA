@@ -312,11 +312,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         intent.putExtra("target",target);
         startActivity(intent);
     }
-    public void callAdsActivity(String category,String subCategory){
+    public void callAdsActivity(String category,String subCategory,String subSubCategory){
         Intent intent = new Intent(this, AdsActivity.class);
         intent.putExtra("user",user);
         intent.putExtra("category",category);
         intent.putExtra("subCategory",subCategory);
+        intent.putExtra("subSubCategory",subSubCategory);
         startActivity(intent);
     }
     private void updateLocation(LocationCustom location) {

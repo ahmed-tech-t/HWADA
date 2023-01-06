@@ -20,7 +20,7 @@ public class Ad implements Parcelable {
     private String title;
     private String description;
     private String date ;
-    private String distance ;
+    private float distance ;
     private float rating;
     private String category;
     private String subCategory;
@@ -29,15 +29,38 @@ public class Ad implements Parcelable {
 
     private double price;
     private DaysSchedule daysSchedule ;
-    private List<Uri> imagesList;
+    private List<Uri> imagesUri;
+    private List<String> imagesUrl;
+    private int views ;
 
     public Ad(){
         this.adReviews =new ArrayList<>();
-        this.imagesList = new ArrayList<>();
+        this.imagesUri = new ArrayList<>();
         this.daysSchedule =new DaysSchedule();
+        this.distance = 0;
     }
 
-    public Ad(String authorId, String authorName, LocationCustom authorLocation, String title, String description, double price,String date, String category, String subCategory ,String subSubCategory) {
+    public Ad(String id, String authorId, String authorName, LocationCustom authorLocation, String title, String description, String date, float distance, float rating, String category, String subCategory, String subSubCategory, ArrayList<AdReview> adReviews, double price, DaysSchedule daysSchedule, List<String> imagesUrl, int views) {
+        this.id = id;
+        this.authorId = authorId;
+        this.authorName = authorName;
+        this.authorLocation = authorLocation;
+        this.title = title;
+        this.description = description;
+        this.date = date;
+        this.distance = distance;
+        this.rating = rating;
+        this.category = category;
+        this.subCategory = subCategory;
+        this.subSubCategory = subSubCategory;
+        this.adReviews = adReviews;
+        this.price = price;
+        this.daysSchedule = daysSchedule;
+        this.imagesUrl = imagesUrl;
+        this.views = views;
+    }
+
+    public Ad(String authorId, String authorName, LocationCustom authorLocation, String title, String description, double price, String date, String category, String subCategory , String subSubCategory) {
         this.authorId = authorId;
         this.authorName = authorName;
         this.authorLocation = authorLocation;
@@ -48,7 +71,7 @@ public class Ad implements Parcelable {
         this.subCategory = subCategory;
         this.subSubCategory = subSubCategory;
         this.adReviews =new ArrayList<>();
-        this.imagesList = new ArrayList<>();
+        this.imagesUri = new ArrayList<>();
         this.daysSchedule =new DaysSchedule();
         this.price =price;
 
@@ -63,7 +86,7 @@ public class Ad implements Parcelable {
         title = in.readString();
         description = in.readString();
         date = in.readString();
-        distance = in.readString();
+        distance = in.readFloat();
         rating = in.readFloat();
         category = in.readString();
         subCategory = in.readString();
@@ -71,7 +94,9 @@ public class Ad implements Parcelable {
         adReviews = in.createTypedArrayList(AdReview.CREATOR);
         price = in.readDouble();
         daysSchedule = in.readParcelable(DaysSchedule.class.getClassLoader());
-        imagesList = in.createTypedArrayList(Uri.CREATOR);
+        imagesUri = in.createTypedArrayList(Uri.CREATOR);
+        imagesUrl = in.createStringArrayList();
+        views = in.readInt();
     }
 
     public static final Creator<Ad> CREATOR = new Creator<Ad>() {
@@ -85,6 +110,22 @@ public class Ad implements Parcelable {
             return new Ad[size];
         }
     };
+
+    public List<String> getImagesUrl() {
+        return imagesUrl;
+    }
+
+    public void setImagesUrl(List<String> imagesUrl) {
+        this.imagesUrl = imagesUrl;
+    }
+
+    public int getViews() {
+        return views;
+    }
+
+    public void setViews(int views) {
+        this.views = views;
+    }
 
     public String getCategory() {
         return category;
@@ -158,11 +199,11 @@ public class Ad implements Parcelable {
         this.date = date;
     }
 
-    public String getDistance() {
+    public float getDistance() {
         return distance;
     }
 
-    public void setDistance(String distance) {
+    public void setDistance(float distance) {
         this.distance = distance;
     }
 
@@ -198,19 +239,19 @@ public class Ad implements Parcelable {
         this.adReviews = adReviews;
     }
 
-    public void removeImageFromImagesList(int pos) {
-        imagesList.remove(pos);
+    public void removeImageFromImagesUri(int pos) {
+        imagesUri.remove(pos);
     }
-    public void setImageToImagesList(Uri image) {
-        imagesList.add(image);
-    }
-
-    public List<Uri> getImagesList() {
-        return imagesList;
+    public void setImageToImagesUri(Uri image) {
+        imagesUri.add(image);
     }
 
-    public void setImagesList(List<Uri> imagesList) {
-        this.imagesList = imagesList;
+    public List<Uri> getImagesUri() {
+        return imagesUri;
+    }
+
+    public void setImagesUri(List<Uri> imagesUri) {
+        this.imagesUri = imagesUri;
     }
 
     public double getPrice() {
@@ -243,7 +284,7 @@ public class Ad implements Parcelable {
         dest.writeString(title);
         dest.writeString(description);
         dest.writeString(date);
-        dest.writeString(distance);
+        dest.writeFloat(distance);
         dest.writeFloat(rating);
         dest.writeString(category);
         dest.writeString(subCategory);
@@ -251,6 +292,8 @@ public class Ad implements Parcelable {
         dest.writeTypedList(adReviews);
         dest.writeDouble(price);
         dest.writeParcelable(daysSchedule, flags);
-        dest.writeTypedList(imagesList);
+        dest.writeTypedList(imagesUri);
+        dest.writeStringList(imagesUrl);
+        dest.writeInt(views);
     }
 }

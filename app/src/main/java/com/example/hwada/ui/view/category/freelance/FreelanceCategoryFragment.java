@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.text.style.TtsSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,8 @@ import android.widget.TextView;
 
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
+import com.example.hwada.database.DbHandler;
+import com.example.hwada.databinding.FragmentFreelanceCategoryBinding;
 import com.example.hwada.ui.CategoryActivity;
 import com.example.hwada.ui.MainActivity;
 
@@ -23,64 +26,59 @@ public class FreelanceCategoryFragment extends Fragment implements View.OnClickL
     String target;
     String adsActivityTarget = "toAdsActivity";
     String adNewAdTarget ="toAdNewAd";
+    private static final String TAG = "FreelanceCategoryFragme";
 
-    ImageView arrow ;
-    TextView ride ,delivery ,nurse , maid ,other;
-    String category = "freelance";
+    FragmentFreelanceCategoryBinding binding ;
+    String category = DbHandler.FREELANCE;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v =  inflater.inflate(R.layout.fragment_freelance_category, container, false);
-        initVarAndSetListener(v);
-        return v ;
+        binding =  FragmentFreelanceCategoryBinding.inflate(inflater, container, false);
+        initVarAndSetListener();
+        return binding.getRoot() ;
     }
 
     @Override
     public void onClick(View v) {
         if(target.equals(adsActivityTarget)) {
-            if (v.getId() == arrow.getId()) {
+            if (v.getId() == binding.arrowFreelanceCategory.getId()) {
                 ((CategoryActivity) getActivity()).callMainActivity();
-            } else if (v.getId() == ride.getId()) {
+            } else if (v.getId() == binding.rideTv.getId()) {
                 ((CategoryActivity) getActivity()).callRideFragment(target);
-            } else if (v.getId() == delivery.getId()) {
+            } else if (v.getId() == binding.deliveryTv.getId()) {
                 ((CategoryActivity) getActivity()).callDeliveryFragment(target);
-            } else if (v.getId() == nurse.getId()) {
-                ((CategoryActivity) getActivity()).callAdsActivity(category, "nurse", "nurse");
-            } else if (v.getId() == maid.getId()) {
-                ((CategoryActivity) getActivity()).callAdsActivity(category, "maid", "maid");
-            } else if (v.getId() == other.getId()) {
-                ((CategoryActivity) getActivity()).callAdsActivity(category, "other", "other");
+            } else if (v.getId() == binding.nurseTv.getId()) {
+                ((CategoryActivity) getActivity()).callAdsActivity(category, DbHandler.NURSE, DbHandler.NURSE);
+            } else if (v.getId() == binding.maidTv.getId()) {
+                ((CategoryActivity) getActivity()).callAdsActivity(category, DbHandler.MAID, DbHandler.MAID);
+            } else if (v.getId() == binding.otherTv.getId()) {
+                ((CategoryActivity) getActivity()).callAdsActivity(category, DbHandler.OTHER, DbHandler.OTHER);
             }
         }else if(target.equals(adNewAdTarget)){
-            if (v.getId() == arrow.getId()) {
+            if (v.getId() == binding.arrowFreelanceCategory.getId()) {
                 ((CategoryActivity) getActivity()).callMainActivity();
-            } else if (v.getId() == ride.getId()) {
+            } else if (v.getId() == binding.rideTv.getId()) {
                 ((CategoryActivity) getActivity()).callRideFragment(target);
-            } else if (v.getId() == delivery.getId()) {
+            } else if (v.getId() == binding.deliveryTv.getId()) {
                 ((CategoryActivity) getActivity()).callDeliveryFragment(target);
-            } else if (v.getId() == nurse.getId()) {
-                ((CategoryActivity) getActivity()).callAddNewAdActivity(category, "nurse", "nurse");
-            } else if (v.getId() == maid.getId()) {
-                ((CategoryActivity) getActivity()).callAddNewAdActivity(category, "maid", "maid");
-            } else if (v.getId() == other.getId()) {
-                ((CategoryActivity) getActivity()).callAddNewAdActivity(category, "other", "other");
+            } else if (v.getId() == binding.nurseTv.getId()) {
+                ((CategoryActivity) getActivity()).callAddNewAdActivity(category, DbHandler.NURSE, DbHandler.NURSE);
+            } else if (v.getId() == binding.maidTv.getId()) {
+                ((CategoryActivity) getActivity()).callAddNewAdActivity(category, DbHandler.MAID, DbHandler.MAID);
+            } else if (v.getId() == binding.otherTv.getId()) {
+                ((CategoryActivity) getActivity()).callAddNewAdActivity(category, DbHandler.OTHER, DbHandler.OTHER);
             }
         }
     }
-    private void initVarAndSetListener(View v){
-        arrow = v.findViewById(R.id.arrow_freelance_category);
-        ride =v.findViewById(R.id.ride_tv);
-        delivery =v.findViewById(R.id.delivery_tv);
-        nurse =v.findViewById(R.id.nurse_tv);
-        maid = v.findViewById(R.id.maid_tv);
-        other= v.findViewById(R.id.other_tv);
-        arrow.setOnClickListener(this);
-        ride.setOnClickListener(this);
-        delivery.setOnClickListener(this);
-        nurse.setOnClickListener(this);
-        maid.setOnClickListener(this);
-        other.setOnClickListener(this);
+    private void initVarAndSetListener(){
+        binding.arrowFreelanceCategory.setOnClickListener(this);
+        binding.rideTv.setOnClickListener(this);
+        binding.deliveryTv.setOnClickListener(this);
+        binding.nurseTv.setOnClickListener(this);
+        binding.maidTv.setOnClickListener(this);
+        binding.otherTv.setOnClickListener(this);
     }
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {

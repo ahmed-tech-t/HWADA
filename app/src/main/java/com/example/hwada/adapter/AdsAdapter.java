@@ -30,7 +30,7 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
     public void onBindViewHolder(@NonNull HomeViewHolder holder, int position) {
         holder.jop.setText(list.get(position).getTitle());
         holder.fullName.setText(list.get(position).getAuthorName());
-        holder.distance.setText(list.get(position).getDistance());
+        holder.distance.setText(list.get(position).getDistance()+"");
         holder.date.setText(list.get(position).getDate());
         if(user!=null){
             //TODO list.get(position).getId();

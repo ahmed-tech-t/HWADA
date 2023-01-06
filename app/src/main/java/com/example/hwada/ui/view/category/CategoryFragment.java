@@ -22,6 +22,8 @@ import android.widget.Toast;
 
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
+import com.example.hwada.database.DbHandler;
+import com.example.hwada.databinding.FragmentCategoryBinding;
 import com.example.hwada.ui.AdsActivity;
 import com.example.hwada.ui.MainActivity;
 import com.example.hwada.ui.view.category.worker.WorkerCategoryFragment;
@@ -34,36 +36,28 @@ public class CategoryFragment extends BottomSheetDialogFragment implements View.
 
     BottomSheetBehavior bottomSheetBehavior;
     BottomSheetDialog dialog ;
-    ImageView arrow;
-    LinearLayout homeFood ,worker ,freelance ,handcraft;
-    String TAG ="CategoryFragment";
+      private static final String TAG = "CategoryFragment";
 
     String adNewAdTarget ="toAdNewAd";
 
-    @SuppressLint("MissingInflatedId")
+    FragmentCategoryBinding binding ;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_category, container, false);
-        initVarAndSetListener(v);
-        return v ;
+        binding = FragmentCategoryBinding.inflate(inflater, container, false);
+        initVarAndSetListener();
+        return binding.getRoot() ;
     }
 
 
 
-    private void initVarAndSetListener(View v){
-        arrow = v.findViewById(R.id.arrow_category_fragment);
-        homeFood = v.findViewById(R.id.home_food_category_fragment);
-        worker =v.findViewById(R.id.worker_category_fragment);
-        freelance =v.findViewById(R.id.freelance_category_fragment);
-        handcraft =v.findViewById(R.id.handcraft_category_fragment);
-
-        homeFood.setOnClickListener(this);
-        worker.setOnClickListener(this);
-        freelance.setOnClickListener(this);
-        handcraft.setOnClickListener(this);
-        arrow.setOnClickListener(this);
+    private void initVarAndSetListener(){
+        binding.homeFoodCategoryFragment.setOnClickListener(this);
+        binding.workerCategoryFragment.setOnClickListener(this);
+        binding.freelanceCategoryFragment.setOnClickListener(this);
+        binding.handcraftCategoryFragment.setOnClickListener(this);
+        binding.arrowCategoryFragment.setOnClickListener(this);
     }
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -111,17 +105,16 @@ public class CategoryFragment extends BottomSheetDialogFragment implements View.
 
     @Override
     public void onClick(View v) {
-        if (v.getId()==arrow.getId()){
+        if (v.getId()==binding.arrowCategoryFragment.getId()){
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-        }else if(v.getId() == homeFood.getId()){
-            ((MainActivity)getActivity()).callAddNewAdActivity("homeFood","homeFood","");
-        }else if(v.getId() == worker.getId()){
-            ((MainActivity)getActivity()).callCategoryActivity("worker",adNewAdTarget);
-        }else if(v.getId()== freelance.getId()){
-            ((MainActivity)getActivity()).callCategoryActivity("freelance",adNewAdTarget);
-
-        }else if(v.getId() == handcraft.getId()){
-            ((MainActivity)getActivity()).callAddNewAdActivity("handcraft","handcraft","");
+        }else if(v.getId() == binding.homeFoodCategoryFragment.getId()){
+            ((MainActivity)getActivity()).callAddNewAdActivity(DbHandler.HOME_FOOD,DbHandler.HOME_FOOD,"");
+        }else if(v.getId() == binding.workerCategoryFragment.getId()){
+            ((MainActivity)getActivity()).callCategoryActivity(DbHandler.WORKER,adNewAdTarget);
+        }else if(v.getId()== binding.freelanceCategoryFragment.getId()){
+            ((MainActivity)getActivity()).callCategoryActivity(DbHandler.FREELANCE,adNewAdTarget);
+        }else if(v.getId() == binding.handcraftCategoryFragment.getId()){
+            ((MainActivity)getActivity()).callAddNewAdActivity(DbHandler.HANDCRAFT,DbHandler.HANDCRAFT,"");
         }
     }
 

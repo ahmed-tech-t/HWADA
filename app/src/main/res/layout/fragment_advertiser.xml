@@ -1,275 +1,195 @@
 <?xml version="1.0" encoding="utf-8"?>
 
+
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/white_background"
     android:orientation="vertical"
-    android:layout_marginTop="60dp"
     android:id="@+id/bottom_sheet_advertiser"
+    android:background="@drawable/white_background"
     tools:context=".ui.view.ad.AdvertiserFragment">
+        <ImageView
+            android:id="@+id/arrow_advertiser"
+            android:layout_marginTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/arrow_down"
+            android:padding="5dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/arrow_advertiser"
-        android:layout_marginTop="20dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:src="@drawable/arrow_down"
-        android:padding="5dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-        <LinearLayout
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <com.denzcoskun.imageslider.ImageSlider
-                android:id="@+id/image_slider"
-                android:layout_width="match_parent"
-                android:layout_height="400dp"/>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
+            android:fillViewport="true" >
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="15dp">
+                android:orientation="vertical">
 
-                <ImageView
-                    android:id="@+id/item_user_image"
-                    android:layout_width="103dp"
-                    android:layout_height="109dp"
-                    android:layout_margin="10dp"
-                    android:padding="10dp"
-                    android:background="@drawable/frame_gray"
-                    android:src="@drawable/worker_item_icon"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-                <ImageView
-                    android:id="@+id/item_fav"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="5dp"
-                    android:layout_marginRight="20dp"
-                    android:src="@drawable/fav_uncheck_icon"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:orientation="vertical"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_weight="1"
-                    app:layout_constraintStart_toEndOf="@+id/item_user_image"
-                    app:layout_constraintTop_toBottomOf="@+id/item_fav">
-
-                    <TextView
-                        android:id="@+id/item_username"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_marginTop="10dp"
-                        android:maxLines="1"
-                        android:paddingLeft="5dp"
-                        android:text="full name"
-                        android:textColor="@color/black"
-                        android:textSize="18dp" />
-
-
-                    <TextView
-                        android:id="@+id/item_jop_title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:maxLines="1"
-                        android:padding="5dp"
-                        android:text="@string/jop"
-                        android:textSize="15dp"
-                        android:textColor="@color/black"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-                </LinearLayout>
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.coordinatorlayout.widget.CoordinatorLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-            <com.google.android.material.appbar.AppBarLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/transparent">
-            <com.google.android.material.appbar.CollapsingToolbarLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed|snap">
-              <LinearLayout
+          <LinearLayout
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:layout_marginTop="10dp"
+              android:orientation="vertical">
+              <androidx.viewpager2.widget.ViewPager2
+                  android:id="@+id/vp2_advertiser_fragment"
                   android:layout_width="match_parent"
-                  android:layout_height="match_parent"
-                  android:orientation="vertical">
-                  <RelativeLayout
-                      android:id="@+id/constraintLayout"
-                      android:layout_width="match_parent"
-                      android:layout_height="wrap_content">
-                      <LinearLayout
-                          android:layout_width="wrap_content"
-                          android:layout_height="wrap_content"
-                          android:layout_marginStart="8dp"
-                          android:gravity="bottom"
-                          android:orientation="horizontal"
-                          android:padding="5dp"
+                  android:clickable="false"
+                  android:focusable="false"
+                  android:orientation="horizontal"
+                  android:layout_height="350dp"/>
+              <me.relex.circleindicator.CircleIndicator3
+                  android:id="@+id/circle_indicator"
+                  android:layout_width="match_parent"
+                  app:ci_drawable="@drawable/circle_indicator"
+                  android:layout_height="48dp"/>
 
-                          android:layout_alignParentLeft="true">
+          </LinearLayout>
+            <RelativeLayout
+            android:id="@+id/constraintLayout"
+            android:layout_width="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:layout_height="wrap_content">
+            <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:gravity="bottom"
+            android:orientation="horizontal"
+            android:padding="5dp"
 
-                          <ImageView
-                              android:layout_width="wrap_content"
-                              android:layout_height="wrap_content"
-                              android:layout_marginLeft="10dp"
-                              android:layout_marginRight="10dp"
-                              android:src="@drawable/location_icon" />
+            android:layout_alignParentLeft="true">
 
-                          <TextView
-                              android:id="@+id/item_user_distance"
-                              android:layout_width="wrap_content"
-                              android:layout_height="wrap_content"
-                              android:text="3 km"
-                              android:textSize="10dp" />
+            <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/location_icon" />
 
-                          <TextView
-                              android:layout_width="wrap_content"
-                              android:layout_height="wrap_content"
-                              android:layout_marginLeft="3dp"
-                              android:layout_marginRight="3dp"
-                              android:text="@string/away" />
-                      </LinearLayout>
-                      <TextView
-                          android:id="@+id/item_date"
-                          android:layout_width="wrap_content"
-                          android:layout_height="wrap_content"
-                          android:layout_marginEnd="20dp"
-                          android:padding="5dp"
-                          android:text="4 sep"
-                          android:textSize="10dp"
-                          android:layout_alignParentRight="true"/>
-                  </RelativeLayout>
-                  <LinearLayout
-                      android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:layout_margin="10dp"
-                      android:padding="5dp"
-                      android:orientation="vertical"
-                      >
+            <TextView
+            android:id="@+id/item_user_distance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3 km"
+            android:textSize="10dp" />
 
-                      <TextView
-                          android:layout_width="match_parent"
-                          android:layout_height="wrap_content"
-                          android:text="description"
-                          android:textColor="@color/black"
-                          android:textSize="18dp" />
+            <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3dp"
+            android:layout_marginRight="3dp"
+            android:text="@string/away" />
+            </LinearLayout>
+            <TextView
+            android:id="@+id/item_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:padding="5dp"
+            android:text="4 sep"
+            android:textSize="10dp"
+            android:layout_alignParentRight="true"/>
+            </RelativeLayout>
+            <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:padding="5dp"
+            android:orientation="vertical"
+            >
 
-                      <com.borjabravo.readmoretextview.ReadMoreTextView
-                          android:id="@+id/item_description"
-                          android:layout_width="match_parent"
-                          android:layout_height="wrap_content"
-                          app:trimExpandedText="@string/read_less"
-                          app:trimCollapsedText="@string/read_more"
-                          android:text="This is Expandable text this is a simple text, this is a testing text"
-                          app:trimLength="50"
-                          app:trimMode="trimModeLength"
-                          app:colorClickableText="@color/background"
+            <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="description"
+            android:textColor="@color/black"
+            android:textSize="18dp" />
 
-                          />
+            <com.borjabravo.readmoretextview.ReadMoreTextView
+            android:id="@+id/item_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:trimExpandedText="@string/read_less"
+            app:trimCollapsedText="@string/read_more"
+            android:text="This is Expandable text this is a simple text, this is a testing text"
+            app:trimLength="50"
+            app:trimMode="trimModeLength"
+            app:colorClickableText="@color/background"
 
-                  </LinearLayout>
-                  <androidx.constraintlayout.widget.ConstraintLayout
-                      android:layout_width="match_parent"
-                      android:layout_height="wrap_content">
+            />
 
-                      <TextView
-                          android:id="@+id/textView3"
-                          android:layout_width="wrap_content"
-                          android:layout_height="wrap_content"
-                          android:layout_alignParentLeft="true"
-                          android:padding="15dp"
-                          android:text="@string/comments"
-                          android:textColor="@color/black"
-                          android:textSize="20dp"
-                          app:layout_constraintBottom_toBottomOf="parent"
-                          app:layout_constraintStart_toStartOf="parent"
-                          app:layout_constraintTop_toTopOf="parent" />
+            </LinearLayout>
+            <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:layout_height="wrap_content">
+            <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:padding="15dp"
+            android:text="@string/comments"
+            android:textColor="@color/black"
+            android:textSize="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-                      <RatingBar
-                          android:id="@+id/item_user_rating"
-                          style="?android:attr/ratingBarStyleIndicator"
-                          android:layout_width="wrap_content"
-                          android:layout_height="wrap_content"
-                          android:layout_gravity="right"
-                          android:elevation="0dp"
-                          android:numStars="5"
-                          android:progressTint="@color/yellow"
-                          android:rating="4.4"
-                          android:secondaryProgressTint="@android:color/transparent"
-                          android:stepSize="0.1"
-                          android:scaleX=".7"
-                          android:scaleY=".7"
-                          app:layout_constraintBottom_toBottomOf="parent"
-                          app:layout_constraintEnd_toEndOf="parent"
-                          app:layout_constraintTop_toTopOf="parent" />
-                  </androidx.constraintlayout.widget.ConstraintLayout>
-                  <LinearLayout
-                      android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:orientation="horizontal">
-                      <de.hdodenhof.circleimageview.CircleImageView
-                          android:id="@+id/user_image_ad_review"
-                          android:layout_width="50dp"
-                          android:layout_height="50dp"
-                          android:paddingLeft="10dp"
-                          android:paddingRight="10dp"
-                          android:src="@drawable/user_account_icon">
-                      </de.hdodenhof.circleimageview.CircleImageView>
-                      <TextView
-                          android:id="@+id/addComment_tv"
-                          android:layout_width="0dp"
-                          android:layout_height="match_parent"
-                          android:gravity="center_vertical"
-                          android:layout_weight="1"
+            <RatingBar
+            android:id="@+id/item_user_rating"
+            style="?android:attr/ratingBarStyleIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:elevation="0dp"
+            android:numStars="5"
+            android:progressTint="@color/yellow"
+            android:rating="4.4"
+            android:secondaryProgressTint="@android:color/transparent"
+            android:stepSize="0.1"
+            android:scaleX=".7"
+            android:scaleY=".7"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                android:orientation="horizontal">
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/user_image_ad_review"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:src="@drawable/user_account_icon"/>
+            <TextView
+                android:id="@+id/addComment_tv"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:text="@string/AddAComment"/>
 
-                          android:layout_gravity="center"
-                          android:text="@string/AddAComment"/>
+            </LinearLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/review_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="400dp"
+                android:background="@color/white"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                android:orientation="vertical" />
 
-                  </LinearLayout>
-                  <View
-                      android:layout_width="match_parent"
-                      android:layout_height="1dp"
-                      android:background="@color/white_gray"
-                      />
-
-              </LinearLayout>
-
-            </com.google.android.material.appbar.CollapsingToolbarLayout>
-            </com.google.android.material.appbar.AppBarLayout>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/review_recycler"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/white"
-                    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                    android:orientation="vertical"/>
-            </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
 </LinearLayout>
-    </ScrollView>
-    </LinearLayout>
+

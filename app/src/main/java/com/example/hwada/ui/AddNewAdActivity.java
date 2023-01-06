@@ -116,7 +116,7 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
             @Override
             public void onClick(View v) {
                 imagesAdapter.removeOneItem(position);
-                if(newAd.getImagesList().size()==0){
+                if(newAd.getImagesUri().size()==0){
                     binding.recyclerLinearLayoutAddNewAd.setVisibility(View.GONE);
                     binding.addImageBackground.setVisibility(View.VISIBLE);
                 }
@@ -160,7 +160,7 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
         }
     }
     private boolean checkIfFieldsAreValid(){
-        return binding.adTitle.getError()==null &&  binding.adDescription.getError()==null && newAd.getImagesList().size()>0;
+        return binding.adTitle.getError()==null &&  binding.adDescription.getError()==null && newAd.getImagesUri().size()>0;
     }
     private void setFieldsWarning(){
         if(binding.adTitle.getText().length() ==0){
@@ -169,7 +169,7 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
             if (binding.adDescription.getText().length() ==0){
                 binding.adDescription.setError(getString(R.string.emptyFieldWarning));
             }else  binding.adDescription.setError(getString(R.string.toShortWarning));
-        }else if(newAd.getImagesList().size()==0){
+        }else if(newAd.getImagesUri().size()==0){
             showDialog(getString(R.string.invalidData),getString(R.string.imagesListEmptyWarning));
         }else if (binding.adPrice.getText().length()==0){
             binding.adPrice.setText("0");
@@ -193,20 +193,20 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
             binding.addImageBackground.setVisibility(View.GONE);
             binding.recyclerLinearLayoutAddNewAd.setVisibility(View.VISIBLE);
 
-            if(newAd.getImagesList().size()==0 && newAd.getImagesList().size()+ uris.size()<=10){
+            if(newAd.getImagesUri().size()==0 && newAd.getImagesUri().size()+ uris.size()<=10){
 
-                newAd.getImagesList().addAll(uris);
-                setImagesToList(newAd.getImagesList());
+                newAd.getImagesUri().addAll(uris);
+                setImagesToList(newAd.getImagesUri());
 
-            } else if(newAd.getImagesList().size()+ uris.size()<=10){
+            } else if(newAd.getImagesUri().size()+ uris.size()<=10){
 
-                imagesAdapter.addItems(newAd.getImagesList().size(),uris);
+                imagesAdapter.addItems(newAd.getImagesUri().size(),uris);
 
-            }else if(newAd.getImagesList().size()<10){
-                int length = 10 - newAd.getImagesList().size();
+            }else if(newAd.getImagesUri().size()<10){
+                int length = 10 - newAd.getImagesUri().size();
                     if(length > uris.size()) length = uris.size();
 
-                imagesAdapter.addItems(newAd.getImagesList().size(),uris.subList(0,length));
+                imagesAdapter.addItems(newAd.getImagesUri().size(),uris.subList(0,length));
             }
         } else {
             Log.d("PhotoPicker", "No media selected");
@@ -221,7 +221,7 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
            int fromPosition = viewHolder.getAdapterPosition();
            int toPosition =target.getAdapterPosition();
 
-            Collections.swap(newAd.getImagesList(),fromPosition,toPosition);
+            Collections.swap(newAd.getImagesUri(),fromPosition,toPosition);
             recyclerView.getAdapter().notifyItemMoved(fromPosition,toPosition);
             return true;
         }
@@ -233,7 +233,7 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
     };
 
     private void pickImagesHandler(){
-        if (newAd.getImagesList().size() >= 10) {
+        if (newAd.getImagesUri().size() >= 10) {
             showDialog(getString(R.string.limitReached),getString(R.string.alertLimitReached));
         }else{
             ActivityResultContracts.PickVisualMedia.VisualMediaType mediaType = (ActivityResultContracts.PickVisualMedia.VisualMediaType) ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE;

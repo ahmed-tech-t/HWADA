@@ -1,6 +1,5 @@
 package com.example.hwada.repository;
 
-import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
 import android.os.Build;
 import android.util.Log;
@@ -38,31 +37,41 @@ public class SplashRepository {
     public MutableLiveData<User> checkIfUserIsAuthenticatedInFirebase() {
         MutableLiveData<User> isUserAuthenticateInFirebaseMutableLiveData = new MutableLiveData<>();
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-        if (firebaseUser == null) {
-            user.isAuthenticated = false;
-            isUserAuthenticateInFirebaseMutableLiveData.setValue(user);
-        } else {
-            user.setuId( firebaseUser.getUid());
-            user.isAuthenticated = true;
-            isUserAuthenticateInFirebaseMutableLiveData.setValue(user);
-        }
+       try {
+           if (firebaseUser == null) {
+               user.isAuthenticated = false;
+               isUserAuthenticateInFirebaseMutableLiveData.setValue(user);
+           } else {
+               user.setuId( firebaseUser.getUid());
+               user.isAuthenticated = true;
+               isUserAuthenticateInFirebaseMutableLiveData.setValue(user);
+           }
+       }catch (Exception e){
+           e.printStackTrace();
+           reportError(e);
+       }
         return isUserAuthenticateInFirebaseMutableLiveData;
     }
 
     public MutableLiveData<User> addUserToLiveData(String uid) {
         MutableLiveData<User> userMutableLiveData = new MutableLiveData<>();
-        usersRef.document(uid).get().addOnCompleteListener(userTask -> {
-            if (userTask.isSuccessful()) {
-                DocumentSnapshot document = userTask.getResult();
-                if(document.exists()) {
-                    User user = document.toObject(User.class);
-                    userMutableLiveData.setValue(user);
-                }
-            } else {
-                reportError(userTask.getException());
-                Log.e(TAG,userTask.getException().getMessage());
-            }
-        });
+        try {
+           usersRef.document(uid).get().addOnCompleteListener(userTask -> {
+               if (userTask.isSuccessful()) {
+                   DocumentSnapshot document = userTask.getResult();
+                   if(document.exists()) {
+                       User user = document.toObject(User.class);
+                       userMutableLiveData.setValue(user);
+                   }
+               } else {
+                   reportError(userTask.getException());
+                   Log.e(TAG,userTask.getException().getMessage());
+               }
+           });
+       }catch (Exception e){
+           e.printStackTrace();
+           reportError(e);
+       }
         return userMutableLiveData;
     }
     private void reportError(Exception e){

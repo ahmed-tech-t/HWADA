@@ -87,8 +87,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
             adapter = new AdsAdapter();
 
             mainRecycler.setAdapter(adapter);
-            viewModel.getAllWorkersAds();
-            viewModel.workerAdsLiveData.observe(getActivity(), ads -> {
+           // TODO
+           // viewModel.getAllAds();
+            viewModel.allAdsLiveData.observe(getActivity(), ads -> {
                 adsList = ads;
                 if (user != null) {
                     adapter.setList(user, ads, this);
@@ -108,13 +109,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
            if (v.getId() == userAddress.getId()) {
                callBottomSheet(new MapsFragment());
            } else if (v.getId() == foodCategory.getId()) {
-               ((MainActivity) getActivity()).callAdsActivity("homeFood", "");
+               ((MainActivity) getActivity()).callAdsActivity("homeFood", "homeFood","");
            } else if (v.getId() == workerCategory.getId()) {
                ((MainActivity) getActivity()).callCategoryActivity("worker", target);
            } else if (v.getId() == freelanceCategory.getId()) {
                ((MainActivity) getActivity()).callCategoryActivity("freelance", target);
            } else if (v.getId() == handcraftCategory.getId()) {
-               ((MainActivity) getActivity()).callAdsActivity("handcraft", "");
+               ((MainActivity) getActivity()).callAdsActivity("handcraft", "handcraft","");
            }
        }catch (Exception e){
            reportError(e);
@@ -156,7 +157,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
               }
           });
           viewModel = ViewModelProviders.of(getActivity()).get(AdsViewModel.class);
-          setAdsToList();
+
+
+
+         //TODO
+          //setAdsToList();
+
+
       }catch (Exception e){
           reportError(e);
       }

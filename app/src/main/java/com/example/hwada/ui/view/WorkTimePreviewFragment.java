@@ -26,6 +26,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.User;
@@ -35,7 +36,6 @@ import com.example.hwada.adapter.MainWorkingTimeAdapter;
 import com.example.hwada.databinding.FragmentWorkTimePreviewBinding;
 import com.example.hwada.ui.MainActivity;
 import com.example.hwada.viewmodel.AdsViewModel;
-import com.example.hwada.viewmodel.ImagesViewModel;
 import com.example.hwada.viewmodel.UserViewModel;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -63,7 +63,6 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
     Ad newAd ;
     UserViewModel userViewModel;
     AdsViewModel adsViewModel;
-    ImagesViewModel imagesViewModel;
     FragmentWorkTimePreviewBinding binding ;
     @SuppressLint("MissingInflatedId")
     @Override
@@ -151,7 +150,6 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
         user = getArguments().getParcelable("user");
         userViewModel = ViewModelProviders.of(getActivity()).get(UserViewModel.class);
         adsViewModel = ViewModelProviders.of(getActivity()).get(AdsViewModel.class);
-        imagesViewModel = ViewModelProviders.of(getActivity()).get(ImagesViewModel.class);
 
     }
 
@@ -172,13 +170,18 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
 
     private void saveNewAdd(){
         adsViewModel.addNewAdd(newAd);
-        adsViewModel.liveDataGetAddId.observe(this, new Observer<Boolean>() {
+        adsViewModel.liveDataGetNewAdd.observe(this, new Observer<Ad>() {
             @Override
-            public void onChanged(Boolean success) {
-                 if(success){
+            public void onChanged(Ad ad) {
+                 if(ad != null){
                     if(saveDialog.isShowing()) saveDialog.dismiss();
+                    user.getAds().add(ad);
                     goToMainActivity();
                  }else {
+                     Toast.makeText(getContext(), "Failed to save new add", Toast.LENGTH_SHORT).show();
+                     if(saveDialog.isShowing()) saveDialog.dismiss();
+                     goToMainActivity();
+
                      Log.e(TAG, "onChanged: failed to save new add" );
                  }
             }
