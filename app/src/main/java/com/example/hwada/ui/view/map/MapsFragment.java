@@ -1,4 +1,4 @@
-package com.example.hwada.ui.view;
+package com.example.hwada.ui.view.map;
 
 import static android.content.ContentValues.TAG;
 

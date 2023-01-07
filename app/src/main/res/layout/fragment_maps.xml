@@ -6,7 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@drawable/white_background"
     android:layout_alignParentTop="true"
-    tools:context=".ui.view.MapsFragment">
+    tools:context=".ui.view.map.MapsFragment">
 
         <ImageView
             android:id="@+id/arrow_map_fragment"

@@ -21,9 +21,10 @@
     <string name="worker"><font size="12">Worker</font></string>
     <string name="freelance"><font size="12">Freelance</font></string>
     <string name="handcraft"><font size="12">Handcraft</font></string>
+    <string name="title"><font size="18">title</font></string>
 
     <string name="jop"><font size="18">jop</font></string>
-    <string name="away"><font size="10">away</font></string>
+    <string name="away">away</string>
     <string name="title_activity_map">Map</string>
     <string name="loadingYourLocation"><font size="18">Loading Your Location ...</font></string>
     <string name="save">save</string>

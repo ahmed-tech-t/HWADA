@@ -105,7 +105,7 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         ad = getArguments().getParcelable("ad");
         setReviewsToRecycler();
         setToSlider();
-        binding.itemDescription.setText(ad.getDescription());
+        binding.itemDescriptionAdvertiserFragment.setText(ad.getDescription());
 
     }
 

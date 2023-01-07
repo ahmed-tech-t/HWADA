@@ -184,18 +184,18 @@ public class AdsRepository {
                         String date =snapshot.getString("date");
                         DaysSchedule daysSchedule = (DaysSchedule) snapshot.get("dasSchedule");
                         String description = snapshot.getString("description");
-                        float distance =  snapshot.getLong("distance").floatValue();
+                        float distance =  snapshot.getDouble("distance").floatValue();
                         String id =snapshot.getString("id");
                         ArrayList<String>imagesUrl = (ArrayList<String>) snapshot.get("imagesUrl");
                         double price = snapshot.getDouble("price");
-                        float rating = snapshot.getLong("rating").floatValue();
+                        float rating = snapshot.getDouble("rating").floatValue();
+
                         String subCategory = snapshot.getString("subCategory");
                         String subSubCategory = snapshot.getString("subSubCategory");
                         String title = snapshot.getString("title");
                         int views = snapshot.getLong("views").intValue();
 
-                        Log.e(TAG, "onComplete: "+imagesUrl.toString() );
-                       list.add(new Ad(id,authorId,authorName,authorLocation,title,description,date,distance,rating,category,subCategory,subSubCategory,adReviews,price,daysSchedule,imagesUrl,views));
+                        list.add(new Ad(id,authorId,authorName,authorLocation,title,description,date,distance,rating,category,subCategory,subSubCategory,adReviews,price,daysSchedule,imagesUrl,views));
                     }
                     allAdsMutableLiveData.setValue(list);
                 }
@@ -228,11 +228,11 @@ public class AdsRepository {
                         String date =snapshot.getString("date");
                         DaysSchedule daysSchedule = (DaysSchedule) snapshot.get("dasSchedule");
                         String description = snapshot.getString("description");
-                        float distance = (float) snapshot.get("distance");
+                        float distance = (float) snapshot.getDouble("distance").floatValue();
                         String id =snapshot.getString("id");
                         ArrayList<String>imagesUrl = (ArrayList<String>) snapshot.get("imagesUrl");
                         double price = snapshot.getDouble("price");
-                        float rating = (float) snapshot.get("rating");
+                        float rating = (float) snapshot.getDouble("rating").floatValue();
                         String subCategory = snapshot.getString("subCategory");
                         String subSubCategory = snapshot.getString("subSubCategory");
                         String title = snapshot.getString("title");

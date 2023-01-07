@@ -104,7 +104,7 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
             adsList = ads;
 
             if(user!=null) {
-                adapter.setList(user,ads,this);
+                adapter.setList(user,ads,this,this);
             }
         });
     }
@@ -114,7 +114,7 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
         viewModel.allAdsLiveData.observe(this, ads -> {
             adsList = ads;
             if(user!=null) {
-                adapter.setList(user,ads,this);
+                adapter.setList(user,ads,this,this);
             }
         });
     }

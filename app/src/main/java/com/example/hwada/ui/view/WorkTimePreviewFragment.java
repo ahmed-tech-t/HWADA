@@ -305,7 +305,7 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
     private String getCurrentDate(){
         Calendar calendar = Calendar.getInstance();
         Date date = calendar.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("d MMM yyyy, h:mm a");
         return  sdf.format(date);
     }
 }

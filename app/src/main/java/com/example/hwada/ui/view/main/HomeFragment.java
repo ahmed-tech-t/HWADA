@@ -1,7 +1,6 @@
 package com.example.hwada.ui.view.main;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -16,7 +15,6 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,10 +28,8 @@ import com.example.hwada.Model.LocationCustom;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
 import com.example.hwada.adapter.AdsAdapter;
-import com.example.hwada.ui.CategoryActivity;
-import com.example.hwada.ui.AdsActivity;
 import com.example.hwada.ui.MainActivity;
-import com.example.hwada.ui.view.MapsFragment;
+import com.example.hwada.ui.view.map.MapsFragment;
 import com.example.hwada.ui.view.ad.AdvertiserFragment;
 import com.example.hwada.viewmodel.AdsViewModel;
 import com.example.hwada.viewmodel.DebugViewModel;
@@ -92,7 +88,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
             viewModel.allAdsLiveData.observe(getActivity(), ads -> {
                 adsList = ads;
                 if (user != null) {
-                    adapter.setList(user, ads, this);
+                    adapter.setList(user, ads, getContext(),this);
                 }
             });
             mainRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));

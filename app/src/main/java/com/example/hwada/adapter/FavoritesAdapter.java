@@ -27,8 +27,8 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
     @Override
     public void onBindViewHolder(@NonNull FavoritesViewHolder holder, int position) {
         holder.jop.setText(list.get(position).getTitle());
-        holder.fullName.setText(list.get(position).getAuthorName());
-        holder.distance.setText((int) list.get(position).getDistance());
+        holder.description.setText(list.get(position).getDescription());
+        holder.distance.setText(list.get(position).getDistance()+"");
         holder.date.setText(list.get(position).getDate());
         holder.favImage.setImageResource(R.drawable.fav_checked_icon);
     }
@@ -47,7 +47,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
     public class FavoritesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         ImageView userImage , favImage;
-        TextView jop , fullName , date , distance;
+        TextView jop , fullName , date , distance ,description;
         OnItemListener onItemListener;
 
         public FavoritesViewHolder(@NonNull View v, OnItemListener onItemListener) {
@@ -55,7 +55,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
             favImage = v.findViewById(R.id.item_fav);
             userImage = v.findViewById(R.id.item_user_image);
             jop = v.findViewById(R.id.item_jop_title);
-            fullName = v.findViewById(R.id.item_username);
+            description = v.findViewById(R.id.item_description);
             date = v.findViewById(R.id.item_date);
             distance = v.findViewById(R.id.item_user_distance);
             this.onItemListener = onItemListener;
