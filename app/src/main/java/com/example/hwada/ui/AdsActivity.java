@@ -148,7 +148,9 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
         AdvertiserFragment fragment = new AdvertiserFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelable("user", user);
+        bundle.putInt("pos",pos);
         bundle.putParcelable("ad",adsList.get(pos));
+        bundle.putParcelableArrayList("adsList",adsList);
         fragment.setArguments(bundle);
         fragment.show(getSupportFragmentManager(),fragment.getTag());
     }

@@ -296,4 +296,28 @@ public class Ad implements Parcelable {
         dest.writeStringList(imagesUrl);
         dest.writeInt(views);
     }
+
+    @Override
+    public String toString() {
+        return "Ad{" +
+                "id='" + id + '\'' +
+                ", authorId='" + authorId + '\'' +
+                ", authorName='" + authorName + '\'' +
+                ", authorLocation=" + authorLocation +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", date='" + date + '\'' +
+                ", distance=" + distance +
+                ", rating=" + rating +
+                ", category='" + category + '\'' +
+                ", subCategory='" + subCategory + '\'' +
+                ", subSubCategory='" + subSubCategory + '\'' +
+                ", adReviews=" + adReviews +
+                ", price=" + price +
+                ", daysSchedule=" + daysSchedule +
+                ", imagesUri=" + imagesUri +
+                ", imagesUrl=" + imagesUrl +
+                ", views=" + views +
+                '}';
+    }
 }

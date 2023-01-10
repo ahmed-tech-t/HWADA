@@ -17,7 +17,7 @@ public class User implements Parcelable {
     private ArrayList<Ad>favAds;
     private ArrayList<Ad>ads;
 
-    private double rating;
+    private float rating;
     private ArrayList<MyReview> myReviews;
 
     private  String email;
@@ -30,6 +30,32 @@ public class User implements Parcelable {
     @Exclude
     boolean isNew , isCreated;
 
+    public User(String uId, String username, LocationCustom location, float rating, String email, String phone, String aboutYou, String image, String gender) {
+        this.uId = uId;
+        this.username = username;
+        this.location = location;
+        this.rating = rating;
+        this.email = email;
+        this.phone = phone;
+        this.aboutYou = aboutYou;
+        this.image = image;
+        this.gender = gender;
+    }
+
+    public User(String uId, String username, LocationCustom location, ArrayList<Ad> favAds, ArrayList<Ad> ads, float rating, ArrayList<MyReview> myReviews, String email, String phone, String aboutYou, String image, String gender) {
+        this.uId = uId;
+        this.username = username;
+        this.location = location;
+        this.favAds = favAds;
+        this.ads = ads;
+        this.rating = rating;
+        this.myReviews = myReviews;
+        this.email = email;
+        this.phone = phone;
+        this.aboutYou = aboutYou;
+        this.image = image;
+        this.gender = gender;
+    }
 
     public User(){
         this.favAds =new ArrayList<>();
@@ -69,7 +95,7 @@ public class User implements Parcelable {
         location = in.readParcelable(LocationCustom.class.getClassLoader());
         favAds = in.createTypedArrayList(Ad.CREATOR);
         ads = in.createTypedArrayList(Ad.CREATOR);
-        rating = in.readDouble();
+        rating = in.readFloat();
         myReviews = in.createTypedArrayList(MyReview.CREATOR);
         email = in.readString();
         phone = in.readString();
@@ -97,7 +123,7 @@ public class User implements Parcelable {
         return rating;
     }
 
-    public void setRating(double rating) {
+    public void setRating(float rating) {
         this.rating = rating;
     }
     public String getuId() {
@@ -267,7 +293,7 @@ public class User implements Parcelable {
         dest.writeParcelable(location, flags);
         dest.writeTypedList(favAds);
         dest.writeTypedList(ads);
-        dest.writeDouble(rating);
+        dest.writeFloat(rating);
         dest.writeTypedList(myReviews);
         dest.writeString(email);
         dest.writeString(phone);

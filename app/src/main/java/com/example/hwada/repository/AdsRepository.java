@@ -390,30 +390,33 @@ public class AdsRepository {
         return updateImagesSuccess;
     }
 */
-
-
-    public MutableLiveData<AdReview> addReview(Ad ad , AdReview review){
+    //**************************************
+    public MutableLiveData<AdReview> addReview(User user,Ad ad , AdReview review){
         MutableLiveData<AdReview> reviewMutableLiveData = new MutableLiveData<>();
        rootRef.runTransaction(new Transaction.Function<Object>() {
            @Nullable
            @Override
            public Object apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
               DocumentReference reviewDocRef;
+               Log.e(TAG, "apply: "+ad.getId());
+               Log.e(TAG, "apply: "+user.getEmail() );
+
 
               //set ad review to ad collection
               reviewDocRef = getAdColRef(ad).document(ad.getId()).collection(DbHandler.Reviews).document();
               review.setId(reviewDocRef.getId());
               transaction.set(reviewDocRef,review);
 
-              //set ad review to user ad collection
-              reviewDocRef = getUserAdColRef(ad).document(ad.getId()).collection(DbHandler.Reviews).document(review.getId());
-              transaction.set(reviewDocRef,review);
+               Log.e(TAG, "apply: this is user ad" );
+               //set ad review to user ad collection
+               reviewDocRef = getUserAdColRef(ad).document(ad.getId()).collection(DbHandler.Reviews).document(review.getId());
+               transaction.set(reviewDocRef, review);
 
-              //set to my reviews to user collection
-               reviewDocRef = rootRef.collection(DbHandler.userCollection).document(ad.getAuthorId()).collection(DbHandler.MyReviews).document(review.getId());
-               MyReview myReview = new MyReview(review.getId(),ad.getId(),ad.getCategory(),ad.getSubCategory(),ad.getSubSubCategory());
-               transaction.set(reviewDocRef , myReview);
 
+                  //set to my reviews to user collection
+                  reviewDocRef = rootRef.collection(DbHandler.userCollection).document(user.getuId()).collection(DbHandler.MyReviews).document(review.getId());
+                  MyReview myReview = new MyReview(review.getId(), ad.getId(), ad.getCategory(), ad.getSubCategory(), ad.getSubSubCategory());
+                  transaction.set(reviewDocRef, myReview);
 
                //set ad review to home page ad collection
                reviewDocRef = getAdColHomePageRef().document(ad.getId()).collection(DbHandler.Reviews).document(review.getId());
@@ -440,6 +443,49 @@ public class AdsRepository {
 
     }
 
+
+    public MutableLiveData<Boolean> deleteReview(User user , Ad ad , AdReview review){
+        MutableLiveData<Boolean> deleteReviewMutableLiveDate = new MutableLiveData<>();
+        rootRef.runTransaction(new Transaction.Function<Object>() {
+            @Nullable
+            @Override
+            public Object apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+                DocumentReference reviewDocRef;
+                Log.e(TAG, "apply: "+ad.getId());
+                Log.e(TAG, "apply: "+user.getEmail() );
+
+                //delete review from ad collection
+                reviewDocRef = getAdColRef(ad).document(ad.getId()).collection(DbHandler.Reviews).document(review.getId());
+                transaction.delete(reviewDocRef);
+
+                //delete review from home page ad collection
+                reviewDocRef = getAdColHomePageRef().document(ad.getId()).collection(DbHandler.Reviews).document(review.getId());
+                transaction.delete(reviewDocRef);
+
+                //set to my reviews to user collection
+                reviewDocRef = rootRef.collection(DbHandler.userCollection).document(user.getuId()).collection(DbHandler.MyReviews).document(review.getId());
+                transaction.delete(reviewDocRef);
+
+                //**************************************
+
+                    //delete review from user ad collection
+
+                    reviewDocRef = rootRef.collection(DbHandler.userCollection).document(ad.getAuthorId()).collection(DbHandler.adCollection)
+                            .document(ad.getId()).collection(DbHandler.Reviews).document(review.getId());
+                    transaction.delete(reviewDocRef);
+
+                return null;
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Object>() {
+            @Override
+            public void onComplete(@NonNull Task<Object> task) {
+                if (task.isSuccessful()){
+                    deleteReviewMutableLiveDate.setValue(true);
+                }
+            }
+        });
+        return deleteReviewMutableLiveDate;
+    }
 
     public AdsRepository(Application application){
         this.application = application;

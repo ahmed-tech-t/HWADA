@@ -7,14 +7,14 @@ public class DbHandler {
 
    public static final String Reviews = "Reviews";
    public static final String MyReviews = "MyReviews";
-
+   public static final String favAds ="FavAds";
    public static final String homePage ="homePage";
 
-   public static final String WORKER ="worker";
+   public static final String WORKER ="Worker";
 
-   public static final String HOME_FOOD ="homeFood";
-   public static final String FREELANCE ="freeLance";
-   public static final String HANDCRAFT ="handcraft";
+   public static final String HOME_FOOD ="HomeFood";
+   public static final String FREELANCE ="FreeLance";
+   public static final String HANDCRAFT ="Handcraft";
 
 
    public static final String PLUMBER ="plumber";

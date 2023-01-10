@@ -26,12 +26,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.DebugModel;
 import com.example.hwada.Model.LocationCustom;
 import com.example.hwada.Model.User;
@@ -78,16 +80,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
       try {
-
-
           binding = ActivityMainBinding.inflate(getLayoutInflater());
           View view = binding.getRoot();
           setContentView(view);
           // get user data
           Intent intent = getIntent();
           user = (User) intent.getParcelableExtra("user");
+
+          Log.e(TAG, "onCreate: "+user.toString());
 
           // ##############
           binding.addFloatActionBar.setOnClickListener(this);

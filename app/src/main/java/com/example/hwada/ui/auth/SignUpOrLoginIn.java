@@ -4,6 +4,7 @@ import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import com.example.hwada.Model.User;
 import com.example.hwada.R;
 import com.example.hwada.databinding.ActivitySignUpOrLoginInBinding;
 import com.example.hwada.viewmodel.AuthViewModel;
+import com.example.hwada.viewmodel.UserViewModel;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -28,8 +30,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 
 public class SignUpOrLoginIn extends AppCompatActivity implements View.OnClickListener {
 
-    AuthViewModel viewModel;
-
+    AuthViewModel authViewModel;
     //google
     private GoogleSignInOptions gso;
     private GoogleSignInClient gsc;
@@ -54,8 +55,7 @@ public class SignUpOrLoginIn extends AppCompatActivity implements View.OnClickLi
         binding.btLogin.setOnClickListener(this);
 
         //get viewModel ref
-        viewModel = new ViewModelProvider(this, (ViewModelProvider.Factory) ViewModelProvider.AndroidViewModelFactory.getInstance(this.getApplication())).get(AuthViewModel.class);
-
+        authViewModel = ViewModelProviders.of(this).get(AuthViewModel.class);
     }
 
     @Override
@@ -106,18 +106,18 @@ public class SignUpOrLoginIn extends AppCompatActivity implements View.OnClickLi
     }
 
     private void signInWithGoogleAuthCredential(AuthCredential googleAuthCredential) {
-        viewModel.signInWithGoogle(googleAuthCredential);
-        viewModel.authenticatedUserLiveData.observe(this, authenticatedUser -> {
-            if (authenticatedUser.isNew()) {
-                createNewUser(authenticatedUser);
+        authViewModel.signInWithGoogle(googleAuthCredential);
+        authViewModel.authenticatedUserLiveData.observe(this, user -> {
+            if (user.isNew()) {
+                createNewUser(user);
             } else {
-                goToSplashActivity(authenticatedUser);
+                goToSplashActivity(user);
             }
         });
     }
     private void createNewUser(User authenticatedUser) {
-        viewModel.createUser(authenticatedUser);
-        viewModel.createdUserLiveData.observe(this, user -> {
+        authViewModel.createUser(authenticatedUser);
+        authViewModel.createdUserLiveData.observe(this, user -> {
             if (user.isCreated()) {
                 goToSplashActivity(user);
             }else Log.e(TAG, "createNewUser: failed" );

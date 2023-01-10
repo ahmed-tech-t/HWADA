@@ -28,6 +28,7 @@
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="5dp"
             android:fillViewport="true" >
             <LinearLayout
                 android:layout_width="match_parent"
@@ -139,13 +140,38 @@
                         app:tabGravity="fill"/>
 
                 </com.google.android.material.appbar.AppBarLayout>
-
               <FrameLayout
                   android:id="@+id/fragments_container_menu_advertiser_fragment"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content" />
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp"
+                    android:background="@color/beige"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/similarAds"
+                    android:textColor="@color/black"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                   android:padding="10dp" />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_grid_fragment_advertiser"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginTop="5dp"
+                    android:layout_margin="10dp"
+                    android:background="@drawable/recycle_view_background"
+
+                    android:paddingBottom="8dp"
+                    android:clipToPadding="false"
+                    android:orientation="vertical"/>
             </LinearLayout>
+
+
         </androidx.core.widget.NestedScrollView>
 
 </LinearLayout>

@@ -207,7 +207,7 @@ public class ReviewFragment extends BottomSheetDialogFragment implements View.On
         return  sdf.format(date);
     }
     private void saveReview(){
-        adsViewModel.addReview(ad ,adReview);
+        adsViewModel.addReview(user,ad ,adReview);
         adsViewModel.liveDataAddReview.observe(this, new Observer<AdReview>() {
             @Override
             public void onChanged(AdReview review) {

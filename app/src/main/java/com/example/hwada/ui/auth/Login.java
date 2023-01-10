@@ -20,6 +20,7 @@ import com.example.hwada.Model.User;
 import com.example.hwada.R;
 import com.example.hwada.databinding.ActivityLoginBinding;
 import com.example.hwada.viewmodel.AuthViewModel;
+import com.example.hwada.viewmodel.UserViewModel;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;

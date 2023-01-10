@@ -3,7 +3,9 @@ package com.example.hwada.ui.auth;
 import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Context;
 import android.content.Intent;
@@ -20,6 +22,7 @@ import com.example.hwada.Model.User;
 import com.example.hwada.R;
 import com.example.hwada.databinding.ActivitySignUpBinding;
 import com.example.hwada.viewmodel.AuthViewModel;
+import com.example.hwada.viewmodel.UserViewModel;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;

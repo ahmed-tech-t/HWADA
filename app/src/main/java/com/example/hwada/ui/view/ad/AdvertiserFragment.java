@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.util.Log;
@@ -26,12 +27,15 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+
 import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.AdReview;
 import com.example.hwada.Model.DebugModel;
 import com.example.hwada.Model.LocationCustom;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
+import com.example.hwada.adapter.AdsGridAdapter;
 import com.example.hwada.adapter.ImageSliderAdapter;
 
 import com.example.hwada.databinding.FragmentAdvertiserBinding;
@@ -46,6 +50,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import org.checkerframework.checker.units.qual.A;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -57,17 +63,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class AdvertiserFragment extends BottomSheetDialogFragment implements View.OnClickListener  {
+public class AdvertiserFragment extends BottomSheetDialogFragment implements View.OnClickListener , AdsGridAdapter.OnItemListener {
 
     BottomSheetBehavior bottomSheetBehavior;
     BottomSheetDialog dialog ;
-
+    ArrayList<Ad> adsList;
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
-
+    int PASSED_POSITION =0;
     DebugViewModel debugViewModel ;
 
-
+    AdsGridAdapter adsGridAdapter;
     User user;
     Ad ad;
     private static final String TAG = "AdvertiserFragment";
@@ -120,6 +126,8 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         super.onActivityCreated(savedInstanceState);
         user = getArguments().getParcelable("user");
         ad = getArguments().getParcelable("ad");
+        adsList = getArguments().getParcelableArrayList("adsList");
+        PASSED_POSITION = getArguments().getInt("pos");
         binding.tvDateAdvertiserFragment.setText(handleTime(ad.getDate()));
         binding.tvAdDistanceAdvertiserFragment.setText(ad.getDistance()+"");
         debugViewModel = ViewModelProviders.of(getActivity()).get(DebugViewModel.class);
@@ -130,6 +138,7 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         }
         setToSlider();
         setMenuTapLayoutListener();
+        setAdGridAdapter();
     }
 
     @Override
@@ -281,4 +290,30 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         return  sdf.format(date);
     }
 
+    @Override
+    public void getItemPosition(int position) {
+        callAdvertiserFragment(position);
+    }
+
+    @Override
+    public void getFavItemPosition(int position, ImageView imageView) {
+
+    }
+
+    private void setAdGridAdapter(){
+        adsGridAdapter = new AdsGridAdapter();
+        adsGridAdapter.setList(user,adsList,getContext(),this);
+        binding.recyclerGridFragmentAdvertiser.setAdapter(adsGridAdapter);
+        binding.recyclerGridFragmentAdvertiser.setLayoutManager(new GridLayoutManager(getContext(),2));
+    }
+    private void callAdvertiserFragment(int pos){
+        AdvertiserFragment fragment = new AdvertiserFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("user", user);
+        bundle.putParcelable("ad",adsList.get(pos));
+        bundle.putParcelableArrayList("adsList",adsList);
+        bundle.putInt("pos",pos);
+        fragment.setArguments(bundle);
+        fragment.show(getChildFragmentManager(),fragment.getTag());
+    }
 }

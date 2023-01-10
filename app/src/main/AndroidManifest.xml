@@ -58,7 +58,8 @@
 
         <activity
             android:name=".ui.auth.SignUpOrLoginIn"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="stateHidden|adjustResize"/>
         <activity
             android:name=".ui.auth.SplashActivity"
             android:exported="true"
@@ -76,10 +77,12 @@
         </activity>
         <activity
             android:name=".ui.auth.Login"
-            android:exported="true" />
+            android:exported="true"
+            android:windowSoftInputMode="stateHidden|adjustResize"/>
         <activity
             android:name=".ui.auth.SignUp"
-            android:exported="true" />
+            android:exported="true"
+            android:windowSoftInputMode="stateHidden|adjustResize"/>
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"

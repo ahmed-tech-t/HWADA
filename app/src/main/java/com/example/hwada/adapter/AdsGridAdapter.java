@@ -1,10 +1,7 @@
 package com.example.hwada.adapter;
 
-
 import android.content.Context;
-import android.graphics.Typeface;
 import android.location.Location;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,17 +23,17 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> {
+public class AdsGridAdapter extends RecyclerView.Adapter<AdsGridAdapter.HomeViewHolder> {
     private ArrayList<Ad> list = new ArrayList();
     private User user ;
     OnItemListener pOnItemListener;
     Context mContext;
-    private static final String TAG = "AdsAdapter";
+    private static final String TAG = "AdsGridAdapter";
 
     @NonNull
     @Override
     public HomeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new HomeViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_view, parent, false),pOnItemListener);
+        return new HomeViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_view_grid_layout, parent, false),pOnItemListener);
     }
 
     @Override
@@ -44,11 +41,7 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
 
         Glide.with(mContext).load(list.get(position).getImagesUrl().get(0)).into(holder.userImage);
         holder.title.setText(list.get(position).getTitle());
-        if(list.get(position).getDescription().length()>237){
-            holder.description.setText(list.get(position).getDescription().substring(0, Math.min(list.get(position).getDescription().length(), 237))+"...");
-        }else{
-            holder.description.setText(list.get(position).getDescription());
-        }
+
         holder.rating.setText(list.get(position).getRating()+"");
 
         list.get(position).setDistance(Float.valueOf(getDistance(position)));
@@ -60,9 +53,9 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
         holder.price.setText(mContext.getString(R.string.from) + "  " + formattedValue);
         if(user!=null){
             //TODO list.get(position).getId();
-           String  adId = String.valueOf(position);
+            String  adId = String.valueOf(position);
             if(adIsInFavList(adId)){
-             holder.favImage.setImageResource(R.drawable.fav_checked_icon);
+                holder.favImage.setImageResource(R.drawable.fav_checked_icon);
             }
         }
 
@@ -83,18 +76,17 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
 
     public class HomeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView userImage , favImage ;
-        TextView title , description , date , distance , price , rating;
+        TextView title  , date , distance , price , rating;
         OnItemListener onItemListener;
         public HomeViewHolder(@NonNull View v,OnItemListener onItemListener) {
             super(v);
-            favImage = v.findViewById(R.id.item_fav);
-            userImage = v.findViewById(R.id.item_user_image);
-            title = v.findViewById(R.id.item_jop_title);
-            description = v.findViewById(R.id.item_description);
-            date = v.findViewById(R.id.item_date);
-            price =v.findViewById(R.id.price_item);
-            rating = v.findViewById(R.id.item_user_rating);
-            distance = v.findViewById(R.id.item_user_distance);
+            favImage = v.findViewById(R.id.item_fav_grid_layout);
+            userImage = v.findViewById(R.id.item_user_image_design_grid_layout);
+            title = v.findViewById(R.id.item_title_design_grid_layout);
+            date = v.findViewById(R.id.item_date_grid_layout);
+            price =v.findViewById(R.id.item_price_grid_layout);
+            rating = v.findViewById(R.id.item_user_rating_grid_layout);
+            distance = v.findViewById(R.id.item_user_distance_grid_layout);
             this.onItemListener = onItemListener;
             v.setOnClickListener(this);
             favImage.setOnClickListener(this);
@@ -128,11 +120,11 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
 
             if (inputDate.get(Calendar.YEAR) == today.get(Calendar.YEAR)
                     && inputDate.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR)) {
-                return mContext.getString(R.string.today)+"  " + dateString.split(",")[1] ;
+                return mContext.getString(R.string.today)+" " + dateString.split(",")[1] ;
             }
             else if (inputDate.get(Calendar.YEAR) == today.get(Calendar.YEAR)
                     && inputDate.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR) - 1) {
-                return mContext.getString(R.string.yesterday)+"  "+ dateString.split(",")[1];
+                return mContext.getString(R.string.yesterday)+" "+ dateString.split(",")[1];
             }
 
         } catch (ParseException e) {
@@ -143,17 +135,16 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
 
     public String getDistance(int pos){
         Location location1 = new Location("user");
-        if(user.getLocation()!=null){
-            location1.setLatitude(user.getLocation().getLatitude());
-            location1.setLongitude(user.getLocation().getLongitude());
+        location1.setLatitude(user.getLocation().getLatitude());
+        location1.setLongitude(user.getLocation().getLongitude());
 
-            Location location2 = new Location("ad");
-            location2.setLatitude(list.get(pos).getAuthorLocation().getLatitude());
-            location2.setLongitude(list.get(pos).getAuthorLocation().getLongitude());
+        Location location2 = new Location("ad");
+        location2.setLatitude(list.get(pos).getAuthorLocation().getLatitude());
+        location2.setLongitude(list.get(pos).getAuthorLocation().getLongitude());
 
-            float distanceInMeters = location1.distanceTo(location2)/1000;
-            return String.format("%.2f", distanceInMeters);
-        }
-        return "-1";
+        float distanceInMeters = location1.distanceTo(location2)/1000;
+
+        return String.format("%.2f", distanceInMeters);
+
     }
 }

@@ -23,7 +23,7 @@ public class MyReview implements Parcelable {
         this.subSubCategory = subSubCategory;
     }
 
-    public MyReview(String addId, String reviewId, String category, String subCategory, String subSubCategory) {
+    public MyReview( String reviewId,String addId, String category, String subCategory, String subSubCategory) {
         this.addId = addId;
         this.reviewId =reviewId ;
         this.category = category;

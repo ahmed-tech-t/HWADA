@@ -90,15 +90,20 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
             if(v.getId() == userLayout.getId()) {
                 onItemListener.getClickedUserFromComments(getAdapterPosition());
             }else if(v.getId() == menu.getId()){
-                onItemListener.menuFromComments(getAdapterPosition());
+                onItemListener.menuFromComments(getAdapterPosition(),menu);
             }
         }
     }
 
     public interface OnItemListener {
         void getClickedUserFromComments(int position);
-        void menuFromComments(int position);
+        void menuFromComments(int position,ImageView imageView);
 
+    }
+    public void removeOneItem(int position){
+        list.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position,list.size());
     }
 
     public void addItem(AdReview review) {
@@ -129,6 +134,5 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         }
         return dateString;
     }
-
 
 }

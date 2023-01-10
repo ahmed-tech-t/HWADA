@@ -125,4 +125,6 @@
     <string name="workingTimeTitle"><b>Working time</b></string>
     <string name="reviewNote">You must at least add rating to add comment * </string>
     <string name="addingNewReview">Adding new review...</string>
+    <string name="report">report</string>
+    <string name="similarAds">Similar Ads</string>
 </resources>

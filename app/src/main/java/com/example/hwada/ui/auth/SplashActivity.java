@@ -28,13 +28,11 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         debugViewModel = ViewModelProviders.of(this).get(DebugViewModel.class);
-        initSplashViewModel();
+        splashViewModel = new ViewModelProvider(this).get(SplashViewModel.class);
+
         checkIfUserIsAuthenticated();
     }
 
-    private void initSplashViewModel() {
-        splashViewModel = new ViewModelProvider(this).get(SplashViewModel.class);
-    }
 
     private void checkIfUserIsAuthenticated() {
         try {

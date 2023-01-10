@@ -23,12 +23,14 @@ import java.util.List;
 public class UserViewModel extends AndroidViewModel {
    private MutableLiveData<User> userMutableLiveData = new MutableLiveData<>();
 
+    private static final String TAG = "UserViewModel";
     UserRepository userRepository ;
     public LiveData<Boolean> updateUserLiveData ;
     public LiveData<Boolean> updateLocationSuccessLiveData;
     public LiveData<Boolean> updateImageSuccessLiveData;
     public LiveData<Boolean> updateFavAdsSuccessLiveData;
     public LiveData<Boolean> updateMyReviewsSuccessLiveData;
+
 
     public UserViewModel(@NonNull Application application){
        super(application);

@@ -167,12 +167,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
 
     @Override
     public void getItemPosition(int position) {
-        AdvertiserFragment fragment = new AdvertiserFragment();
-        Bundle bundle = new Bundle();
-        bundle.putParcelable("user", user);
-        bundle.putParcelable("ad", adsList.get(position));
-        fragment.setArguments(bundle);
-        fragment.show((getActivity()).getSupportFragmentManager(), fragment.getTag());
+      callAdvertiserFragment(position);
     }
 
     @Override
@@ -232,5 +227,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
         Date date = calendar.getTime();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return  sdf.format(date);
+    }
+
+    private void callAdvertiserFragment(int pos){
+        AdvertiserFragment fragment = new AdvertiserFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("user", user);
+        bundle.putParcelable("ad",adsList.get(pos));
+        bundle.putParcelableArrayList("adsList",adsList);
+        bundle.putInt("pos",pos);
+        fragment.setArguments(bundle);
+        fragment.show(getChildFragmentManager(),fragment.getTag());
     }
 }
