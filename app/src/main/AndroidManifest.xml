@@ -28,6 +28,9 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCWZpNk7RjtjCV5OAKfokq-HUsDURcj1Ow" />
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
 
         <activity
             android:name=".ui.AddNewAdActivity"
@@ -59,6 +62,7 @@
         <activity
             android:name=".ui.auth.SplashActivity"
             android:exported="true"
+            android:windowSoftInputMode="stateHidden|adjustResize"
             android:theme="@style/Theme.SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -79,7 +83,11 @@
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"
-            android:windowSoftInputMode="stateHidden|adjustResize"/>
+            android:windowSoftInputMode="stateHidden|stateUnspecified|adjustResize">
+        <meta-data
+            android:name="android.app.lib_name"
+            android:value="" />
+        </activity>
     </application>
 
 </manifest>

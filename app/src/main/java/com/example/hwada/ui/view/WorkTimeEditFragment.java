@@ -5,22 +5,14 @@ import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.res.ColorStateList;
 import android.content.res.Resources;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.viewbinding.ViewBinding;
 
 import android.os.Handler;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,15 +21,11 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
-import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.WorkingTime;
 import com.example.hwada.R;
-import com.example.hwada.adapter.WorkingTimeAdapter;
+import com.example.hwada.adapter.WorkingTimeEditPeriodAdapter;
 import com.example.hwada.databinding.FragmentWorkTimeEditBinding;
-import com.example.hwada.viewmodel.UserViewModel;
-import com.example.hwada.viewmodel.WorkingTimeViewModel;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
@@ -46,9 +34,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class WorkTimeEditFragment extends BottomSheetDialogFragment implements WorkingTimeAdapter.OnItemListener , View.OnClickListener {
+public class WorkTimeEditFragment extends BottomSheetDialogFragment implements WorkingTimeEditPeriodAdapter.OnItemListener , View.OnClickListener {
 
-    WorkingTimeAdapter adapter ;
+    WorkingTimeEditPeriodAdapter adapter ;
     int hour ,minutes;
     String tag ;
     ArrayList<WorkingTime> workingTimeList ;
@@ -152,7 +140,7 @@ public class WorkTimeEditFragment extends BottomSheetDialogFragment implements W
     }
 
     public void setWorkTimeToAdapter() {
-        adapter = new WorkingTimeAdapter();
+        adapter = new WorkingTimeEditPeriodAdapter();
         try {
             binding.recyclerWorkTimeEdit.setAdapter(adapter);
 

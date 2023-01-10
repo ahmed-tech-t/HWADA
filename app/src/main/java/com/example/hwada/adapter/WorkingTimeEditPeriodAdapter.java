@@ -1,12 +1,10 @@
 package com.example.hwada.adapter;
 
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,16 +13,15 @@ import com.example.hwada.Model.WorkingTime;
 import com.example.hwada.R;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class WorkingTimeAdapter extends RecyclerView.Adapter<WorkingTimeAdapter.WorkingTimeViewHolder> {
+public class WorkingTimeEditPeriodAdapter extends RecyclerView.Adapter<WorkingTimeEditPeriodAdapter.WorkingTimeViewHolder> {
     private ArrayList<WorkingTime> list = new ArrayList();
     OnItemListener pOnItemListener;
 
     @NonNull
     @Override
     public WorkingTimeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new WorkingTimeViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.working_time_layout, parent, false), pOnItemListener);
+        return new WorkingTimeViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.working_time_edit_period_layout, parent, false), pOnItemListener);
     }
 
     @Override

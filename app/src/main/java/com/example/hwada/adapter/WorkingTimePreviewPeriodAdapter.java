@@ -1,6 +1,5 @@
 package com.example.hwada.adapter;
 
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,16 +12,15 @@ import com.example.hwada.Model.WorkingTime;
 import com.example.hwada.R;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class WorkingTimePreviewAdapter extends RecyclerView.Adapter<WorkingTimePreviewAdapter.WorkingTimePreviewViewHolder> {
+public class WorkingTimePreviewPeriodAdapter extends RecyclerView.Adapter<WorkingTimePreviewPeriodAdapter.WorkingTimePreviewViewHolder> {
     private ArrayList<WorkingTime> list = new ArrayList();
 
 
     @NonNull
     @Override
     public WorkingTimePreviewViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new WorkingTimePreviewViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.working_time_show_layout, parent, false));
+        return new WorkingTimePreviewViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.working_time_preview_period_layout, parent, false));
     }
 
     @Override

@@ -9,7 +9,8 @@ tools:context=".ui.view.category.freelance.RideFragment">
 <LinearLayout
     android:id="@+id/linearLayout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
+    android:elevation="10dp"
     android:background="@drawable/white_background"
     android:orientation="vertical">
 

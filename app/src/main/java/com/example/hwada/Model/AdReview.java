@@ -28,6 +28,16 @@ public class AdReview implements Parcelable {
     }
 
 
+    public AdReview(String id, String date, String authorId, String authorName, String authorImage, float rating, String body) {
+        this.id = id;
+        this.date = date;
+        this.authorId = authorId;
+        this.authorName = authorName;
+        this.authorImage = authorImage;
+        this.rating = rating;
+        this.body = body;
+    }
+
     protected AdReview(Parcel in) {
         id = in.readString();
         date = in.readString();

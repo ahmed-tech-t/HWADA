@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="preloaded_fonts" translatable="false">
+        <item>@font/aguafina_script</item>
+        <item>@font/amita</item>
+        <item>@font/audiowide</item>
+        <item>@font/bad_script</item>
+        <item>@font/baloo_thambi</item>
+    </array>
+</resources>

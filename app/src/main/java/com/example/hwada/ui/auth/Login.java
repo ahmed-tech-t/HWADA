@@ -84,7 +84,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
     private void loginWithEmail(String email ,String pass){
             viewModel.loginWithEmail(email,pass);
             viewModel.authenticatedUserLiveData.observe(this, authenticatedUser -> {
-                goToMainActivity(authenticatedUser);
+                goToSplashActivity(authenticatedUser);
         });
     }
     private boolean fieldsNotEmpty() {
@@ -133,11 +133,11 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
     private void signInWithGoogleAuthCredential(AuthCredential googleAuthCredential) {
         viewModel.signInWithGoogle(googleAuthCredential);
         viewModel.authenticatedUserLiveData.observe(this, authenticatedUser -> {
-                goToMainActivity(authenticatedUser);
+            goToSplashActivity(authenticatedUser);
         });
     }
-    private void goToMainActivity(User user) {
-        Intent intent = new Intent(Login.this, MainActivity.class);
+    private void goToSplashActivity(User user) {
+        Intent intent = new Intent(Login.this, SplashActivity.class);
         intent.putExtra("user", user);
         startActivity(intent);
         finish();

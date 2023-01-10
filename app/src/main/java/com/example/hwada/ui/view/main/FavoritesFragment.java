@@ -72,7 +72,7 @@ public class FavoritesFragment extends Fragment implements FavoritesAdapter.OnIt
             viewModel.getFavAds(user);
             viewModel.favAdsLiveData.observe(getActivity(), ads -> {
                 adsList = ads;
-                adapter.setList(ads,this);
+                adapter.setList(ads,getContext(),this);
             });
             mainRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
         }catch (Exception e){

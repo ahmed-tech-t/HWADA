@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background"
+    android:background="@color/mainBackGround"
     android:id="@+id/login_main_constraint_layout"
     tools:context=".ui.auth.Login">
 
@@ -25,6 +25,7 @@
         android:id="@+id/login_main_linear_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:elevation="10dp"
         android:background="@drawable/white_background"
         android:orientation="vertical"
         android:layout_marginTop="60dp"
@@ -67,7 +68,7 @@
             android:id="@+id/bt_login"
             android:layout_width="match_parent"
             android:background="@drawable/layout_design_curve"
-            android:backgroundTint="@color/background"
+            android:backgroundTint="@color/mainBackGround"
             android:text="@string/login"
             android:textAllCaps="false"
             android:textSize="18dp"

@@ -1,5 +1,6 @@
 package com.example.hwada.ui.view.category.freelance;
 
+import android.annotation.SuppressLint;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.text.style.TtsSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,11 +28,12 @@ public class FreelanceCategoryFragment extends Fragment implements View.OnClickL
     String target;
     String adsActivityTarget = "toAdsActivity";
     String adNewAdTarget ="toAdNewAd";
-    private static final String TAG = "FreelanceCategoryFragme";
+    private static final String TAG = "FreelanceCategoryFragment";
 
     FragmentFreelanceCategoryBinding binding ;
     String category = DbHandler.FREELANCE;
 
+    @SuppressLint("LongLogTag")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

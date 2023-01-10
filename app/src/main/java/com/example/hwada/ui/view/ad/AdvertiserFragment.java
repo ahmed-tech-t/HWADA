@@ -1,50 +1,76 @@
 package com.example.hwada.ui.view.ad;
 
+import static android.content.ContentValues.TAG;
+
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.res.Resources;
+import android.location.Address;
+import android.location.Geocoder;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager.widget.PagerAdapter;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.fragment.app.Fragment;
+
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-
-import com.denzcoskun.imageslider.constants.ScaleTypes;
-import com.denzcoskun.imageslider.models.SlideModel;
 import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.AdReview;
+import com.example.hwada.Model.DebugModel;
+import com.example.hwada.Model.LocationCustom;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
 import com.example.hwada.adapter.ImageSliderAdapter;
-import com.example.hwada.adapter.ReviewAdapter;
+
 import com.example.hwada.databinding.FragmentAdvertiserBinding;
+import com.example.hwada.ui.view.ad.menu.AdDescriptionFragment;
+import com.example.hwada.ui.view.ad.menu.AdReviewsFragment;
+import com.example.hwada.ui.view.ad.menu.AdWorkingTimeFragment;
+import com.example.hwada.ui.view.map.MapPreviewFragment;
+import com.example.hwada.viewmodel.DebugViewModel;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
-public class AdvertiserFragment extends BottomSheetDialogFragment implements View.OnClickListener , ReviewAdapter.OnItemListener {
+public class AdvertiserFragment extends BottomSheetDialogFragment implements View.OnClickListener  {
 
     BottomSheetBehavior bottomSheetBehavior;
     BottomSheetDialog dialog ;
 
+    FragmentManager fragmentManager;
+    FragmentTransaction fragmentTransaction;
+
+    DebugViewModel debugViewModel ;
+
+
     User user;
     Ad ad;
     private static final String TAG = "AdvertiserFragment";
-    ReviewAdapter adapter;
 
     FragmentAdvertiserBinding binding;
     @SuppressLint("MissingInflatedId")
@@ -54,7 +80,7 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         // Inflate the layout for this fragment
         binding = FragmentAdvertiserBinding.inflate(inflater, container, false);
         binding.arrowAdvertiser.setOnClickListener(this);
-        binding.addCommentTv.setOnClickListener(this);
+        binding.tvAdLocationAdvertiserFragment.setOnClickListener(this);
         return binding.getRoot();
     }
 
@@ -76,21 +102,12 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
     private void setBottomSheet(View view){
         bottomSheetBehavior = BottomSheetBehavior.from((View)view.getParent());
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        CoordinatorLayout layout = dialog.findViewById(R.id.bottom_sheet_advertiser);
+        assert layout != null;
+        layout.setMinimumHeight(Resources.getSystem().getDisplayMetrics().heightPixels);
 
-        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-            @Override
-            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                if(newState==BottomSheetBehavior.STATE_DRAGGING||newState==BottomSheetBehavior.STATE_COLLAPSED)
-                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                if(newState==BottomSheetBehavior.STATE_HIDDEN) dismiss();
-            }
-
-            @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-
-            }
-        });
     }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,32 +120,27 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         super.onActivityCreated(savedInstanceState);
         user = getArguments().getParcelable("user");
         ad = getArguments().getParcelable("ad");
-        setReviewsToRecycler();
+        binding.tvDateAdvertiserFragment.setText(handleTime(ad.getDate()));
+        binding.tvAdDistanceAdvertiserFragment.setText(ad.getDistance()+"");
+        debugViewModel = ViewModelProviders.of(getActivity()).get(DebugViewModel.class);
+        try {
+            binding.tvAdLocationAdvertiserFragment.setText(getUserAddress(ad.getAuthorLocation()));
+        }catch (Exception e){
+            reportError(e);
+        }
         setToSlider();
-        binding.itemDescriptionAdvertiserFragment.setText(ad.getDescription());
-
+        setMenuTapLayoutListener();
     }
 
     @Override
     public void onClick(View v) {
         if(v.getId() == binding.arrowAdvertiser.getId()){
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-        }else if(v.getId() == binding.addCommentTv.getId()){
-            callReviewBottomSheet();
+        }else if(v.getId() == binding.tvAdLocationAdvertiserFragment.getId()){
+            callBottomSheet(new MapPreviewFragment());
         }
     }
 
-    public void setReviewsToRecycler() {
-        adapter = new ReviewAdapter();
-        try {
-            binding.reviewRecycler.setAdapter(adapter);
-            if (ad.getAdReviews()==null) ad.initAdReviewsList();
-            adapter.setList(tempReviewLIst(),this);
-            binding.reviewRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
 
 
     private void onBackPressed(Dialog dialog){
@@ -146,40 +158,127 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
     }
 
 
-    @Override
-    public void getClickedUserFromComments(int position) {
 
-    }
-
-    private  ArrayList<AdReview> tempReviewLIst(){
-        ArrayList<AdReview> adReviews = new ArrayList<>();
-        String body = "this comment for test";
-        adReviews.add(new AdReview("date","authorId","authorName","authorImage",4,body));
-        adReviews.add(new AdReview("date","authorId","authorName","authorImage",4,body));
-        adReviews.add(new AdReview("date","authorId","authorName","authorImage",4,body));
-        adReviews.add(new AdReview("date","authorId","authorName","authorImage",4,body));
-        adReviews.add(new AdReview("date","authorId","authorName","authorImage",4,body));
-        adReviews.add(new AdReview("date","authorId","authorName","authorImage",4,body));
-        adReviews.add(new AdReview("date","authorId","authorName","authorImage",4,body));
-        adReviews.add(new AdReview("date","authorId","authorName","authorImage",4,body));
-
-
-        return adReviews;
-    }
-    private void callReviewBottomSheet(){
-        ReviewFragment fragment = new ReviewFragment();
-        Bundle bundle =new Bundle();
-        bundle.putParcelable("user",user);
-        bundle.putParcelable("ad",ad);
-        fragment.setArguments(bundle);
-        fragment.show(getActivity().getSupportFragmentManager(),fragment.getTag());
-    }
 
     private void setToSlider(){
         ImageSliderAdapter adapter = new ImageSliderAdapter(getActivity(), ad.getImagesUrl());
-        binding.vp2AdvertiserFragment.setAdapter(adapter);
-        binding.circleIndicator.setViewPager(binding.vp2AdvertiserFragment);
+        binding.vp2ImageSliderAdvertiserFragment.setAdapter(adapter);
+        binding.circleIndicator.setViewPager(binding.vp2ImageSliderAdvertiserFragment);
         adapter.registerAdapterDataObserver(binding.circleIndicator.getAdapterDataObserver());
+    }
+
+    private void setMenuTapLayoutListener(){
+        String [] tabTitles={ getString(R.string.description), getString(R.string.workingTimeTitle), getString(R.string.reviews)};
+
+        for (int i = 0; i < tabTitles.length; i++) {
+            binding.tabLayoutAdvertiser.addTab(binding.tabLayoutAdvertiser.newTab().setText(tabTitles[i]));
+        }
+        callFragment(new AdDescriptionFragment());
+        binding.tabLayoutAdvertiser.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                int position = tab.getPosition();
+                if(position==0){
+                    Log.e(TAG, "onTabSelected: 0" );
+                    callFragment(new AdDescriptionFragment());
+                }else if(position==1){
+                    Log.e(TAG, "onTabSelected: 1" );
+                    callFragment(new AdWorkingTimeFragment());
+                }else if (position == 2){
+                    Log.e(TAG, "onTabSelected: 2" );
+                    callFragment(new AdReviewsFragment());
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                // Do nothing
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                // Do nothing
+            }
+        });
 
     }
+
+    public void callFragment(Fragment fragment){
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("ad", ad);
+        bundle.putParcelable("user",user);
+        fragment.setArguments(bundle);
+        fragmentManager = getChildFragmentManager();
+        fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragments_container_menu_advertiser_fragment, fragment);
+        fragmentTransaction.commit();
+    }
+
+    public void callBottomSheet(BottomSheetDialogFragment fragment) {
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("ad", ad);
+        fragment.setArguments(bundle);
+        FragmentManager fragmentManager = getChildFragmentManager();
+        fragment.show(fragmentManager, fragment.getTag());
+    }
+    private String getUserAddress(LocationCustom location) {
+        try {
+            LocationCustom locationCustom = new LocationCustom(location.getLatitude(),location.getLongitude());
+            Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
+            String address = "loading your location...";
+            List<Address> addresses = geocoder.getFromLocation(locationCustom.getLatitude(), locationCustom.getLongitude(), 1);
+            if(addresses.size()>0) {
+                address = addresses.get(0).getAddressLine(0);
+                for (String s: address.split(",")) {
+                    if(address.split(",").length<2){
+                        address +=s;
+                    }
+                }
+
+            }
+            return address ;
+        } catch (IOException e) {
+            e.printStackTrace();
+            reportError(e);
+        }
+        return "";
+    }
+
+    public String handleTime(String dateString){
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy , h:mm a");
+            Date date = dateFormat.parse(dateString);
+
+            Calendar today = Calendar.getInstance();
+            Calendar inputDate = Calendar.getInstance();
+            inputDate.setTime(date);
+
+            if (inputDate.get(Calendar.YEAR) == today.get(Calendar.YEAR)
+                    && inputDate.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR)) {
+                return getString(R.string.today)+" " + dateString.split(",")[1] ;
+            }
+            else if (inputDate.get(Calendar.YEAR) == today.get(Calendar.YEAR)
+                    && inputDate.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR) - 1) {
+                return getString(R.string.yesterday)+" "+ dateString.split(",")[1];
+            }
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return dateString;
+    }
+
+
+    private void reportError(Exception e){
+        StringWriter sw = new StringWriter();
+        e.printStackTrace(new PrintWriter(sw));
+        debugViewModel.reportError(new DebugModel(getCurrentDate(),e.getMessage(),sw.toString(),TAG, Build.VERSION.SDK_INT,false));
+    }
+    private String getCurrentDate(){
+        Calendar calendar = Calendar.getInstance();
+        Date date = calendar.getTime();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return  sdf.format(date);
+    }
+
 }

@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -34,6 +35,12 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
     String subCategory;
     String subSubCategory;
 
+    //debounce mechanism
+    private static final long DEBOUNCE_DELAY_MILLIS = 500;
+    private boolean debouncing = false;
+    private Runnable debounceRunnable;
+    private Handler debounceHandler;
+
     private static final String TAG = "AdsActivity";
     ActivityAdsBinding binding;
     @Override
@@ -49,6 +56,8 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
         subCategory = intent.getStringExtra("subCategory");
         subSubCategory = intent.getStringExtra("subSubCategory");
         viewModel = ViewModelProviders.of(this).get(AdsViewModel.class);
+
+        debounceHandler = new Handler();
 
         setAdsToList();
     }
@@ -75,12 +84,18 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
 
     @Override
     public void getItemPosition(int position) {
-        AdvertiserFragment fragment = new AdvertiserFragment();
-        Bundle bundle = new Bundle();
-        bundle.putParcelable("user", user);
-        bundle.putParcelable("ad",adsList.get(position));
-        fragment.setArguments(bundle);
-        fragment.show(getSupportFragmentManager(),fragment.getTag());
+        if (debouncing) {
+            // Remove the previous runnable
+            debounceHandler.removeCallbacks(debounceRunnable);
+        } else {
+            // This is the first click, so open the item
+            debouncing = true;
+            callAdvertiserFragment(position);
+        }
+        // Start a new timer
+        debounceRunnable = () -> debouncing = false;
+        debounceHandler.postDelayed(debounceRunnable, DEBOUNCE_DELAY_MILLIS);
+
     }
 
     @Override
@@ -120,7 +135,21 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        debounceHandler.removeCallbacks(debounceRunnable);
+    }
+    @Override
     public void onBackPressed() {
       super.onBackPressed();
+    }
+
+    private void callAdvertiserFragment(int pos){
+        AdvertiserFragment fragment = new AdvertiserFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("user", user);
+        bundle.putParcelable("ad",adsList.get(pos));
+        fragment.setArguments(bundle);
+        fragment.show(getSupportFragmentManager(),fragment.getTag());
     }
 }

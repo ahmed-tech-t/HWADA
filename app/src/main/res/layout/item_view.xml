@@ -5,20 +5,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/nav_color"
-    android:layout_marginTop="8dp"
-    app:cardCornerRadius="5dp"
+    android:layout_marginTop="10dp"
+    app:cardCornerRadius="15dp"
     android:layout_marginLeft="10dp"
     android:layout_marginRight="10dp">
-
-
-
 <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
-
-
    <LinearLayout
        android:id="@+id/linearLayout_1"
        android:layout_width="match_parent"
@@ -27,8 +21,7 @@
 
        <RelativeLayout
            android:id="@id/relative_layout"
-           android:layout_width="0dp"
-           android:layout_weight="1"
+           android:layout_width="wrap_content"
            android:layout_height="wrap_content"
            android:padding="5dp"
            app:layout_constraintStart_toStartOf="parent"
@@ -36,8 +29,8 @@
 
            <com.google.android.material.imageview.ShapeableImageView
                android:id="@+id/item_user_image"
-               android:layout_width="103dp"
-               android:layout_height="109dp"
+               android:layout_width="110dp"
+               android:layout_height="110dp"
                android:adjustViewBounds="true"
                android:background="@color/white_blue"
                android:padding="5dp"
@@ -128,16 +121,22 @@
             android:layout_marginBottom="10dp"
             android:orientation="horizontal">
             <TextView
-                android:id="@+id/item_user_distance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="3 km"
                 android:textStyle="bold"
                 android:gravity="bottom"
+                android:text="@string/withInRange"
                 android:drawableStart="@drawable/distance_icon"
                 android:drawablePadding="5dp"
                 android:textSize="12dp" />
-
+            <TextView
+                android:id="@+id/item_user_distance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="3dp"
+                android:layout_marginEnd="3dp"
+                android:textStyle="bold"
+                android:textSize="12dp"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -145,7 +144,7 @@
                 android:layout_marginRight="3dp"
                 android:textSize="12dp"
                 android:textStyle="bold"
-                android:text="@string/away" />
+                android:text="@string/km" />
 
         </LinearLayout>
 
@@ -157,14 +156,14 @@
        <TextView
            android:id="@+id/item_date"
            android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
+           android:layout_height="match_parent"
            android:layout_gravity="start"
-           android:drawablePadding="5dp"
-           android:textStyle="bold"
            android:drawableStart="@drawable/calendar_icon"
+           android:drawablePadding="5dp"
            android:gravity="bottom"
            android:text="4 sep"
-           android:textSize="12dp" />
+           android:textSize="12dp"
+           android:textStyle="bold" />
 
        <TextView
            android:id="@+id/item_user_rating"

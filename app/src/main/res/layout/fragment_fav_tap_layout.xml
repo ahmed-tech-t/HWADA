@@ -6,6 +6,7 @@ xmlns:tools="http://schemas.android.com/tools"
 android:layout_width="match_parent"
 android:layout_height="match_parent"
 android:layout_marginTop="60dp"
+    android:elevation="10dp"
 android:background="@drawable/white_background"
 tools:context=".ui.view.main.FavTapLayoutFragment">
 
@@ -25,13 +26,14 @@ tools:context=".ui.view.main.FavTapLayoutFragment">
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/mainBackGround"
         android:layout_marginTop="30dp">
 
         <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tab_layout"
+            android:id="@+id/tab_layout_fav"
             android:layout_width="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            app:tabTextAppearance="@style/TabLayoutStyle"
+            app:tabTextAppearance="@style/TabLayoutFavStyle"
             app:tabTextColor="@color/white"
             app:tabIndicatorColor="@color/white"
             android:layout_height="?android:actionBarSize"
@@ -41,7 +43,7 @@ tools:context=".ui.view.main.FavTapLayoutFragment">
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/view_pager"
+        android:id="@+id/view_pager_fav"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"

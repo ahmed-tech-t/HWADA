@@ -6,7 +6,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="60dp"
-        tools:context=".ui.view.main.FavoritesFragment">
+    android:paddingBottom="?attr/actionBarSize"
+
+    tools:context=".ui.view.main.FavoritesFragment">
 
         <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/main_recycler"

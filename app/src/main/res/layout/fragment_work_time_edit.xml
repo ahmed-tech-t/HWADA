@@ -6,6 +6,7 @@
     android:orientation="vertical"
     android:layout_marginTop="60dp"
     android:id="@+id/bottom_sheet_work_time_edit"
+    android:elevation="10dp"
     android:background="@drawable/white_background"
     tools:context=".ui.view.WorkTimeEditFragment">
     <ImageView

@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginTop="60dp"
+    android:elevation="10dp"
     android:background="@drawable/white_background"
     tools:context=".ui.view.category.worker.WorkerCategoryFragment">
 

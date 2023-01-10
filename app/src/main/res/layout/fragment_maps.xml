@@ -6,6 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@drawable/white_background"
     android:layout_alignParentTop="true"
+    android:elevation="10dp"
     tools:context=".ui.view.map.MapsFragment">
 
         <ImageView

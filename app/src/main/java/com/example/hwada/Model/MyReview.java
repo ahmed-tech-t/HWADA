@@ -6,24 +6,36 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 
 public class MyReview implements Parcelable {
-    String id;
+    String reviewId;
     String addId;
     String category;
     String subCategory;
     String subSubCategory;
 
 
+    public MyReview() {
+    }
 
     public MyReview(String addId, String category, String subCategory, String subSubCategory) {
         this.addId = addId;
+        this.category = category;
+        this.subCategory = subCategory;
+        this.subSubCategory = subSubCategory;
+    }
+
+    public MyReview(String addId, String reviewId, String category, String subCategory, String subSubCategory) {
+        this.addId = addId;
+        this.reviewId =reviewId ;
         this.category = category;
         this.subCategory = subCategory;
         this.subSubCategory =subSubCategory;
     }
 
 
+
+
     protected MyReview(Parcel in) {
-        id = in.readString();
+        reviewId = in.readString();
         addId = in.readString();
         category = in.readString();
         subCategory = in.readString();
@@ -32,11 +44,19 @@ public class MyReview implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(id);
+        dest.writeString(reviewId);
         dest.writeString(addId);
         dest.writeString(category);
         dest.writeString(subCategory);
         dest.writeString(subSubCategory);
+    }
+
+    public String getReviewId() {
+        return reviewId;
+    }
+
+    public void setReviewId(String reviewId) {
+        this.reviewId = reviewId;
     }
 
     @Override
@@ -56,13 +76,6 @@ public class MyReview implements Parcelable {
         }
     };
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getAddId() {
         return addId;

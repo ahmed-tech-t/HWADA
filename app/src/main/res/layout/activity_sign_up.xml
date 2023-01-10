@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background"
+    android:background="@color/mainBackGround"
     android:id="@+id/sign_up_main_constraint_layout"
     tools:context=".ui.auth.SignUp">
 
@@ -12,11 +12,12 @@
         android:id="@+id/logo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="70dp"
+        android:gravity="center"
         android:text="@string/app_name"
+
         android:textColor="@color/white"
         android:textSize="45dp"
-        android:gravity="center"
-        android:layout_marginTop="70dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -25,6 +26,7 @@
         android:id="@+id/sign_up_main_linear_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:elevation="10dp"
         android:background="@drawable/white_background"
         android:orientation="vertical"
         android:layout_marginTop="10dp"
@@ -98,7 +100,7 @@
             android:id="@+id/bt_sign_up"
             android:layout_width="match_parent"
             android:background="@drawable/layout_design_curve"
-            android:backgroundTint="@color/background"
+            android:backgroundTint="@color/mainBackGround"
             android:text="@string/signup"
             android:textAllCaps="false"
             android:textSize="18dp"

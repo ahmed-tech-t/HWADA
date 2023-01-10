@@ -2,12 +2,10 @@ package com.example.hwada.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -16,19 +14,14 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.hwada.Model.DaysSchedule;
 import com.example.hwada.Model.WorkingTime;
 import com.example.hwada.R;
 
-import org.checkerframework.checker.units.qual.A;
-
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Locale;
-import java.util.Collections;
 
 
-public class MainWorkingTimeAdapter extends RecyclerView.Adapter<MainWorkingTimeAdapter.MainWorkingTimeViewHolder> {
+public class WorkingTimeEditDaysAdapter extends RecyclerView.Adapter<WorkingTimeEditDaysAdapter.MainWorkingTimeViewHolder> {
     private ArrayList<String> list = new ArrayList();
     OnItemListener pOnItemListener;
     String DAY_TAG;
@@ -39,14 +32,14 @@ public class MainWorkingTimeAdapter extends RecyclerView.Adapter<MainWorkingTime
     @NonNull
     @Override
     public MainWorkingTimeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new MainWorkingTimeViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.main_working_time_layout, parent, false), pOnItemListener);
+        return new MainWorkingTimeViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.working_time_edit_days_layout, parent, false), pOnItemListener);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MainWorkingTimeViewHolder holder, @SuppressLint("RecyclerView") int position) {
         holder.button.setText("add");
         holder.title.setText(list.get(position));
-        WorkingTimePreviewAdapter innerAdapter = new WorkingTimePreviewAdapter();
+        WorkingTimePreviewPeriodAdapter innerAdapter = new WorkingTimePreviewPeriodAdapter();
 
         if(workingTimes!=null  ) {
                 holder.button.setVisibility(View.VISIBLE);
@@ -68,7 +61,7 @@ public class MainWorkingTimeAdapter extends RecyclerView.Adapter<MainWorkingTime
                     holder.innerRecycler.setVisibility(View.VISIBLE);
 
                 }else {
-                    holder.innerRecycler.setAdapter(new WorkingTimePreviewAdapter());
+                    holder.innerRecycler.setAdapter(new WorkingTimePreviewPeriodAdapter());
                     holder.button.setVisibility(View.GONE);
                     holder.innerRecycler.setVisibility(View.GONE);
                 }

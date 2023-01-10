@@ -38,6 +38,7 @@ import com.example.hwada.R;
 import com.example.hwada.databinding.FragmentMapsBinding;
 import com.example.hwada.viewmodel.DebugViewModel;
 import com.example.hwada.viewmodel.UserViewModel;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -118,9 +119,12 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
             binding.imArrowFragment.setOnClickListener(this);
             binding.userAddressFragment.setOnClickListener(this);
             binding.btSaveNewLocationFragment.setOnClickListener(this);
-            setUserLocation(user.getLocation());
-            getUserAddress(user.getLocation());
-
+            if(user.getLocation()!=null){
+                setUserLocation(user.getLocation());
+                getUserAddress(user.getLocation());
+            }else {
+                reportError("location is null in Map fragment");
+            }
         }catch (Exception e){
             reportError(e);
         }
@@ -206,11 +210,10 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
     public void setUserLocation(LocationCustom location) {
        try {
            //mMap.clear();
-           LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
+           LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+           CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 16);
+           mMap.animateCamera(cameraUpdate);
 
-           mMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation));
-
-           mMap.animateCamera(CameraUpdateFactory.zoomTo(16));
            if (checkPermissions()) {
                mMap.setMyLocationEnabled(true);
                mMap.getUiSettings().setMyLocationButtonEnabled(true);
@@ -350,6 +353,7 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
     public interface GettingPassedData{
         void newLocation(Location location);
     }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -410,5 +414,8 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
         Date date = calendar.getTime();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return  sdf.format(date);
+    }
+    private void reportError(String s){
+        debugViewModel.reportError(new DebugModel(getCurrentDate(),s,s,TAG, Build.VERSION.SDK_INT,false));
     }
 }

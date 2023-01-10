@@ -42,10 +42,8 @@ public class CategoryActivity extends AppCompatActivity {
         Intent intent = getIntent();
         user = (User) intent.getParcelableExtra("user");
         target = intent.getStringExtra("target");
-
         String tagFragment = intent.getStringExtra("tag");
         fragmentManager = getSupportFragmentManager();
-
         handleFragmentsCall(tagFragment);
     }
 

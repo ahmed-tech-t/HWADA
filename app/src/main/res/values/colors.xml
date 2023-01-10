@@ -17,5 +17,9 @@
     <color name="transparent">#00000000</color>
     <color name="nav_color">#FDFDFD</color>
     <color name="white_blue">#F2F6F9</color>
+    <color name="beige">#F5F5F5</color>
+    <color name="concrete">#B0BEC5 </color>
+    <color name="mainBackGround">#003087</color>
+    <color name="arrowColor">#003087</color>
 
 </resources>

@@ -6,6 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:id="@+id/edit_user_bottom_sheet"
+    android:elevation="10dp"
     android:background="@drawable/white_background"
     tools:context=".ui.view.EditUserFragment">
 

@@ -32,7 +32,7 @@ import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.User;
 import com.example.hwada.Model.WorkingTime;
 import com.example.hwada.R;
-import com.example.hwada.adapter.MainWorkingTimeAdapter;
+import com.example.hwada.adapter.WorkingTimeEditDaysAdapter;
 import com.example.hwada.databinding.FragmentWorkTimePreviewBinding;
 import com.example.hwada.ui.MainActivity;
 import com.example.hwada.viewmodel.AdsViewModel;
@@ -47,7 +47,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
-public class WorkTimePreviewFragment extends BottomSheetDialogFragment implements View.OnClickListener , WorkTimeEditFragment.GettingPassedData ,MainWorkingTimeAdapter.OnItemListener  {
+public class WorkTimePreviewFragment extends BottomSheetDialogFragment implements View.OnClickListener , WorkTimeEditFragment.GettingPassedData , WorkingTimeEditDaysAdapter.OnItemListener  {
 
     BottomSheetBehavior bottomSheetBehavior ;
     BottomSheetDialog dialog ;
@@ -56,7 +56,7 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
     String SATURDAY = "saturday" ,SUNDAY ="sunday" ,MONDAY ="monday",TUESDAY ="tuesday"
             ,WEDNESDAY="wednesday",THURSDAY="thursday",FRIDAY="friday";
     
-    MainWorkingTimeAdapter adapter ;
+    WorkingTimeEditDaysAdapter adapter ;
     String DAY_TAG ;
     private static final String TAG = "WorkTimePreviewFragment";
     ArrayList<Boolean> switches = new ArrayList<>(Arrays.asList(false,false,false,false,false,false,false));
@@ -148,6 +148,8 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
         super.onActivityCreated(savedInstanceState);
         newAd = getArguments().getParcelable("ad");
         user = getArguments().getParcelable("user");
+        Log.e(TAG, "onClick: "+newAd.getDaysSchedule().toString() );
+
         userViewModel = ViewModelProviders.of(getActivity()).get(UserViewModel.class);
         adsViewModel = ViewModelProviders.of(getActivity()).get(AdsViewModel.class);
 
@@ -161,15 +163,14 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
             if(dataValidated()){
                 newAd.setDate(getCurrentDate());
                 setSavingDialog();
-                //todo save To data base ;
-                saveNewAdd();
+               saveNewAdd();
             }
         }
     }
 
 
     private void saveNewAdd(){
-        adsViewModel.addNewAdd(newAd);
+        adsViewModel.addNewAd(newAd);
         adsViewModel.liveDataGetNewAdd.observe(this, new Observer<Ad>() {
             @Override
             public void onChanged(Ad ad) {
@@ -199,7 +200,7 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
 
 
     private void setWorkingTimeMainAdapter(){
-        adapter = new MainWorkingTimeAdapter();
+        adapter = new WorkingTimeEditDaysAdapter();
         try {
             binding.recyclerWorkingTimePreview.setAdapter(adapter);
             adapter.setList(daysListHeader(),DAY_TAG,getContext(),this);
@@ -305,7 +306,8 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
     private String getCurrentDate(){
         Calendar calendar = Calendar.getInstance();
         Date date = calendar.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("d MMM yyyy, h:mm a");
+        SimpleDateFormat sdf = new SimpleDateFormat("d MMM yyyy , h:mm a");
         return  sdf.format(date);
     }
+
 }

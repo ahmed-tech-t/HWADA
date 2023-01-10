@@ -10,4 +10,39 @@
     <style name="RoundedSquare">
         <item name="cornerSize">10%</item>
     </style>
+
+
+    <!-- bottom sheet style -->
+    <style name="CustomBottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/CustomBottomSheetStyle</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+
+    </style>
+
+    <style name="CustomBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/white_background</item>
+    </style>
+
+    //tapLayout
+
+    <style name="TabLayoutFavStyle" parent="Base.Widget.Design.TabLayout">
+        <item name="android:textSize">11sp</item>
+    </style>
+
+    <style name="TabLayoutAdvertiserStyle" parent="Base.Widget.Design.TabLayout">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    //radio button
+    <style name="RadioButtonCheckedStyle" parent="@android:style/Widget.CompoundButton">
+        <item name="android:buttonTint">@color/white</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="RadioButtonUnCheckedStyle" parent="@android:style/Widget.CompoundButton">
+        <item name="android:buttonTint">@color/black</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
 </resources>

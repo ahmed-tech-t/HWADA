@@ -8,6 +8,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import com.example.hwada.Model.Ad;
+import com.example.hwada.Model.AdReview;
 import com.example.hwada.Model.User;
 import com.example.hwada.repository.AdsRepository;
 
@@ -21,28 +22,32 @@ public class AdsViewModel extends AndroidViewModel {
     public LiveData<ArrayList<Ad>> favAdsLiveData;
 
     public LiveData<Ad> liveDataGetNewAdd;
+    public LiveData<AdReview> liveDataAddReview;
+
     public LiveData<Boolean>liveDataUpdateImagesSuccess;
 
 
 
-    public void addNewAdd(Ad newAd ){
-        liveDataGetNewAdd =  repository.addNewAdd(newAd);
+
+    public void addReview(Ad ad,AdReview review){
+        liveDataAddReview = repository.addReview(ad ,review);
+    }
+    public void addNewAd(Ad newAd ){
+        liveDataGetNewAdd =  repository.addNewAd(newAd);
     }
 
     public void updateImages(Ad newAd){
-        liveDataUpdateImagesSuccess = repository.updateImages(newAd);
+        //liveDataUpdateImagesSuccess = repository.updateImages(newAd);
     }
-
-
-
     public void getAllAds(String category ,String subCategory){
         allAdsLiveData = repository.getAllAds(category,subCategory);
-
     }
     public void getAllAds(String category ,String subCategory,String subSubCategory){
         allAdsLiveData = repository.getAllAds(category,subCategory,subSubCategory);
     }
-
+    public void getAllAds(){
+        allAdsLiveData = repository.getAllAds();
+    }
 
     public void getFavAds(User user){favAdsLiveData = repository.getFavAds(user);}
 

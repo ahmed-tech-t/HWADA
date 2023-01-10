@@ -5,6 +5,11 @@ public class DbHandler {
    public static final String adCollection = "Ads";
    public static final String debugCollection ="Debug";
 
+   public static final String Reviews = "Reviews";
+   public static final String MyReviews = "MyReviews";
+
+   public static final String homePage ="homePage";
+
    public static final String WORKER ="worker";
 
    public static final String HOME_FOOD ="homeFood";

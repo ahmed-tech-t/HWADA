@@ -28,6 +28,7 @@ import com.example.hwada.Model.LocationCustom;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
 import com.example.hwada.adapter.AdsAdapter;
+import com.example.hwada.database.DbHandler;
 import com.example.hwada.ui.MainActivity;
 import com.example.hwada.ui.view.map.MapsFragment;
 import com.example.hwada.ui.view.ad.AdvertiserFragment;
@@ -47,13 +48,14 @@ import java.util.List;
 import java.util.Locale;
 
 public class HomeFragment extends Fragment implements View.OnClickListener , AdsAdapter.OnItemListener ,MapsFragment.GettingPassedData {
-    AdsViewModel viewModel;
+    AdsViewModel adsViewModel;
 
     AdsAdapter adapter;
     RecyclerView mainRecycler;
 
     EditText userAddress;
     UserViewModel userViewModel;
+
 
     String target = "toAdsActivity";
 
@@ -81,11 +83,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
     public void setAdsToList() {
         try {
             adapter = new AdsAdapter();
-
             mainRecycler.setAdapter(adapter);
            // TODO
-           // viewModel.getAllAds();
-            viewModel.allAdsLiveData.observe(getActivity(), ads -> {
+            adsViewModel.getAllAds();
+            adsViewModel.allAdsLiveData.observe(getActivity(), ads -> {
                 adsList = ads;
                 if (user != null) {
                     adapter.setList(user, ads, getContext(),this);
@@ -96,7 +97,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
             e.printStackTrace();
             reportError(e);
         }
-
     }
 
     @Override
@@ -105,13 +105,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
            if (v.getId() == userAddress.getId()) {
                callBottomSheet(new MapsFragment());
            } else if (v.getId() == foodCategory.getId()) {
-               ((MainActivity) getActivity()).callAdsActivity("homeFood", "homeFood","");
+               ((MainActivity) getActivity()).callAdsActivity(DbHandler.HOME_FOOD, DbHandler.HOME_FOOD,"");
            } else if (v.getId() == workerCategory.getId()) {
-               ((MainActivity) getActivity()).callCategoryActivity("worker", target);
+               ((MainActivity) getActivity()).callCategoryActivity(DbHandler.WORKER, target);
            } else if (v.getId() == freelanceCategory.getId()) {
-               ((MainActivity) getActivity()).callCategoryActivity("freelance", target);
+               ((MainActivity) getActivity()).callCategoryActivity(DbHandler.FREELANCE, target);
            } else if (v.getId() == handcraftCategory.getId()) {
-               ((MainActivity) getActivity()).callAdsActivity("handcraft", "handcraft","");
+               ((MainActivity) getActivity()).callAdsActivity(DbHandler.HANDCRAFT, DbHandler.HANDCRAFT,"");
            }
        }catch (Exception e){
            reportError(e);
@@ -149,15 +149,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
               @Override
               public void onChanged(User u) {
                   user = u;
-                  if (isAdded()) userAddress.setText(getUserAddress(user.getLocation()));
+                  if(user.getLocation()!=null){
+                      if (isAdded()) userAddress.setText(getUserAddress(user.getLocation()));
+                  }else {
+                      reportError("location is null in home fragment");
+                  }
               }
           });
-          viewModel = ViewModelProviders.of(getActivity()).get(AdsViewModel.class);
-
-
-
-         //TODO
-          //setAdsToList();
+          adsViewModel = ViewModelProviders.of(getActivity()).get(AdsViewModel.class);
+          setAdsToList();
 
 
       }catch (Exception e){
@@ -223,6 +223,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
         StringWriter sw = new StringWriter();
         e.printStackTrace(new PrintWriter(sw));
         debugViewModel.reportError(new DebugModel(getCurrentDate(),e.getMessage(),sw.toString(),TAG, Build.VERSION.SDK_INT,false));
+    }
+    private void reportError(String s){
+        debugViewModel.reportError(new DebugModel(getCurrentDate(),s,s,TAG, Build.VERSION.SDK_INT,false));
     }
     private String getCurrentDate(){
         Calendar calendar = Calendar.getInstance();

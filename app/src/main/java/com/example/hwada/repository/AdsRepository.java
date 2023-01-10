@@ -13,9 +13,11 @@ import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.AdReview;
 import com.example.hwada.Model.DaysSchedule;
 import com.example.hwada.Model.LocationCustom;
+import com.example.hwada.Model.MyReview;
 import com.example.hwada.Model.User;
 import com.example.hwada.database.DbHandler;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
@@ -42,35 +44,24 @@ public class AdsRepository {
     MutableLiveData<ArrayList<Ad>> favAdsMutableLiveData;
 
     private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
-    private DocumentReference adDocRef;
-    private DocumentReference userDocRef;
-    private CollectionReference adColRef;
-    private 
+
+    private
     //Storage
     FirebaseStorage storage = FirebaseStorage.getInstance();
     StorageReference storageRef = storage.getReference();
     private static final String TAG = "AdsRepository";
 
-//********************************
-    public MutableLiveData<Ad>addNewAdd(Ad newAd){
+    //********************************
+    //add new ad
+    public MutableLiveData<Ad>addNewAd(Ad newAd){
         MutableLiveData<Ad> addNewAdSuccess = new MutableLiveData<>();
-        if (newAd.getCategory().equals(DbHandler.FREELANCE)){
-            adDocRef = rootRef.collection(DbHandler.adCollection)
-                    .document(newAd.getCategory())
-                    .collection(newAd.getCategory())
-                    .document(newAd.getSubCategory())
-                    .collection(newAd.getSubSubCategory())
-                    .document();
-        }else {
-            adDocRef = rootRef.collection(DbHandler.adCollection)
-                    .document(newAd.getCategory())
-                    .collection(newAd.getSubCategory())
-                    .document();
-        }
+
+        DocumentReference adDocRef = getAdColRef(newAd).document();
 
         newAd.setId(adDocRef.getId());
-        Log.e(TAG, "addNewAdd: "+ adDocRef.getId());
+
         StorageReference imageRef = storageRef.child("images").child(newAd.getAuthorId()).child(newAd.getCategory()).child(newAd.getSubCategory()).child(newAd.getId());
+
         List<String> downloadUrls = new ArrayList<>();
 
         for (Uri uri :newAd.getImagesUri()){
@@ -106,16 +97,19 @@ public class AdsRepository {
             @Nullable
             @Override
             public Object apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
-                userDocRef = rootRef.collection(DbHandler.userCollection).document(newAd.getAuthorId());
-                transaction.get(userDocRef);
-                Map<String,Object> data = new HashMap<>();
 
-                data.put("ads", FieldValue.arrayUnion(newAd));
-                Log.e(TAG, "apply: "+adDocRef.getId());
+                DocumentReference adDocRef = getAdColRef(newAd).document();
+                DocumentReference userAdDocRef = getUserAdColRef(newAd).document(newAd.getId());
 
-                // add new Add
+                // add new Ad to Ad collection
                 transaction.set(adDocRef,newAd);
-                transaction.update(userDocRef,data);
+
+                //add new ad to user collection
+                transaction.set(userAdDocRef,newAd);
+
+                //add to homePage Collection
+                adDocRef = getAdColHomePageRef().document(newAd.getId());
+                transaction.set(adDocRef,newAd);
 
                 return null;
             }
@@ -126,16 +120,252 @@ public class AdsRepository {
                     addNewAdSuccess.setValue(newAd);
                 }else {
                     addNewAdSuccess.setValue(null);
-                    Log.e(TAG, "onComplete: "+task.getException().getMessage());
                     task.getException().printStackTrace();
                 }
             }
         });
 
     }
-//********************************
 
-    public MutableLiveData<Boolean>updateImages(Ad newAd){
+    //********************************
+
+    private CollectionReference getAdColHomePageRef(){
+        CollectionReference adColRef;
+            adColRef = rootRef.collection(DbHandler.adCollection)
+                    .document(DbHandler.homePage)
+                    .collection(DbHandler.homePage);
+        return adColRef;
+    }
+    private CollectionReference getAdColRef(Ad newAd){
+        CollectionReference adColRef;
+        if (newAd.getCategory().equals(DbHandler.FREELANCE)){
+            adColRef = rootRef.collection(DbHandler.adCollection)
+                    .document(newAd.getCategory())
+                    .collection(newAd.getCategory())
+                    .document(newAd.getSubCategory())
+                    .collection(newAd.getSubSubCategory());
+        }else {
+            adColRef = rootRef.collection(DbHandler.adCollection)
+                    .document(newAd.getCategory())
+                    .collection(newAd.getSubCategory());
+        }
+        return adColRef;
+    }
+    private CollectionReference getAdColRef(String category , String subCategory){
+        CollectionReference adColRef;
+        adColRef = rootRef.collection(DbHandler.adCollection)
+                .document(category)
+                .collection(subCategory);
+        return adColRef;
+    }
+    private CollectionReference getAdColRef(String category , String subCategory , String subSubCategory){
+        CollectionReference adColRef;
+        adColRef = rootRef.collection(DbHandler.adCollection)
+                .document(category)
+                .collection(subCategory)
+                .document(subCategory)
+                .collection(subSubCategory);
+        return adColRef;
+    }
+    private CollectionReference getUserAdColRef(Ad ad){
+        CollectionReference ref;
+        ref =  rootRef.collection(DbHandler.userCollection).document(ad.getAuthorId()).collection(DbHandler.adCollection);
+        return ref;
+    }
+    private CollectionReference getUserMyReviewsColRef(Ad ad){
+        CollectionReference ref;
+        ref =  rootRef.collection(DbHandler.userCollection).document(ad.getId()).collection(DbHandler.MyReviews);
+        return ref;
+    }
+
+    //**************************************
+
+    public MutableLiveData<ArrayList<Ad>> getAllAds(String category ,String subCategory){
+        ArrayList<Ad> list = new ArrayList<>();
+        MutableLiveData<ArrayList<Ad>> allAdsMutableLiveData =new MutableLiveData<>();
+
+        getAdColRef(category,subCategory).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot snapshot : task.getResult()) {
+
+                        String authorId = snapshot.getString("authorId");
+
+                        Map<String, Object> locationMap = (Map<String, Object>) snapshot.get("authorLocation");
+                        LocationCustom authorLocation = new LocationCustom((Double) locationMap.get("latitude"),(Double) locationMap.get("longitude"));
+
+                        String authorName = snapshot.getString("authorName");
+                        String category = snapshot.getString("category");
+                        String date =snapshot.getString("date");
+                        DaysSchedule daysSchedule = snapshot.get("daysSchedule", DaysSchedule.class);
+                        String description = snapshot.getString("description");
+                        float distance =  snapshot.getDouble("distance").floatValue();
+                        String id =snapshot.getString("id");
+                        ArrayList<String>imagesUrl = (ArrayList<String>) snapshot.get("imagesUrl");
+                        double price = snapshot.getDouble("price");
+                        float rating = snapshot.getDouble("rating").floatValue();
+
+                        String subCategory = snapshot.getString("subCategory");
+                        String subSubCategory = snapshot.getString("subSubCategory");
+                        String title = snapshot.getString("title");
+                        int views = snapshot.getLong("views").intValue();
+
+                        ArrayList<AdReview> adReviews = new ArrayList<>();
+                        CollectionReference reviewsRef =  snapshot.getReference().collection(DbHandler.Reviews);
+                        reviewsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    for (QueryDocumentSnapshot reviewSnapshot : task.getResult()) {
+                                        String id =  reviewSnapshot.getString("id");
+                                        String authorId = reviewSnapshot.getString("authorId");
+                                        String authorImage = reviewSnapshot.getString("authorImage");
+                                        String authorName =reviewSnapshot.getString("authorName");
+                                        String body = reviewSnapshot.getString("body");
+                                        String date =reviewSnapshot.getString("date");
+                                        float rating = reviewSnapshot.getDouble("rating").floatValue();
+                                        adReviews.add(new AdReview(id,date,authorId,authorName,authorImage,rating,body));
+                                    }
+                                }
+                            }
+                        });
+                        list.add(new Ad(id,authorId,authorName,authorLocation,title,description,date,distance,rating,category,subCategory,subSubCategory,adReviews,price,daysSchedule,imagesUrl,views));
+                    }
+                    allAdsMutableLiveData.setValue(list);
+                }
+            }
+        });
+
+        return  allAdsMutableLiveData;
+    }
+    public MutableLiveData<ArrayList<Ad>> getAllAds(String category ,String subCategory,String subSubCategory){
+        ArrayList<Ad> list = new ArrayList<>();
+        MutableLiveData<ArrayList<Ad>> allAdsMutableLiveData =new MutableLiveData<>();
+
+        getAdColRef(category,subCategory,subSubCategory).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot snapshot : task.getResult()) {
+
+                        String authorId = snapshot.getString("authorId");
+                        LocationCustom authorLocation = (LocationCustom) snapshot.get("authorLocation");
+                        String authorName = snapshot.getString("authorName");
+                        String category = snapshot.getString("category");
+                        String date =snapshot.getString("date");
+                        DaysSchedule daysSchedule = snapshot.get("daysSchedule", DaysSchedule.class);
+                        String description = snapshot.getString("description");
+                        float distance = (float) snapshot.getDouble("distance").floatValue();
+                        String id =snapshot.getString("id");
+                        ArrayList<String>imagesUrl = (ArrayList<String>) snapshot.get("imagesUrl");
+                        double price = snapshot.getDouble("price");
+                        float rating = (float) snapshot.getDouble("rating").floatValue();
+                        String subCategory = snapshot.getString("subCategory");
+                        String subSubCategory = snapshot.getString("subSubCategory");
+                        String title = snapshot.getString("title");
+                        int views = (int) snapshot.get("views");
+
+                        ArrayList<AdReview> adReviews = new ArrayList<>();
+                        CollectionReference reviewsRef =  snapshot.getReference().collection(DbHandler.Reviews);
+                        reviewsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    for (QueryDocumentSnapshot reviewSnapshot : task.getResult()) {
+                                        String id =  reviewSnapshot.getString("id");
+                                        String authorId = reviewSnapshot.getString("authorId");
+                                        String authorImage = reviewSnapshot.getString("authorImage");
+                                        String authorName =reviewSnapshot.getString("authorName");
+                                        String body = reviewSnapshot.getString("body");
+                                        String date =reviewSnapshot.getString("date");
+                                        float rating = reviewSnapshot.getDouble("rating").floatValue();
+                                        adReviews.add(new AdReview(id,date,authorId,authorName,authorImage,rating,body));
+                                    }
+                                }
+                            }
+                        });
+                        list.add(new Ad(id,authorId,authorName,authorLocation,title,description,date,distance,rating,category,subCategory,subSubCategory,adReviews,price,daysSchedule,imagesUrl,views));
+
+                    }
+                    allAdsMutableLiveData.setValue(list);
+                }
+            }
+        });
+        return  allAdsMutableLiveData;
+    }
+    public MutableLiveData<ArrayList<Ad>> getAllAds(){
+        ArrayList<Ad> list = new ArrayList<>();
+        MutableLiveData<ArrayList<Ad>> allAdsMutableLiveData =new MutableLiveData<>();
+
+        getAdColHomePageRef().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot snapshot : task.getResult()) {
+
+                        String authorId = snapshot.getString("authorId");
+
+                        Map<String, Object> locationMap = (Map<String, Object>) snapshot.get("authorLocation");
+                        LocationCustom authorLocation = new LocationCustom((Double) locationMap.get("latitude"),(Double) locationMap.get("longitude"));
+
+                        String authorName = snapshot.getString("authorName");
+                        String category = snapshot.getString("category");
+                        String date =snapshot.getString("date");
+                        DaysSchedule daysSchedule = snapshot.get("daysSchedule", DaysSchedule.class);
+                        String description = snapshot.getString("description");
+                        float distance =  snapshot.getDouble("distance").floatValue();
+                        String id =snapshot.getString("id");
+                        ArrayList<String>imagesUrl = (ArrayList<String>) snapshot.get("imagesUrl");
+                        double price = snapshot.getDouble("price");
+                        float rating = snapshot.getDouble("rating").floatValue();
+
+                        String subCategory = snapshot.getString("subCategory");
+                        String subSubCategory = snapshot.getString("subSubCategory");
+                        String title = snapshot.getString("title");
+                        int views = snapshot.getLong("views").intValue();
+
+                        ArrayList<AdReview> adReviews = new ArrayList<>();
+                        CollectionReference reviewsRef =  snapshot.getReference().collection(DbHandler.Reviews);
+                        reviewsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    for (QueryDocumentSnapshot reviewSnapshot : task.getResult()) {
+                                        String id =  reviewSnapshot.getString("id");
+                                        String authorId = reviewSnapshot.getString("authorId");
+                                        String authorImage = reviewSnapshot.getString("authorImage");
+                                        String authorName =reviewSnapshot.getString("authorName");
+                                        String body = reviewSnapshot.getString("body");
+                                        String date =reviewSnapshot.getString("date");
+                                        float rating = reviewSnapshot.getDouble("rating").floatValue();
+                                        adReviews.add(new AdReview(id,date,authorId,authorName,authorImage,rating,body));
+                                    }
+                                }
+                            }
+                        });
+                        list.add(new Ad(id,authorId,authorName,authorLocation,title,description,date,distance,rating,category,subCategory,subSubCategory,adReviews,price,daysSchedule,imagesUrl,views));
+                    }
+                    allAdsMutableLiveData.setValue(list);
+                }
+            }
+        });
+
+        return  allAdsMutableLiveData;
+    }
+
+    //**************************************
+
+    public MutableLiveData<ArrayList<Ad>> getFavAds(User user){
+        ArrayList<Ad> list = new ArrayList<>();
+
+        LocationCustom authorLocation =null;
+
+        favAdsMutableLiveData.setValue(list);
+        return  favAdsMutableLiveData;
+    }
+
+  /*  public MutableLiveData<Boolean>updateImages(Ad newAd){
         MutableLiveData<Boolean> updateImagesSuccess = new MutableLiveData<>();
         if (newAd.getCategory().equals("freelance")||newAd.getCategory().equals("worker")){
             adDocRef = rootRef.collection(DbHandler.adCollection)
@@ -159,117 +389,62 @@ public class AdsRepository {
         });
         return updateImagesSuccess;
     }
-
-    public MutableLiveData<ArrayList<Ad>> getAllAds(String category ,String subCategory){
-        ArrayList<Ad> list = new ArrayList<>();
-        MutableLiveData<ArrayList<Ad>> allAdsMutableLiveData =new MutableLiveData<>();
-
-        adColRef = rootRef.collection(DbHandler.adCollection)
-                .document(category)
-                .collection(subCategory);
-        adColRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot snapshot : task.getResult()) {
-
-                        ArrayList<AdReview> adReviews = (ArrayList<AdReview>) snapshot.get("adReviews");
-                        String authorId = snapshot.getString("authorId");
-
-                        Map<String, Object> locationMap = (Map<String, Object>) snapshot.get("authorLocation");
-                        LocationCustom authorLocation = new LocationCustom((Double) locationMap.get("latitude"),(Double) locationMap.get("longitude"));
-
-                        String authorName = snapshot.getString("authorName");
-                        String category = snapshot.getString("category");
-                        String date =snapshot.getString("date");
-                        DaysSchedule daysSchedule = (DaysSchedule) snapshot.get("dasSchedule");
-                        String description = snapshot.getString("description");
-                        float distance =  snapshot.getDouble("distance").floatValue();
-                        String id =snapshot.getString("id");
-                        ArrayList<String>imagesUrl = (ArrayList<String>) snapshot.get("imagesUrl");
-                        double price = snapshot.getDouble("price");
-                        float rating = snapshot.getDouble("rating").floatValue();
-
-                        String subCategory = snapshot.getString("subCategory");
-                        String subSubCategory = snapshot.getString("subSubCategory");
-                        String title = snapshot.getString("title");
-                        int views = snapshot.getLong("views").intValue();
-
-                        list.add(new Ad(id,authorId,authorName,authorLocation,title,description,date,distance,rating,category,subCategory,subSubCategory,adReviews,price,daysSchedule,imagesUrl,views));
-                    }
-                    allAdsMutableLiveData.setValue(list);
-                }
-            }
-        });
-
-        return  allAdsMutableLiveData;
-    }
-    public MutableLiveData<ArrayList<Ad>> getAllAds(String category ,String subCategory,String subSubCategory){
-        ArrayList<Ad> list = new ArrayList<>();
-        MutableLiveData<ArrayList<Ad>> allAdsMutableLiveData =new MutableLiveData<>();
+*/
 
 
-        adColRef = rootRef.collection(DbHandler.adCollection)
-                .document(category)
-                .collection(subCategory)
-                .document(subCategory)
-                .collection(subSubCategory);
-        adColRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot snapshot : task.getResult()) {
+    public MutableLiveData<AdReview> addReview(Ad ad , AdReview review){
+        MutableLiveData<AdReview> reviewMutableLiveData = new MutableLiveData<>();
+       rootRef.runTransaction(new Transaction.Function<Object>() {
+           @Nullable
+           @Override
+           public Object apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+              DocumentReference reviewDocRef;
 
-                        ArrayList<AdReview> adReviews = (ArrayList<AdReview>) snapshot.get("adReviews");
-                        String authorId = snapshot.getString("authorId");
-                        LocationCustom authorLocation = (LocationCustom) snapshot.get("authorLocation");
-                        String authorName = snapshot.getString("authorName");
-                        String category = snapshot.getString("category");
-                        String date =snapshot.getString("date");
-                        DaysSchedule daysSchedule = (DaysSchedule) snapshot.get("dasSchedule");
-                        String description = snapshot.getString("description");
-                        float distance = (float) snapshot.getDouble("distance").floatValue();
-                        String id =snapshot.getString("id");
-                        ArrayList<String>imagesUrl = (ArrayList<String>) snapshot.get("imagesUrl");
-                        double price = snapshot.getDouble("price");
-                        float rating = (float) snapshot.getDouble("rating").floatValue();
-                        String subCategory = snapshot.getString("subCategory");
-                        String subSubCategory = snapshot.getString("subSubCategory");
-                        String title = snapshot.getString("title");
-                        int views = (int) snapshot.get("views");
+              //set ad review to ad collection
+              reviewDocRef = getAdColRef(ad).document(ad.getId()).collection(DbHandler.Reviews).document();
+              review.setId(reviewDocRef.getId());
+              transaction.set(reviewDocRef,review);
 
-                        list.add(new Ad(id,authorId,authorName,authorLocation,title,description,date,distance,rating,category,subCategory,subSubCategory,adReviews,price,daysSchedule,imagesUrl,views));
+              //set ad review to user ad collection
+              reviewDocRef = getUserAdColRef(ad).document(ad.getId()).collection(DbHandler.Reviews).document(review.getId());
+              transaction.set(reviewDocRef,review);
 
-                    }
-                    allAdsMutableLiveData.setValue(list);
-                }
-            }
-        });
-        return  allAdsMutableLiveData;
+              //set to my reviews to user collection
+               reviewDocRef = rootRef.collection(DbHandler.userCollection).document(ad.getAuthorId()).collection(DbHandler.MyReviews).document(review.getId());
+               MyReview myReview = new MyReview(review.getId(),ad.getId(),ad.getCategory(),ad.getSubCategory(),ad.getSubSubCategory());
+               transaction.set(reviewDocRef , myReview);
+
+
+               //set ad review to home page ad collection
+               reviewDocRef = getAdColHomePageRef().document(ad.getId()).collection(DbHandler.Reviews).document(review.getId());
+               transaction.set(reviewDocRef,review);
+
+               return null;
+           }
+       }).addOnCompleteListener(new OnCompleteListener<Object>() {
+           @Override
+           public void onComplete(@NonNull Task<Object> task) {
+               if(task.isSuccessful()){
+                   Log.e(TAG, "onComplete: "+review.getBody() );
+                   reviewMutableLiveData.setValue(review);
+               }
+           }
+       }).addOnFailureListener(new OnFailureListener() {
+           @Override
+           public void onFailure(@NonNull Exception e) {
+               e.printStackTrace();
+           }
+       });
+
+        return reviewMutableLiveData ;
+
     }
 
-    public MutableLiveData<ArrayList<Ad>> getFavAds(User user){
-        ArrayList<Ad> list = new ArrayList<>();
-
-        LocationCustom authorLocation =null;
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description",10,"date","category","subCategory","subSubCategory"));
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description",10,"date","category","subCategory","subSubCategory"));
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description",10,"date","category","subCategory","subSubCategory"));
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description",10,"date","category","subCategory","subSubCategory"));
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description",10,"date","category","subCategory","subSubCategory"));
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description",10,"date","category","subCategory","subSubCategory"));
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description",10,"date","category","subCategory","subSubCategory"));
-        list.add(new Ad("authorId","authorName",authorLocation,"title","description",10,"date","category","subCategory","subSubCategory"));
-
-
-        favAdsMutableLiveData.setValue(list);
-        return  favAdsMutableLiveData;
-    }
 
     public AdsRepository(Application application){
         this.application = application;
 
-        favAdsMutableLiveData =new MutableLiveData<>();
+        favAdsMutableLiveData = new MutableLiveData<>();
 
     }
 

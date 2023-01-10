@@ -24,7 +24,8 @@
     <string name="title"><font size="18">title</font></string>
 
     <string name="jop"><font size="18">jop</font></string>
-    <string name="away">away</string>
+    <string name="km">km</string>
+    <string name="withInRange">In range of</string>
     <string name="title_activity_map">Map</string>
     <string name="loadingYourLocation"><font size="18">Loading Your Location ...</font></string>
     <string name="save">save</string>
@@ -65,7 +66,7 @@
     <string name="comments"><b>Comments</b></string>
     <string name="comment">Comment</string>
 
-    <string name="AddAComment">Add a comment...</string>
+    <string name="AddAComment"><font size = "15" >Add a comment...</font></string>
     <string name="username">username</string>
     <string name="what_are_you_offering">What are you offering</string>
     <string name="uploadUpTo10Photos">UPLOAD UP TO 10 PHOTOS</string>
@@ -117,4 +118,11 @@
     <string name="savingData">Saving data...</string>
     <string name="savingError">Failed to Update ... please try again</string>
     <string name="addingNewAd">Adding new add...</string>
+    <string name="today">today</string>
+    <string name="yesterday">yesterday</string>
+    <string name="description"><b>Description</b></string>
+    <string name="reviews"><b>Reviews</b></string>
+    <string name="workingTimeTitle"><b>Working time</b></string>
+    <string name="reviewNote">You must at least add rating to add comment * </string>
+    <string name="addingNewReview">Adding new review...</string>
 </resources>

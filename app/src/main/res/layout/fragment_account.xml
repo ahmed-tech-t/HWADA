@@ -9,6 +9,8 @@
         android:layout_width="match_parent"
         android:background="@drawable/white_background"
         android:layout_marginTop="60dp"
+        android:elevation="10dp"
+        android:paddingBottom="?attr/actionBarSize"
         android:layout_height="match_parent">
 
         <ImageView

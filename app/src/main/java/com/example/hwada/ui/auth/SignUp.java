@@ -130,7 +130,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
             if (authenticatedUser.isNew()) {
                 createNewUser(authenticatedUser);
             } else {
-                goToMainActivity(authenticatedUser);
+                goToSplashActivity(authenticatedUser);
             }
         });
     }
@@ -155,7 +155,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
             if (authenticatedUser.isNew()) {
                 createNewUser(authenticatedUser);
             } else {
-                goToMainActivity(authenticatedUser);
+                goToSplashActivity(authenticatedUser);
             }
         });
     }
@@ -163,12 +163,12 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
         viewModel.createUser(authenticatedUser);
         viewModel.createdUserLiveData.observe(this, user -> {
             if (user.isCreated()) {
-                goToMainActivity(user);
+                goToSplashActivity(user);
             }else Log.e(TAG, "createNewUser: failed" );
         });
     }
-    private void goToMainActivity(User user) {
-        Intent intent = new Intent(SignUp.this, MainActivity.class);
+    private void goToSplashActivity(User user) {
+        Intent intent = new Intent(SignUp.this, SplashActivity.class);
         intent.putExtra("user", user);
         startActivity(intent);
         finish();

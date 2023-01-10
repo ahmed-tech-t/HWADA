@@ -1,9 +1,12 @@
 package com.example.hwada.Model;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+
+import com.example.hwada.R;
 
 import org.checkerframework.checker.units.qual.A;
 
@@ -170,6 +173,18 @@ public class DaysSchedule implements Parcelable {
                 return null;
         }
     }
+    public int size(){
+        int length = 0 ;
+        if(saturday.size()>0) length +=1;
+        if(sunday.size()>0) length +=1;
+        if(monday.size()>0) length +=1;
+        if(tuesday.size()>0) length +=1;
+        if(wednesday.size()>0) length +=1;
+        if(thursday.size()>0) length +=1;
+        if(friday.size()>0) length +=1;
+
+        return length;
+    }
     public void set(int pos,ArrayList<WorkingTime> list){
         switch (pos){
             case 0:
@@ -236,6 +251,7 @@ public class DaysSchedule implements Parcelable {
         dest.writeTypedList(thursday);
         dest.writeTypedList(friday);
     }
+
 
     @Override
     public String toString() {

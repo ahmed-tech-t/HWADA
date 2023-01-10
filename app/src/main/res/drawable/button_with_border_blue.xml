@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="NamespaceTypo"
     android:shape="rectangle">
-    <solid android:color="@color/background" />
+    <solid android:color="@color/mainBackGround" />
     <corners android:radius ="70dp" />
     <stroke android:width="1dip" android:color="@color/black"/>
 
