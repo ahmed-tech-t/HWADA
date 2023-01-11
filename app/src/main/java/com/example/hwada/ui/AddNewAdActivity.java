@@ -156,10 +156,12 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
         }
     }
     private boolean checkIfFieldsAreValid(){
-        return binding.adTitle.getError()==null &&  binding.adDescription.getError()==null && newAd.getImagesUri().size()>0;
+        return binding.adPrice.getError()==null && binding.adTitle.getError()==null &&  binding.adDescription.getError()==null && newAd.getImagesUri().size()>0;
     }
     private void setFieldsWarning(){
-        if(binding.adTitle.getText().length() ==0){
+        if(binding.adPrice.getText().length()>4){
+            binding.adPrice.setError(getString(R.string.toLong));
+        }else if(binding.adTitle.getText().length() ==0){
             binding.adTitle.setError(getString(R.string.emptyFieldWarning));
         } else if (binding.adDescription.getText().length() < 50){
             if (binding.adDescription.getText().length() ==0){

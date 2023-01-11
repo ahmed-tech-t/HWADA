@@ -153,10 +153,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:text="@string/similarAds"
+
                     android:textColor="@color/black"
-                    android:textSize="18dp"
+                    android:textSize="20dp"
                     android:textStyle="bold"
-                   android:padding="10dp" />
+                   android:paddingStart="10dp"
+                    android:paddingTop="10dp"/>
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycler_grid_fragment_advertiser"
                     android:layout_width="match_parent"

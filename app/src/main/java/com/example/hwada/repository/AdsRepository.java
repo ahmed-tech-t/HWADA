@@ -98,7 +98,9 @@ public class AdsRepository {
             @Override
             public Object apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
 
-                DocumentReference adDocRef = getAdColRef(newAd).document();
+                DocumentReference adDocRef = getAdColRef(newAd).document(newAd.getId());
+
+
                 DocumentReference userAdDocRef = getUserAdColRef(newAd).document(newAd.getId());
 
                 // add new Ad to Ad collection
@@ -109,6 +111,7 @@ public class AdsRepository {
 
                 //add to homePage Collection
                 adDocRef = getAdColHomePageRef().document(newAd.getId());
+
                 transaction.set(adDocRef,newAd);
 
                 return null;
