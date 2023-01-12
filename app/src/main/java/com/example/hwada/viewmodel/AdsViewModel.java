@@ -23,6 +23,8 @@ public class AdsViewModel extends AndroidViewModel {
 
     public LiveData<Ad> liveDataGetNewAdd;
     public LiveData<AdReview> liveDataAddReview;
+    public LiveData<AdReview> liveDataEditReview;
+
     public LiveData<Boolean> liveDataDeleteReview;
 
     public LiveData<Boolean>liveDataUpdateImagesSuccess;
@@ -34,6 +36,9 @@ public class AdsViewModel extends AndroidViewModel {
         liveDataDeleteReview = repository.deleteReview(user , ad ,review);
     }
 
+    public void editReview(Ad ad , AdReview review){
+        liveDataEditReview =repository.editReview(ad,review);
+    }
     public void addReview(User user,Ad ad,AdReview review){
         liveDataAddReview = repository.addReview(user , ad ,review);
     }

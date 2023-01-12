@@ -57,10 +57,10 @@ public class ReviewFragment extends BottomSheetDialogFragment implements View.On
     Ad ad ;
     AdReview adReview ;
     User user;
-
+    String tag;
     Dialog saveDialog ;
     private GettingPassedData mListener;
-
+    int PASSED_POS ;
     AdsViewModel adsViewModel;
     FragmentReviewBinding binding;
     String TAG ="ReviewFragment";
@@ -159,24 +159,50 @@ public class ReviewFragment extends BottomSheetDialogFragment implements View.On
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         }else if(v.getId() == binding.reviewSubmitIm.getId()){
             if(adReview.getRating()>0){
+
                 adReview.setBody(binding.reviewEt.getText().toString());
-                adReview.setAuthorId(user.getuId());
-                adReview.setAuthorName(user.getUsername());
-                adReview.setAuthorImage(user.getImage());
-                adReview.setDate(getCurrentDate());
+                if(tag =="add"){
+                    adReview.setAuthorId(user.getuId());
+                    adReview.setAuthorName(user.getUsername());
+                    adReview.setAuthorImage(user.getImage());
+                    adReview.setDate(getCurrentDate());
+                }
+
                 binding.reviewSubmitIm.setVisibility(View.GONE);
                 binding.reviewEt.setFocusable(false);
                 binding.reviewEt.setClickable(false);
                 binding.reviewRating.setClickable(false);
                 binding.reviewRating.setFocusable(false);
-                setSavingDialog();
-                saveReview();
-                //TODO send it to database
+
+                if(tag == "add"){
+                    saveReview();
+                    setSavingDialog("add");
+                }else if(tag == "edit"){
+                    setSavingDialog("edit");
+                    editReview();
+                }
                 hideKeyboard();
             }
         }
     }
 
+    private void editReview() {
+        adsViewModel.editReview(ad,adReview);
+        adsViewModel.liveDataEditReview.observe(this, new Observer<AdReview>() {
+            @Override
+            public void onChanged(AdReview review) {
+                if(saveDialog.isShowing())saveDialog.dismiss();
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                mListener.getUpdatedReview(review,PASSED_POS);
+            }
+        });
+    }
+    private void setDataToFields(){
+        if(tag == "edit" && adReview != null ){
+            binding.reviewRating.setRating(adReview.getRating());
+            binding.reviewEt.setText(adReview.getBody());
+        }
+    }
     private void ratingBarListener(){
         binding.reviewRating.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
@@ -192,12 +218,22 @@ public class ReviewFragment extends BottomSheetDialogFragment implements View.On
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        tag = getArguments().getString("tag");
         user = getArguments().getParcelable("user");
         ad = getArguments().getParcelable("ad");
+
+        if(tag == "add"){
+            adReview = new AdReview();
+        }else if(tag == "edit" ){
+            PASSED_POS = getArguments().getInt("pos");
+            adReview = ad.getAdReviews().get(PASSED_POS);
+            setDataToFields();
+        }
+
         Glide.with(getActivity()).load(user.getImage()).into(binding.userImageReview);
 
         adsViewModel = ViewModelProviders.of(this).get(AdsViewModel.class);
-        adReview = new AdReview();
+
     }
 
     private String getCurrentDate(){
@@ -213,13 +249,15 @@ public class ReviewFragment extends BottomSheetDialogFragment implements View.On
             public void onChanged(AdReview review) {
                 if(saveDialog.isShowing())saveDialog.dismiss();
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-                mListener.getAd(review);
+                mListener.getAddedReview(review);
             }
         });
     }
 
     public interface GettingPassedData{
-        void getAd(AdReview review);
+        void getAddedReview(AdReview review );
+        void getUpdatedReview(AdReview review ,int pos);
+
     }
 
     @Override
@@ -228,10 +266,11 @@ public class ReviewFragment extends BottomSheetDialogFragment implements View.On
         mListener = (ReviewFragment.GettingPassedData) getParentFragment();
     }
 
-    public void setSavingDialog() {
+    public void setSavingDialog(String tag) {
         if (saveDialog != null && saveDialog.isShowing()) return;
         saveDialog = new Dialog(getContext());
-        saveDialog.setContentView(R.layout.dialog_adding_new_review);
+        if(tag=="add") saveDialog.setContentView(R.layout.dialog_adding_new_review);
+        else if(tag =="edit")saveDialog.setContentView(R.layout.dialog_updating_review);
         Window window = saveDialog.getWindow();
         window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
         window.setGravity(Gravity.BOTTOM);

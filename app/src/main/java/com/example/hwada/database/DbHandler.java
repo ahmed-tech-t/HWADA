@@ -4,11 +4,16 @@ public class DbHandler {
    public static final String userCollection = "Users";
    public static final String adCollection = "Ads";
    public static final String debugCollection ="Debug";
+   public static final String reportCollection ="Reports";
+
 
    public static final String Reviews = "Reviews";
    public static final String MyReviews = "MyReviews";
    public static final String favAds ="FavAds";
    public static final String homePage ="homePage";
+   public static final String Review = "Review";
+
+
 
    public static final String WORKER ="Worker";
 

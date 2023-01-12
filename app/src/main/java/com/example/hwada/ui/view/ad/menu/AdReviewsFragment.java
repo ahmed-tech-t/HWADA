@@ -21,13 +21,16 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.AdReview;
+import com.example.hwada.Model.Report;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
 import com.example.hwada.adapter.AdsGridAdapter;
 import com.example.hwada.adapter.ReviewAdapter;
+import com.example.hwada.database.DbHandler;
 import com.example.hwada.databinding.FragmentAdReviewsBinding;
 import com.example.hwada.ui.view.ad.ReviewFragment;
 import com.example.hwada.viewmodel.AdsViewModel;
+import com.example.hwada.viewmodel.ReportViewModel;
 
 import java.util.ArrayList;
 
@@ -39,6 +42,7 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
     Ad ad ;
     User user ;
     AdsViewModel adsViewModel ;
+    ReportViewModel reportViewModel ;
     private static final String TAG = "AdReviewsFragment";
     //debounce mechanism
     private static final long DEBOUNCE_DELAY_MILLIS = 500;
@@ -64,6 +68,7 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
         user =getArguments().getParcelable("user");
 
         adsViewModel = ViewModelProviders.of(this).get(AdsViewModel.class);
+        reportViewModel = ViewModelProviders.of(this).get(ReportViewModel.class);
         if(userMadeReview()){
             binding.linearLayoutCommentBox.setVisibility(View.GONE);
         }else binding.linearLayoutCommentBox.setVisibility(View.VISIBLE);
@@ -94,11 +99,23 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
     }
 
 
-    private void callReviewBottomSheet(){
+    private void callReviewBottomSheet(String tag){
         ReviewFragment fragment = new ReviewFragment();
         Bundle bundle =new Bundle();
         bundle.putParcelable("user",user);
         bundle.putParcelable("ad",ad);
+        bundle.putString("tag",tag);
+        fragment.setArguments(bundle);
+        fragment.show(getChildFragmentManager(),fragment.getTag());
+    }
+
+    private void callReviewBottomSheet(String tag,int pos){
+        ReviewFragment fragment = new ReviewFragment();
+        Bundle bundle =new Bundle();
+        bundle.putParcelable("user", user);
+        bundle.putParcelable("ad", ad);
+        bundle.putString("tag", tag);
+        bundle.putInt("pos", pos);
         fragment.setArguments(bundle);
         fragment.show(getChildFragmentManager(),fragment.getTag());
     }
@@ -121,7 +138,7 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
             } else {
                 // This is the first click, so open the item
                 debouncing = true;
-                callReviewBottomSheet();
+                callReviewBottomSheet("add");
             }
             // Start a new timer
             debounceRunnable = () -> debouncing = false;
@@ -134,13 +151,6 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
         debounceHandler.removeCallbacks(debounceRunnable);
     }
 
-    @Override
-    public void getAd(AdReview review) {
-        binding.linearLayoutCommentBox.setVisibility(View.GONE);
-        adapter.addItem(review);
-        binding.tvReviewsAdReviewsFragment.setText(getString(R.string.reviews)+"("+ad.getAdReviews().size()+")");
-        Log.e(TAG, "getAd: "+ad.getId() );
-    }
 
     private boolean userMadeReview(){
         for (AdReview a: ad.getAdReviews()) {
@@ -160,13 +170,12 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId()==R.id.delete_review_menu){
-
                     deleteReview(ad.getAdReviews().get(pos),pos);
-
                 }else if((item.getItemId()==R.id.edit_review_menu)){
-
+                    callReviewBottomSheet("edit",pos);
                 }else if((item.getItemId()==R.id.report_review_menu)){
-
+                    Report r = new Report(ad.getAdReviews().get(pos).getId(), DbHandler.Review,ad.getCategory(),ad.getSubCategory(),ad.getSubSubCategory());
+                    reportViewModel.addReport(r);
                 }
                 return true;
             }
@@ -193,4 +202,15 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
         });
     }
 
+    @Override
+    public void getAddedReview(AdReview review) {
+        binding.linearLayoutCommentBox.setVisibility(View.GONE);
+        binding.tvReviewsAdReviewsFragment.setText(getString(R.string.reviews)+"("+ad.getAdReviews().size()+")");
+        adapter.addItem(review);
+    }
+
+    @Override
+    public void getUpdatedReview(AdReview review, int pos) {
+        adapter.updateItem(review,pos);
+    }
 }

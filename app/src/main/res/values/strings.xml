@@ -128,4 +128,5 @@
     <string name="report">report</string>
     <string name="similarAds">Similar Ads</string>
     <string name="toLong">to long</string>
+    <string name="updatingReview">Updating review</string>
 </resources>

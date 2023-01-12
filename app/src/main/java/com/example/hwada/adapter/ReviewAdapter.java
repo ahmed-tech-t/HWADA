@@ -111,6 +111,11 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         list.add(review);
         notifyDataSetChanged();
     }
+
+    public void updateItem(AdReview review , int pos){
+        list.set(pos, review);
+        notifyItemChanged(pos);
+    }
     public String handleTime(String dateString){
         try {
             SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy , h:mm a");

@@ -401,8 +401,6 @@ public class AdsRepository {
            @Override
            public Object apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
               DocumentReference reviewDocRef;
-               Log.e(TAG, "apply: "+ad.getId());
-               Log.e(TAG, "apply: "+user.getEmail() );
 
 
               //set ad review to ad collection
@@ -445,7 +443,53 @@ public class AdsRepository {
         return reviewMutableLiveData ;
 
     }
+    public MutableLiveData<AdReview> editReview(Ad ad , AdReview review){
+        MutableLiveData<AdReview> reviewMutableLiveData = new MutableLiveData<>();
+        rootRef.runTransaction(new Transaction.Function<Object>() {
+            @Nullable
+            @Override
+            public Object apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+                DocumentReference reviewDocRef;
 
+                Map<String ,Object>data = new HashMap<>();
+                data.put("body",review.getBody());
+                data.put("rating",review.getRating());
+
+                //set ad review to ad collection
+                reviewDocRef = getAdColRef(ad).document(ad.getId()).collection(DbHandler.Reviews).document(review.getId());
+                review.setId(reviewDocRef.getId());
+                transaction.update(reviewDocRef,data);
+
+                Log.e(TAG, "apply: this is user ad" );
+                //set ad review to user ad collection
+                reviewDocRef = getUserAdColRef(ad).document(ad.getId()).collection(DbHandler.Reviews).document(review.getId());
+                transaction.update(reviewDocRef, data);
+
+
+                //set ad review to home page ad collection
+                reviewDocRef = getAdColHomePageRef().document(ad.getId()).collection(DbHandler.Reviews).document(review.getId());
+                transaction.update(reviewDocRef,data);
+
+                return null;
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Object>() {
+            @Override
+            public void onComplete(@NonNull Task<Object> task) {
+                if(task.isSuccessful()){
+                    Log.e(TAG, "onComplete: "+review.getBody() );
+                    reviewMutableLiveData.setValue(review);
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        return reviewMutableLiveData ;
+
+    }
 
     public MutableLiveData<Boolean> deleteReview(User user , Ad ad , AdReview review){
         MutableLiveData<Boolean> deleteReviewMutableLiveDate = new MutableLiveData<>();
