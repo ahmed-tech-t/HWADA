@@ -2,18 +2,23 @@ package com.example.hwada.ui.view.ad;
 
 import static android.content.ContentValues.TAG;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.location.Address;
 import android.location.Geocoder;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import androidx.fragment.app.FragmentManager;
@@ -73,6 +78,7 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
     int PASSED_POSITION =0;
     DebugViewModel debugViewModel ;
 
+    int PERMISSION_ID = 3 ;
     AdsGridAdapter adsGridAdapter;
     User user;
     Ad ad;
@@ -128,6 +134,10 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         ad = getArguments().getParcelable("ad");
         adsList = getArguments().getParcelableArrayList("adsList");
         PASSED_POSITION = getArguments().getInt("pos");
+
+
+        binding.buttonCallAdvertiserFragment.setOnClickListener(this);
+
         binding.tvDateAdvertiserFragment.setText(handleTime(ad.getDate()));
         binding.tvAdDistanceAdvertiserFragment.setText(ad.getDistance()+"");
         debugViewModel = ViewModelProviders.of(getActivity()).get(DebugViewModel.class);
@@ -147,6 +157,8 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         }else if(v.getId() == binding.tvAdLocationAdvertiserFragment.getId()){
             callBottomSheet(new MapPreviewFragment());
+        }else if(v.getId() == binding.buttonCallAdvertiserFragment.getId()){
+            callCallActivity();
         }
     }
 
@@ -315,5 +327,10 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         bundle.putInt("pos",pos);
         fragment.setArguments(bundle);
         fragment.show(getChildFragmentManager(),fragment.getTag());
+    }
+    
+   private void callCallActivity(){
+        Intent dial = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:"+user.getPhone()));
+        startActivity(dial);
     }
 }

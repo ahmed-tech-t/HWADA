@@ -129,4 +129,14 @@
     <string name="similarAds">Similar Ads</string>
     <string name="toLong">to long</string>
     <string name="updatingReview">Updating review</string>
+    <string name="call">call</string>
+    <string name="warning">Warning</string>
+    <string name="unCompletedProfile">Please complete your profile first</string>
+    <string name="toProfile">Complete my Profile</string>
+
+    <string-array name="spinner_gender">
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
+
 </resources>

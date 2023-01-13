@@ -163,11 +163,10 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
             if(dataValidated()){
                 newAd.setDate(getCurrentDate());
                 setSavingDialog();
-               saveNewAdd();
+                saveNewAdd();
             }
         }
     }
-
 
     private void saveNewAdd(){
         adsViewModel.addNewAd(newAd);

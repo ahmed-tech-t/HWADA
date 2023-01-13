@@ -251,6 +251,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/next"
+            android:foreground="?attr/selectableItemBackground"
             android:background="@drawable/button_save_blue"
             android:textColor="@color/white"
             android:layout_marginTop="10dp"

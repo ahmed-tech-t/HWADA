@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,7 +57,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
     EditText userAddress;
     UserViewModel userViewModel;
 
-
     String target = "toAdsActivity";
 
     DebugViewModel debugViewModel ;
@@ -92,6 +92,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
                     adapter.setList(user, ads, getContext(),this);
                 }
             });
+
             mainRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
         } catch (Exception e) {
             e.printStackTrace();
@@ -228,7 +229,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return  sdf.format(date);
     }
-
     private void callAdvertiserFragment(int pos){
         AdvertiserFragment fragment = new AdvertiserFragment();
         Bundle bundle = new Bundle();
@@ -238,5 +238,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
         bundle.putInt("pos",pos);
         fragment.setArguments(bundle);
         fragment.show(getChildFragmentManager(),fragment.getTag());
+    }
+    private void adObserver(){
+        adsViewModel.liveDataGetNewAdd.observe(getActivity(), new Observer<Ad>() {
+            @Override
+            public void onChanged(Ad ad) {
+                Log.e(TAG, "onChanged: ad" );
+                user.getAds().add(ad);
+                adapter.notifyDataSetChanged();
+            }
+        });
+
     }
 }

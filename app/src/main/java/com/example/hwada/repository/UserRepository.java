@@ -57,20 +57,19 @@ public class UserRepository {
     }
 
 
-    public MutableLiveData<Boolean> updateUser(User user) {
-        MutableLiveData<Boolean> updateSuccess =new MutableLiveData();
+    public MutableLiveData<User> updateUser(User user) {
+        MutableLiveData<User> updateSuccess = new MutableLiveData();
         Map<String, Object> data = new HashMap<>();
         data.put("username",user.getUsername());
         data.put("phone",user.getPhone());
-        data.put("about you",user.getAboutYou());
-        data.put("image",user.getImage());
+        data.put("aboutYou",user.getAboutYou());
         data.put("gender",user.getGender());
         rootRef.collection(DbHandler.userCollection).document(auth.getUid()).update(data).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()){
-                    updateSuccess.setValue(true);
-                } else updateSuccess.setValue(false);
+                    updateSuccess.setValue(user);
+                }
             }
         });
         return updateSuccess ;

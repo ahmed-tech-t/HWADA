@@ -25,7 +25,7 @@ public class UserViewModel extends AndroidViewModel {
 
     private static final String TAG = "UserViewModel";
     UserRepository userRepository ;
-    public LiveData<Boolean> updateUserLiveData ;
+    public LiveData<User> updateUserLiveData ;
     public LiveData<Boolean> updateLocationSuccessLiveData;
     public LiveData<Boolean> updateImageSuccessLiveData;
     public LiveData<Boolean> updateFavAdsSuccessLiveData;
@@ -47,6 +47,7 @@ public class UserViewModel extends AndroidViewModel {
     public void updateUser (User user){
        updateUserLiveData = userRepository.updateUser(user);
     }
+
     public void updateLocationUser(LocationCustom location){
         updateLocationSuccessLiveData =userRepository.updateUserLocation(location);
     }

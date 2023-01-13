@@ -34,7 +34,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class AccountFragment extends Fragment implements View.OnClickListener {
+public class AccountFragment extends Fragment implements View.OnClickListener , EditUserFragment.PassedData {
 
    User user ;
    UserViewModel userViewModel ;
@@ -72,14 +72,18 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
         super.onActivityCreated(savedInstanceState);
         user = getArguments().getParcelable("user");
         authViewModel = ViewModelProviders.of(getActivity()).get(AuthViewModel.class);
+        setDataToFields();
+        setUserObserver();
+    }
 
+
+    private void setDataToFields(){
         binding.userNameAccountFragment.setText(user.getUsername());
         if(user.getImage()!=null){
             Picasso.get()
                     .load(user.getImage())
                     .into(binding.userImageAccountFragment);
         }
-        setUserObserver();
     }
 
     private void setUserObserver(){
@@ -88,6 +92,8 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onChanged(User u) {
                 user = u;
+                Log.e(TAG, "onChanged: " );
+                setDataToFields();
             }
         });
     }
@@ -103,5 +109,14 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
         Intent intent = new Intent(getContext(), SplashActivity.class);
         startActivity(intent);
         getActivity().finish();
+    }
+
+    @Override
+    public void getPassedData(User u) {
+        user.setUsername(u.getUsername());
+        user.setGender(u.getGender());
+        user.setAboutYou(u.getAboutYou());
+        user.setPhone(u.getPhone());
+        setDataToFields();
     }
 }

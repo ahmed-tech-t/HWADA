@@ -71,6 +71,8 @@ public class User implements Parcelable {
         this.myReviews=new ArrayList<>();
     }
 
+
+
     public User(String uId, String email) {
         this.uId = uId;
         this.email = email;

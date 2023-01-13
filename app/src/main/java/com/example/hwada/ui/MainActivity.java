@@ -39,6 +39,7 @@ import com.example.hwada.Model.LocationCustom;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
 import com.example.hwada.databinding.ActivityMainBinding;
+import com.example.hwada.ui.view.EditUserFragment;
 import com.example.hwada.ui.view.category.CategoryFragment;
 import com.example.hwada.ui.view.main.FavTapLayoutFragment;
 import com.example.hwada.ui.view.main.AccountFragment;
@@ -88,7 +89,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
           Intent intent = getIntent();
           user = (User) intent.getParcelableExtra("user");
 
-          Log.e(TAG, "onCreate: "+user.toString());
+          Log.e(TAG, "onCreate: "+user.getAboutYou());
+          Log.e(TAG, "onCreate: "+user.getPhone());
 
           // ##############
           binding.addFloatActionBar.setOnClickListener(this);
@@ -101,7 +103,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
               @Override
               public void onChanged(User u) {
                   user = u;
-                  //TODO SAVE TO DATA BASE
               }
           });
 
@@ -299,7 +300,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             try {
                 switch (item.getItemId()){
                     case R.id.home:
-
                         callFragment(new HomeFragment(),"home");
                         break;
                     case R.id.chat:
@@ -362,7 +362,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         try {
             if(v.getId()==binding.addFloatActionBar.getId()){
-                callBottomSheet(new CategoryFragment());
+                if(user.getPhone()!=null){
+                    callBottomSheet(new CategoryFragment());
+                }else {
+                    showDialog(getString(R.string.warning),getString(R.string.unCompletedProfile));
+                }
             }
         }catch (Exception e){
             reportError(e);
@@ -428,5 +432,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Date date = calendar.getTime();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return  sdf.format(date);
+    }
+
+    private void showDialog(String title ,String body){
+        new AlertDialog.Builder(this)
+                .setTitle(title)
+                .setMessage(body)
+                .setPositiveButton(R.string.toProfile, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        callBottomSheet(new EditUserFragment());
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .show();
     }
 }
