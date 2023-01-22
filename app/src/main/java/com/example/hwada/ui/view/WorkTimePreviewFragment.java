@@ -62,7 +62,7 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
     ArrayList<Boolean> switches = new ArrayList<>(Arrays.asList(false,false,false,false,false,false,false));
     Ad newAd ;
     UserViewModel userViewModel;
-    AdsViewModel adsViewModel;
+    AdsViewModel adsViewModel = AdsViewModel.getInstance();
     FragmentWorkTimePreviewBinding binding ;
     @SuppressLint("MissingInflatedId")
     @Override
@@ -148,11 +148,8 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
         super.onActivityCreated(savedInstanceState);
         newAd = getArguments().getParcelable("ad");
         user = getArguments().getParcelable("user");
-        Log.e(TAG, "onClick: "+newAd.getDaysSchedule().toString() );
 
         userViewModel = ViewModelProviders.of(getActivity()).get(UserViewModel.class);
-        adsViewModel = ViewModelProviders.of(getActivity()).get(AdsViewModel.class);
-
     }
 
     @Override
@@ -162,30 +159,10 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
         } else if (v.getId() ==binding.saveButtonAddNewAd.getId()){
             if(dataValidated()){
                 newAd.setDate(getCurrentDate());
-                setSavingDialog();
-                saveNewAdd();
+                adsViewModel.addNewAd(newAd);
+                goToMainActivity();
             }
         }
-    }
-
-    private void saveNewAdd(){
-        adsViewModel.addNewAd(newAd);
-        adsViewModel.liveDataGetNewAdd.observe(this, new Observer<Ad>() {
-            @Override
-            public void onChanged(Ad ad) {
-                 if(ad != null){
-                    if(saveDialog.isShowing()) saveDialog.dismiss();
-                    user.getAds().add(ad);
-                    goToMainActivity();
-                 }else {
-                     Toast.makeText(getContext(), "Failed to save new add", Toast.LENGTH_SHORT).show();
-                     if(saveDialog.isShowing()) saveDialog.dismiss();
-                     goToMainActivity();
-
-                     Log.e(TAG, "onChanged: failed to save new add" );
-                 }
-            }
-        });
     }
 
     public void callBottomSheet(BottomSheetDialogFragment fragment , ArrayList<WorkingTime> workingTimes, String tag){

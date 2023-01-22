@@ -33,7 +33,7 @@ public class FavoritesFragment extends Fragment implements FavoritesAdapter.OnIt
     UserViewModel userViewModel ;
     User user;
     FavoritesAdapter adapter;
-    AdsViewModel viewModel;
+    AdsViewModel adsViewModel = AdsViewModel.getInstance();
     RecyclerView mainRecycler;
     ArrayList<Ad> adsList;
     String category ;
@@ -61,7 +61,6 @@ public class FavoritesFragment extends Fragment implements FavoritesAdapter.OnIt
                 user = u;
             }
         });
-        viewModel = new ViewModelProvider(this, (ViewModelProvider.Factory) ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(AdsViewModel.class);
         setAdsToList();
     }
 
@@ -69,8 +68,8 @@ public class FavoritesFragment extends Fragment implements FavoritesAdapter.OnIt
         adapter = new FavoritesAdapter();
         try {
             mainRecycler.setAdapter(adapter);
-            viewModel.getFavAds(user);
-            viewModel.favAdsLiveData.observe(getActivity(), ads -> {
+
+            adsViewModel.getFavAds(user).observe(getActivity(), ads -> {
                 adsList = ads;
                 adapter.setList(ads,getContext(),this);
             });

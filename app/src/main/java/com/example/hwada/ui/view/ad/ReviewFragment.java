@@ -61,7 +61,7 @@ public class ReviewFragment extends BottomSheetDialogFragment implements View.On
     Dialog saveDialog ;
     private GettingPassedData mListener;
     int PASSED_POS ;
-    AdsViewModel adsViewModel;
+    AdsViewModel adsViewModel = AdsViewModel.getInstance();
     FragmentReviewBinding binding;
     String TAG ="ReviewFragment";
     @SuppressLint("MissingInflatedId")
@@ -187,8 +187,7 @@ public class ReviewFragment extends BottomSheetDialogFragment implements View.On
     }
 
     private void editReview() {
-        adsViewModel.editReview(ad,adReview);
-        adsViewModel.liveDataEditReview.observe(this, new Observer<AdReview>() {
+        adsViewModel.editReview(ad,adReview).observe(this, new Observer<AdReview>() {
             @Override
             public void onChanged(AdReview review) {
                 if(saveDialog.isShowing())saveDialog.dismiss();
@@ -232,8 +231,6 @@ public class ReviewFragment extends BottomSheetDialogFragment implements View.On
 
         Glide.with(getActivity()).load(user.getImage()).into(binding.userImageReview);
 
-        adsViewModel = ViewModelProviders.of(this).get(AdsViewModel.class);
-
     }
 
     private String getCurrentDate(){
@@ -244,7 +241,7 @@ public class ReviewFragment extends BottomSheetDialogFragment implements View.On
     }
     private void saveReview(){
         adsViewModel.addReview(user,ad ,adReview);
-        adsViewModel.liveDataAddReview.observe(this, new Observer<AdReview>() {
+        adsViewModel.adReviewLiveData.observe(this, new Observer<AdReview>() {
             @Override
             public void onChanged(AdReview review) {
                 if(saveDialog.isShowing())saveDialog.dismiss();

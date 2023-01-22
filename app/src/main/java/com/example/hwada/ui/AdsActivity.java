@@ -29,7 +29,7 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
     AdsAdapter adapter;
     ArrayList<Ad> adsList;
 
-    AdsViewModel viewModel;
+    AdsViewModel adsViewModel = AdsViewModel.getInstance();
     User user;
     String category;
     String subCategory;
@@ -48,6 +48,7 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
         super.onCreate(savedInstanceState);
         binding = ActivityAdsBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
+
         setContentView(view);
         Intent intent = getIntent();
         user = intent.getParcelableExtra("user");
@@ -55,7 +56,6 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
         category = intent.getStringExtra("category");
         subCategory = intent.getStringExtra("subCategory");
         subSubCategory = intent.getStringExtra("subSubCategory");
-        viewModel = ViewModelProviders.of(this).get(AdsViewModel.class);
 
         debounceHandler = new Handler();
 
@@ -114,8 +114,8 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
     }
 
     private void getAllAds(String category ,String subCategory){
-        viewModel.getAllAds(category,subCategory);
-        viewModel.allAdsLiveData.observe(this, ads -> {
+
+        adsViewModel.getAllAds(category,subCategory).observe(this, ads -> {
             adsList = ads;
 
             if(user!=null) {
@@ -125,8 +125,7 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
     }
 
     private void getAllAds(String category ,String subCategory, String subSubCategory){
-        viewModel.getAllAds(category,subCategory,subSubCategory);
-        viewModel.allAdsLiveData.observe(this, ads -> {
+        adsViewModel.getAllAds(category,subCategory,subSubCategory).observe(this, ads -> {
             adsList = ads;
             if(user!=null) {
                 adapter.setList(user,ads,this,this);

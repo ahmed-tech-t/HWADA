@@ -67,13 +67,13 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
         ad = getArguments().getParcelable("ad");
         user =getArguments().getParcelable("user");
 
-        adsViewModel = ViewModelProviders.of(this).get(AdsViewModel.class);
         reportViewModel = ViewModelProviders.of(this).get(ReportViewModel.class);
         if(userMadeReview()){
             binding.linearLayoutCommentBox.setVisibility(View.GONE);
         }else binding.linearLayoutCommentBox.setVisibility(View.VISIBLE);
         Glide.with(getActivity()).load(user.getImage()).into(binding.userImageAdReview);
 
+        adsViewModel = AdsViewModel.getInstance();
         binding.tvReviewsAdReviewsFragment.setText(getString(R.string.reviews)+"("+ad.getAdReviews().size()+")");
         setReviewsToRecycler();
     }
@@ -189,8 +189,7 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
     }
 
     private void deleteReview(AdReview review,int pos){
-        adsViewModel.deleteReview(user,ad,review);
-        adsViewModel.liveDataDeleteReview.observe(this, new Observer<Boolean>() {
+        adsViewModel.deleteReview(user,ad,review).observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean success) {
                 if(success){

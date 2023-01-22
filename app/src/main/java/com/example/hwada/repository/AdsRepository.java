@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.Map;
 
 public class AdsRepository {
-    private Application application ;
     MutableLiveData<ArrayList<Ad>> favAdsMutableLiveData;
 
     private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
@@ -408,7 +407,6 @@ public class AdsRepository {
               review.setId(reviewDocRef.getId());
               transaction.set(reviewDocRef,review);
 
-               Log.e(TAG, "apply: this is user ad" );
                //set ad review to user ad collection
                reviewDocRef = getUserAdColRef(ad).document(ad.getId()).collection(DbHandler.Reviews).document(review.getId());
                transaction.set(reviewDocRef, review);
@@ -429,7 +427,6 @@ public class AdsRepository {
            @Override
            public void onComplete(@NonNull Task<Object> task) {
                if(task.isSuccessful()){
-                   Log.e(TAG, "onComplete: "+review.getBody() );
                    reviewMutableLiveData.setValue(review);
                }
            }
@@ -534,11 +531,8 @@ public class AdsRepository {
         return deleteReviewMutableLiveDate;
     }
 
-    public AdsRepository(Application application){
-        this.application = application;
-
+    public AdsRepository(){
         favAdsMutableLiveData = new MutableLiveData<>();
-
     }
 
 }

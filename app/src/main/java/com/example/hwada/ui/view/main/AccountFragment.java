@@ -23,6 +23,8 @@ import com.example.hwada.Model.User;
 import com.example.hwada.Model.WorkingTime;
 import com.example.hwada.R;
 import com.example.hwada.databinding.FragmentAccountBinding;
+import com.example.hwada.ui.CategoryActivity;
+import com.example.hwada.ui.MyAdsActivity;
 import com.example.hwada.ui.auth.SignUpOrLoginIn;
 import com.example.hwada.ui.auth.SplashActivity;
 import com.example.hwada.ui.view.EditUserFragment;
@@ -50,6 +52,7 @@ public class AccountFragment extends Fragment implements View.OnClickListener , 
         binding.tvEditUserProfileAccountFragment.setOnClickListener(this);
         binding.userImageAccountFragment.setOnClickListener(this);
         binding.tvLogout.setOnClickListener(this);
+        binding.tvMyAds.setOnClickListener(this);
         return binding.getRoot();
     }
 
@@ -60,7 +63,8 @@ public class AccountFragment extends Fragment implements View.OnClickListener , 
         }else if (v.getId() == binding.userImageAccountFragment.getId()){
             callBottomSheet(new ImageFragment());
         }else if(v.getId()== binding.tvMyAds.getId()){
-
+           Log.e(TAG, "onClick: " );
+            callMyAdsActivity();
         }else if(v.getId() == binding.tvLogout.getId()){
             authViewModel.logout();
            goToSplashActivity();
@@ -118,5 +122,15 @@ public class AccountFragment extends Fragment implements View.OnClickListener , 
         user.setAboutYou(u.getAboutYou());
         user.setPhone(u.getPhone());
         setDataToFields();
+    }
+
+    public void callMyAdsActivity(){
+        try {
+            Intent intent = new Intent(getContext(), MyAdsActivity.class);
+            intent.putExtra("user",user);
+            startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

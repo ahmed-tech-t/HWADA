@@ -89,9 +89,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
           Intent intent = getIntent();
           user = (User) intent.getParcelableExtra("user");
 
-          Log.e(TAG, "onCreate: "+user.getAboutYou());
-          Log.e(TAG, "onCreate: "+user.getPhone());
-
           // ##############
           binding.addFloatActionBar.setOnClickListener(this);
           //****************

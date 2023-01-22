@@ -49,8 +49,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class HomeFragment extends Fragment implements View.OnClickListener , AdsAdapter.OnItemListener ,MapsFragment.GettingPassedData {
-    AdsViewModel adsViewModel;
-
+    AdsViewModel adsViewModel = AdsViewModel.getInstance();
     AdsAdapter adapter;
     RecyclerView mainRecycler;
 
@@ -64,8 +63,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
     ArrayList<Ad> adsList;
     LinearLayout foodCategory, workerCategory, freelanceCategory, handcraftCategory;
 
-    String TAG = "HomeFragment";
-
+    private static final String TAG = "HomeFragment";
     @SuppressLint("MissingInflatedId")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -79,26 +77,36 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
         return v;
     }
 
-
     public void setAdsToList() {
         try {
             adapter = new AdsAdapter();
             mainRecycler.setAdapter(adapter);
            // TODO
-            adsViewModel.getAllAds();
-            adsViewModel.allAdsLiveData.observe(getActivity(), ads -> {
+            adsViewModel.getAllAds().observe(getActivity(), ads -> {
                 adsList = ads;
                 if (user != null) {
                     adapter.setList(user, ads, getContext(),this);
                 }
             });
-
             mainRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
         } catch (Exception e) {
             e.printStackTrace();
             reportError(e);
         }
     }
+
+
+    public void newAdObserver(){
+        adsViewModel.newAdLiveData.observe(getActivity(), new Observer<Ad>() {
+            @Override
+            public void onChanged(Ad ad) {
+                user.getAds().add(ad);
+                adapter.addItem(ad);
+                adapter.notifyDataSetChanged();
+            }
+        });
+    }
+
 
     @Override
     public void onClick(View v) {
@@ -157,9 +165,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
                   }
               }
           });
-          adsViewModel = ViewModelProviders.of(getActivity()).get(AdsViewModel.class);
           setAdsToList();
-
+          newAdObserver();
 
       }catch (Exception e){
           reportError(e);
@@ -239,15 +246,5 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
         fragment.setArguments(bundle);
         fragment.show(getChildFragmentManager(),fragment.getTag());
     }
-    private void adObserver(){
-        adsViewModel.liveDataGetNewAdd.observe(getActivity(), new Observer<Ad>() {
-            @Override
-            public void onChanged(Ad ad) {
-                Log.e(TAG, "onChanged: ad" );
-                user.getAds().add(ad);
-                adapter.notifyDataSetChanged();
-            }
-        });
 
-    }
 }

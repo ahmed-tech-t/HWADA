@@ -6,6 +6,8 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 
 import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.AdReview;
@@ -14,55 +16,52 @@ import com.example.hwada.repository.AdsRepository;
 
 import java.util.ArrayList;
 
-public class AdsViewModel extends AndroidViewModel {
+public class AdsViewModel extends ViewModel {
     AdsRepository repository ;
+    public static AdsViewModel adsViewModel = new AdsViewModel();
+
+    public LiveData<Ad> newAdLiveData = new MutableLiveData<>();
+    public LiveData<AdReview> adReviewLiveData = new MutableLiveData<>();
+
     private static final String TAG = "AdsViewModel";
-    public LiveData<ArrayList<Ad>> allAdsLiveData;
-
-    public LiveData<ArrayList<Ad>> favAdsLiveData;
-
-    public LiveData<Ad> liveDataGetNewAdd;
-    public LiveData<AdReview> liveDataAddReview;
-    public LiveData<AdReview> liveDataEditReview;
-
-    public LiveData<Boolean> liveDataDeleteReview;
-
-    public LiveData<Boolean>liveDataUpdateImagesSuccess;
 
 
-
-
-    public void deleteReview(User user,Ad ad,AdReview review){
-        liveDataDeleteReview = repository.deleteReview(user , ad ,review);
+    private AdsViewModel (){
+       repository = new AdsRepository();
+    }
+    public static AdsViewModel getInstance(){
+       return adsViewModel;
     }
 
-    public void editReview(Ad ad , AdReview review){
-        liveDataEditReview =repository.editReview(ad,review);
+    public LiveData<Boolean> deleteReview(User user,Ad ad,AdReview review){
+        return repository.deleteReview(user , ad ,review);
     }
+
+    public LiveData<AdReview> editReview(Ad ad , AdReview review){
+        return repository.editReview(ad,review);
+    }
+
     public void addReview(User user,Ad ad,AdReview review){
-        liveDataAddReview = repository.addReview(user , ad ,review);
+        adReviewLiveData = repository.addReview(user , ad ,review);
     }
+
     public void addNewAd(Ad newAd ){
-        liveDataGetNewAdd =  repository.addNewAd(newAd);
+        newAdLiveData = repository.addNewAd(newAd);
     }
 
     public void updateImages(Ad newAd){
         //liveDataUpdateImagesSuccess = repository.updateImages(newAd);
     }
-    public void getAllAds(String category ,String subCategory){
-        allAdsLiveData = repository.getAllAds(category,subCategory);
+    public LiveData<ArrayList<Ad>> getAllAds(String category ,String subCategory){
+       return repository.getAllAds(category,subCategory);
     }
-    public void getAllAds(String category ,String subCategory,String subSubCategory){
-        allAdsLiveData = repository.getAllAds(category,subCategory,subSubCategory);
+    public LiveData<ArrayList<Ad>> getAllAds(String category ,String subCategory,String subSubCategory){
+        return repository.getAllAds(category,subCategory,subSubCategory);
     }
-    public void getAllAds(){
-        allAdsLiveData = repository.getAllAds();
+    public LiveData<ArrayList<Ad>> getAllAds(){
+        return repository.getAllAds();
     }
 
-    public void getFavAds(User user){favAdsLiveData = repository.getFavAds(user);}
+    public LiveData<ArrayList<Ad>> getFavAds(User user){return repository.getFavAds(user);}
 
-    public AdsViewModel(@NonNull Application application) {
-        super(application);
-        repository = new AdsRepository(application);
-    }
 }

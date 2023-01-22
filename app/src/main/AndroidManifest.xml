@@ -3,12 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
-
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29" />
-
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
-
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="29" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
@@ -23,7 +24,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.HWADA"
         tools:targetApi="31">
-
+        <activity
+            android:name=".ui.MyAdsActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -55,16 +62,15 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
-
         <activity
             android:name=".ui.auth.SignUpOrLoginIn"
             android:exported="false"
-            android:windowSoftInputMode="stateHidden|adjustResize"/>
+            android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".ui.auth.SplashActivity"
             android:exported="true"
-            android:windowSoftInputMode="stateHidden|adjustResize"
-            android:theme="@style/Theme.SplashTheme">
+            android:theme="@style/Theme.SplashTheme"
+            android:windowSoftInputMode="stateHidden|adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -78,18 +84,18 @@
         <activity
             android:name=".ui.auth.Login"
             android:exported="true"
-            android:windowSoftInputMode="stateHidden|adjustResize"/>
+            android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".ui.auth.SignUp"
             android:exported="true"
-            android:windowSoftInputMode="stateHidden|adjustResize"/>
+            android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"
             android:windowSoftInputMode="stateHidden|stateUnspecified|adjustPan">
-        <meta-data
-            android:name="android.app.lib_name"
-            android:value="" />
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
         </activity>
     </application>
 

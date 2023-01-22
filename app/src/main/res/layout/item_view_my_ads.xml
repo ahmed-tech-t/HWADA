@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    app:cardCornerRadius="15dp"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <LinearLayout
+            android:id="@+id/linearLayout_1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RelativeLayout
+                android:id="@id/relative_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/item_user_image"
+                    android:layout_width="110dp"
+                    android:layout_height="110dp"
+                    android:adjustViewBounds="true"
+                    android:background="@color/white_blue"
+                    android:padding="5dp"
+                    android:scaleType="matrix"
+                    android:layout_centerHorizontal="true"
+
+                    app:strokeColor="@null"
+                    app:shapeAppearanceOverlay="@style/RoundedSquare" />
+
+
+            </RelativeLayout>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp">
+
+                    <TextView
+                        android:id="@+id/item_jop_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentTop="true"
+                        android:text="@string/title"
+                        android:textSize="20dp"
+
+                        android:layout_marginTop="10dp"
+                        android:textColor="@color/black" />
+
+
+                    <ImageView
+                        android:id="@+id/review_item_menu"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentEnd="true"
+                        android:padding="5dp"
+                        android:layout_marginEnd="10dp"
+                        android:src="@drawable/option_icon" />
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/price_item"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="price"
+                    android:textColor="@color/black"
+                    android:backgroundTint="@color/white_blue"
+                    android:background="@drawable/curved_background_white_blue"
+                    android:padding="5dp"
+                    android:layout_marginTop="10dp"/>
+
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/item_description"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
+            android:paddingLeft="5dp"
+            android:maxLength="240"
+            android:textColor="@color/gray"
+            android:textSize="15dp" />
+
+        <TextView
+            android:id="@+id/item_user_rating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableStart="@drawable/star_icon"
+            android:drawablePadding="5dp"
+            android:gravity="bottom"
+            android:layout_marginStart="15dp"
+            android:text="3.5"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/gray"
+            android:textSize="12dp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="10dp"
+            android:padding="5dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/item_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="start"
+                    android:drawableStart="@drawable/calendar_icon"
+                    android:drawablePadding="5dp"
+                    android:gravity="bottom"
+                    android:text="4 sep"
+                    android:textSize="12dp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv_view_item_view_my_ads"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableStart="@drawable/eye_icon"
+                    android:text="5"
+                    android:drawablePadding="3dp"
+                    android:layout_marginStart="40dp"
+                    android:textColor="@color/black"
+                    />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
