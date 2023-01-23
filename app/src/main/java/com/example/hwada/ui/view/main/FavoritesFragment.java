@@ -39,7 +39,7 @@ public class FavoritesFragment extends Fragment implements FavoritesAdapter.OnIt
 
     User user;
     FavViewModel favViewModel ;
-
+    UserViewModel userViewModel ;
     FavoritesAdapter adapter;
     ArrayList<Ad> adsList;
     String category ;
@@ -73,11 +73,22 @@ public class FavoritesFragment extends Fragment implements FavoritesAdapter.OnIt
         user = getArguments().getParcelable("user");
         category = getArguments().getString("category");
         favViewModel = FavViewModel.getInstance() ;
+        userViewModel = UserViewModel.getInstance();
 
+        setUserObserver();
         setAdsToList();
         if(adsList.size()==0) binding.mainRecycler.setBackgroundColor(Color.WHITE);
     }
-
+    private void setUserObserver(){
+        userViewModel.getUser().observe(getActivity(), new Observer<User>() {
+            @Override
+            public void onChanged(User u) {
+                Log.e(TAG, "onChanged: user observer " );
+                user = u;
+                setAdsToList();
+            }
+        });
+    }
     public void setAdsToList() {
         adapter = new FavoritesAdapter();
         try {
@@ -110,6 +121,7 @@ public class FavoritesFragment extends Fragment implements FavoritesAdapter.OnIt
         int favPos = adIsInFavList(adId);
         if (favPos != -1) {
             user.getFavAds().remove(favPos);
+            userViewModel.setUser(user);
             favViewModel.deleteFavAd(user.getUId(),adsList.get(position));
             adapter.removeOneItem(position);
             favImage.setImageResource(R.drawable.fav_uncheck_icon);
@@ -118,6 +130,7 @@ public class FavoritesFragment extends Fragment implements FavoritesAdapter.OnIt
             if (user.getFavAds() == null) user.initFavAdsList();
             favViewModel.addFavAd(user.getUId(),adsList.get(position));
             user.getFavAds().add(adsList.get(position));
+            userViewModel.setUser(user);
             favImage.setImageResource(R.drawable.fav_checked_icon);
         }
     }

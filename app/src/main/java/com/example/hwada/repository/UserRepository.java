@@ -42,18 +42,14 @@ import java.util.Map;
 public class UserRepository {
 
     private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
-    Application application;
-    private DebugRepository debugRepository;
 
     private FirebaseAuth auth ;
 
     MutableLiveData<User> userMutableLiveData;
 
-    public UserRepository (Application application){
-        this.application = application ;
+    public UserRepository (){
         this.auth = FirebaseAuth.getInstance();
         userMutableLiveData = new MutableLiveData<>();
-        debugRepository = new DebugRepository(application);
     }
 
 
@@ -133,15 +129,4 @@ public class UserRepository {
         return updateMyReviewsSuccess;
     }
 
-    private void reportError(Exception e){
-        StringWriter sw = new StringWriter();
-        e.printStackTrace(new PrintWriter(sw));
-        debugRepository.reportError(new DebugModel(getCurrentDate(),e.getMessage(),sw.toString(),TAG, Build.VERSION.SDK_INT,false));
-    }
-    private String getCurrentDate(){
-        Calendar calendar = Calendar.getInstance();
-        Date date = calendar.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        return  sdf.format(date);
-    }
 }

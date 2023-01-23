@@ -164,27 +164,32 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
       try {
           user = getArguments().getParcelable("user");
           debugViewModel = ViewModelProviders.of(this).get(DebugViewModel.class);
-          userViewModel = ViewModelProviders.of(getActivity()).get(UserViewModel.class);
+          userViewModel = UserViewModel.getInstance();
           adsViewModel =  AdsViewModel.getInstance() ;
           favViewModel = FavViewModel.getInstance() ;
 
-          ViewModelProviders.of(getActivity()).get(UserViewModel.class).getUser().observe(getActivity(), new Observer<User>() {
-              @Override
-              public void onChanged(User u) {
-                  user = u;
-                  if(user.getLocation()!=null){
-                      if (isAdded()) userAddress.setText(getUserAddress(user.getLocation()));
-                  }else {
-                      reportError("location is null in home fragment");
-                  }
-              }
-          });
+         setUserObserver();
           setAdsToList();
           newAdObserver();
 
       }catch (Exception e){
           reportError(e);
       }
+    }
+
+    private void setUserObserver(){
+        userViewModel.getUser().observe(getActivity(), new Observer<User>() {
+            @Override
+            public void onChanged(User u) {
+                Log.e(TAG, "onChanged: user observer " );
+                user = u;
+                setAdsToList();
+                if(user.getLocation()!=null){
+                    if (isAdded()) userAddress.setText(getUserAddress(user.getLocation()));
+                }else {
+                    reportError("location is null in home fragment");
+                }            }
+        });
     }
 
     @Override
@@ -209,6 +214,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
         if (favPos != -1) {
 
             user.getFavAds().remove(favPos);
+            userViewModel.setUser(user);
             favViewModel.deleteFavAd(user.getUId(),adsList.get(position));
             favImage.setImageResource(R.drawable.fav_uncheck_icon);
 
@@ -217,6 +223,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
 
             favViewModel.addFavAd(user.getUId(),adsList.get(position));
             user.getFavAds().add(adsList.get(position));
+            userViewModel.setUser(user);
             favImage.setImageResource(R.drawable.fav_checked_icon);
         }
     }

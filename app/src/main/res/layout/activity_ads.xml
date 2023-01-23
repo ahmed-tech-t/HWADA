@@ -83,7 +83,7 @@
             android:background="@color/white_gray" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/home_food_recycler"
+            android:id="@+id/recycler_ads_activity"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="5dp"

@@ -76,6 +76,7 @@ public class AccountFragment extends Fragment implements View.OnClickListener , 
         super.onActivityCreated(savedInstanceState);
         user = getArguments().getParcelable("user");
         authViewModel = ViewModelProviders.of(getActivity()).get(AuthViewModel.class);
+        userViewModel = UserViewModel.getInstance();
         setDataToFields();
         setUserObserver();
     }
@@ -91,8 +92,7 @@ public class AccountFragment extends Fragment implements View.OnClickListener , 
     }
 
     private void setUserObserver(){
-        userViewModel = ViewModelProviders.of(getActivity()).get(UserViewModel.class);
-        ViewModelProviders.of(getActivity()).get(UserViewModel.class).getUser().observe(getActivity(), new Observer<User>() {
+        userViewModel.getUser().observe(getActivity(), new Observer<User>() {
             @Override
             public void onChanged(User u) {
                 user = u;

@@ -3,6 +3,7 @@ package com.example.hwada.ui;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -22,6 +23,7 @@ import com.example.hwada.databinding.ActivityAdsBinding;
 import com.example.hwada.ui.view.ad.AdvertiserFragment;
 import com.example.hwada.viewmodel.AdsViewModel;
 import com.example.hwada.viewmodel.FavViewModel;
+import com.example.hwada.viewmodel.UserViewModel;
 
 import java.util.ArrayList;
 
@@ -29,9 +31,11 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
 
     AdsAdapter adapter;
     ArrayList<Ad> adsList;
-    FavViewModel favViewModel ;
 
+    FavViewModel favViewModel ;
+    UserViewModel userViewModel ;
     AdsViewModel adsViewModel;
+
     User user;
     String category;
     String subCategory;
@@ -55,6 +59,7 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
         Intent intent = getIntent();
         user = intent.getParcelableExtra("user");
 
+        userViewModel = UserViewModel.getInstance();
         adsViewModel =  AdsViewModel.getInstance() ;
         favViewModel = FavViewModel.getInstance() ;
 
@@ -63,25 +68,34 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
         subSubCategory = intent.getStringExtra("subSubCategory");
 
         debounceHandler = new Handler();
+        initRecycler();
+        setUserObserver();
 
-        setAdsToList();
+    }
+    private void setUserObserver(){
+        userViewModel.getUser().observe(this, new Observer<User>() {
+            @Override
+            public void onChanged(User u) {
+                Log.e(TAG, "onChanged: user observer " );
+                user = u;
+                initRecycler();
+            }
+        });
     }
 
-    public void setAdsToList() {
+    private void initRecycler() {
         adapter = new AdsAdapter();
         try {
-            binding.homeFoodRecycler.setAdapter(adapter);
-
+            binding.recyclerAdsActivity.setAdapter(adapter);
             if(category.equals(DbHandler.FREELANCE)){
                 getAllAds(category,subCategory,subSubCategory);
             }else getAllAds(category,subCategory);
-
-            binding.homeFoodRecycler.setLayoutManager(new LinearLayoutManager(this));
+            binding.recyclerAdsActivity.setLayoutManager(new LinearLayoutManager(this));
         }catch (Exception e){
             e.printStackTrace();
         }
-
     }
+
     @Override
     public void onClick(View v) {
 
@@ -110,6 +124,7 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
         if (favPos != -1) {
 
             user.getFavAds().remove(favPos);
+            userViewModel.setUser(user);
             favViewModel.deleteFavAd(user.getUId(),adsList.get(position));
             favImage.setImageResource(R.drawable.fav_uncheck_icon);
 
@@ -118,6 +133,7 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
 
             favViewModel.addFavAd(user.getUId(),adsList.get(position));
             user.getFavAds().add(adsList.get(position));
+            userViewModel.setUser(user);
             favImage.setImageResource(R.drawable.fav_checked_icon);
         }
     }
@@ -168,6 +184,7 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
         bundle.putParcelable("ad",adsList.get(pos));
         bundle.putParcelableArrayList("adsList",adsList);
         fragment.setArguments(bundle);
+
         fragment.show(getSupportFragmentManager(),fragment.getTag());
     }
 }

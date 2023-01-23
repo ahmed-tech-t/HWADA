@@ -23,6 +23,7 @@ import androidx.fragment.app.Fragment;
 
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.viewpager2.widget.ViewPager2;
@@ -51,6 +52,7 @@ import com.example.hwada.ui.view.ad.menu.AdWorkingTimeFragment;
 import com.example.hwada.ui.view.map.MapPreviewFragment;
 import com.example.hwada.viewmodel.DebugViewModel;
 import com.example.hwada.viewmodel.FavViewModel;
+import com.example.hwada.viewmodel.UserViewModel;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
@@ -80,6 +82,8 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
     FragmentTransaction fragmentTransaction;
     int PASSED_POSITION =0;
     DebugViewModel debugViewModel ;
+
+    UserViewModel userViewModel;
 
     int PERMISSION_ID = 3 ;
     AdsGridAdapter adsGridAdapter;
@@ -148,6 +152,7 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         adsList = getArguments().getParcelableArrayList("adsList");
         PASSED_POSITION = getArguments().getInt("pos");
 
+        userViewModel =  UserViewModel.getInstance();
         favViewModel = FavViewModel.getInstance();
         binding.buttonCallAdvertiserFragment.setOnClickListener(this);
 
@@ -159,9 +164,20 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         }catch (Exception e){
             reportError(e);
         }
+        setUserObserver();
         setToSlider();
         setMenuTapLayoutListener();
         setAdGridAdapter();
+    }
+
+    private void setUserObserver(){
+        userViewModel.getUser().observe(getActivity(), new Observer<User>() {
+            @Override
+            public void onChanged(User u) {
+                Log.e(TAG, "onChanged: user observer " );
+                user = u;
+            }
+        });
     }
 
     @Override
@@ -336,6 +352,7 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         int favPos = adIsInFavList(adId);
         if (favPos != -1) {
             user.getFavAds().remove(favPos);
+            userViewModel.setUser(user);
             favViewModel.deleteFavAd(user.getUId(),adsList.get(position));
             favImage.setImageResource(R.drawable.fav_uncheck_icon);
 
@@ -343,6 +360,7 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
             if (user.getFavAds() == null) user.initFavAdsList();
             favViewModel.addFavAd(user.getUId(),adsList.get(position));
             user.getFavAds().add(adsList.get(position));
+            userViewModel.setUser(user);
             favImage.setImageResource(R.drawable.fav_checked_icon);
         }
     }

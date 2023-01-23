@@ -94,15 +94,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
           //****************
           callFragment(new HomeFragment(), "home");
           navBarOnSelected();
-          userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+          userViewModel = UserViewModel.getInstance();
           debugViewModel = ViewModelProviders.of(this).get(DebugViewModel.class);
-          ViewModelProviders.of(this).get(UserViewModel.class).getUser().observe(this, new Observer<User>() {
-              @Override
-              public void onChanged(User u) {
-                  user = u;
-              }
-          });
 
+          setUserObserver();
 
           if (user.getLocation() != null) {
               userViewModel.setUser(user);
@@ -121,8 +116,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
       }
     }
 
-    public void setLocationDialog() {
 
+    private void setUserObserver(){
+        userViewModel.getUser().observe(this, new Observer<User>() {
+            @Override
+            public void onChanged(User u) {
+                Log.e(TAG, "onChanged: user observer " );
+                user = u;
+            }
+        });
+    }
+    public void setLocationDialog() {
      try {
          if (locationDialog != null && locationDialog.isShowing()) return;
 

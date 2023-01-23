@@ -20,22 +20,25 @@ import com.example.hwada.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserViewModel extends AndroidViewModel {
+public class UserViewModel extends ViewModel {
+
+    private static UserViewModel userViewModel = new UserViewModel();
+    public static UserViewModel getInstance(){
+        return  userViewModel;
+    }
+    private UserViewModel(){
+        userRepository = new UserRepository();
+    }
+
+
    private MutableLiveData<User> userMutableLiveData = new MutableLiveData<>();
+   public MutableLiveData<User> updateUserLiveData = new MutableLiveData<>();
 
     private static final String TAG = "UserViewModel";
     UserRepository userRepository ;
-    public LiveData<User> updateUserLiveData ;
+
+
     public LiveData<Boolean> updateLocationSuccessLiveData;
-    public LiveData<Boolean> updateImageSuccessLiveData;
-    public LiveData<Boolean> updateFavAdsSuccessLiveData;
-    public LiveData<Boolean> updateMyReviewsSuccessLiveData;
-
-
-    public UserViewModel(@NonNull Application application){
-       super(application);
-       userRepository = new UserRepository(application);
-   }
 
     public void setUser(User user){
         userMutableLiveData.setValue(user);
@@ -49,8 +52,9 @@ public class UserViewModel extends AndroidViewModel {
     }
 
     public void updateLocationUser(LocationCustom location){
-        updateLocationSuccessLiveData =userRepository.updateUserLocation(location);
+        updateLocationSuccessLiveData = userRepository.updateUserLocation(location);
     }
+    /*
     public void updateImageSuccess(User user){
         updateImageSuccessLiveData = userRepository.updateUserImage(user);
     }
@@ -60,4 +64,6 @@ public class UserViewModel extends AndroidViewModel {
     public void setUpdateMyReviewsSuccess(User user){
         updateMyReviewsSuccessLiveData = userRepository.updateUserReviews(user);
     }
+
+ */
 }

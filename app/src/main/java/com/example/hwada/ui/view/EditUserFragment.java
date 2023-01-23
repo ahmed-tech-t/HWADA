@@ -133,7 +133,7 @@ public class EditUserFragment extends BottomSheetDialogFragment implements View.
                     .load(user.getImage())
                     .into(binding.userImageEditUserFragment);
         }
-        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        userViewModel = UserViewModel.getInstance();
     }
 
     @Override
