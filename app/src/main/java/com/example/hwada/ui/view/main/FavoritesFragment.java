@@ -47,6 +47,7 @@ public class FavoritesFragment extends Fragment implements FavoritesAdapter.OnIt
     FragmentFavoritesBinding binding ;
     private static final String TAG = "FavoritesFragment";
 
+    AdvertiserFragment advertiserFragment ;
 
     //debounce mechanism
     private static final long DEBOUNCE_DELAY_MILLIS = 500;
@@ -61,7 +62,7 @@ public class FavoritesFragment extends Fragment implements FavoritesAdapter.OnIt
         // Inflate the layout for this fragment
         binding = FragmentFavoritesBinding.inflate(inflater, container, false);
         debounceHandler = new Handler();
-
+        advertiserFragment = new AdvertiserFragment();
         return  binding.getRoot();
     }
 
@@ -85,7 +86,7 @@ public class FavoritesFragment extends Fragment implements FavoritesAdapter.OnIt
             public void onChanged(User u) {
                 Log.e(TAG, "onChanged: user observer " );
                 user = u;
-                setAdsToList();
+                if(advertiserFragment.isAdded()) setAdsToList();
             }
         });
     }
@@ -168,13 +169,12 @@ public class FavoritesFragment extends Fragment implements FavoritesAdapter.OnIt
     }
 
     private void callAdvertiserFragment(int pos){
-        AdvertiserFragment fragment = new AdvertiserFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelable("user", user);
         bundle.putParcelable("ad",adsList.get(pos));
         bundle.putParcelableArrayList("adsList",adsList);
         bundle.putInt("pos",pos);
-        fragment.setArguments(bundle);
-        fragment.show(getChildFragmentManager(),fragment.getTag());
+        advertiserFragment.setArguments(bundle);
+        advertiserFragment.show(getChildFragmentManager(),advertiserFragment.getTag());
     }
 }

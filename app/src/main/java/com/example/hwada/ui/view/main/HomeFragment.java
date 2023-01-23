@@ -66,6 +66,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
     ArrayList<Ad> adsList;
     LinearLayout foodCategory, workerCategory, freelanceCategory, handcraftCategory;
 
+    AdvertiserFragment advertiserFragment ;
+
     //debounce mechanism
     private static final long DEBOUNCE_DELAY_MILLIS = 500;
     private boolean debouncing = false;
@@ -84,7 +86,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
         mainRecycler = v.findViewById(R.id.main_recycler);
         userAddress.setOnClickListener(this);
         debounceHandler = new Handler();
-
+        advertiserFragment = new AdvertiserFragment();
         return v;
     }
 
@@ -92,7 +94,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
         try {
             adapter = new AdsAdapter();
             mainRecycler.setAdapter(adapter);
-           // TODO
+            // TODO
             adsViewModel.getAllAds().observe(getActivity(), ads -> {
                 adsList = ads;
                 if (user != null) {
@@ -183,7 +185,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
             public void onChanged(User u) {
                 Log.e(TAG, "onChanged: user observer " );
                 user = u;
-                setAdsToList();
+
+                if (advertiserFragment.isAdded()) {
+                    setAdsToList();
+                }
+
                 if(user.getLocation()!=null){
                     if (isAdded()) userAddress.setText(getUserAddress(user.getLocation()));
                 }else {
@@ -277,14 +283,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
         return  sdf.format(date);
     }
     private void callAdvertiserFragment(int pos){
-        AdvertiserFragment fragment = new AdvertiserFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelable("user", user);
         bundle.putParcelable("ad",adsList.get(pos));
         bundle.putParcelableArrayList("adsList",adsList);
         bundle.putInt("pos",pos);
-        fragment.setArguments(bundle);
-        fragment.show(getChildFragmentManager(),fragment.getTag());
+        advertiserFragment.setArguments(bundle);
+        advertiserFragment.show(getChildFragmentManager(),advertiserFragment.getTag());
     }
 
     @Override

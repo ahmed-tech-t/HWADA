@@ -49,6 +49,9 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
 
     private static final String TAG = "AdsActivity";
     ActivityAdsBinding binding;
+
+    AdvertiserFragment advertiserFragment ;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,6 +70,8 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
         subCategory = intent.getStringExtra("subCategory");
         subSubCategory = intent.getStringExtra("subSubCategory");
 
+        advertiserFragment = new AdvertiserFragment();
+
         debounceHandler = new Handler();
         initRecycler();
         setUserObserver();
@@ -78,7 +83,7 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
             public void onChanged(User u) {
                 Log.e(TAG, "onChanged: user observer " );
                 user = u;
-                initRecycler();
+                if(advertiserFragment.isAdded()) initRecycler();
             }
         });
     }
@@ -177,14 +182,12 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
     }
 
     private void callAdvertiserFragment(int pos){
-        AdvertiserFragment fragment = new AdvertiserFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelable("user", user);
         bundle.putInt("pos",pos);
         bundle.putParcelable("ad",adsList.get(pos));
         bundle.putParcelableArrayList("adsList",adsList);
-        fragment.setArguments(bundle);
-
-        fragment.show(getSupportFragmentManager(),fragment.getTag());
+        advertiserFragment.setArguments(bundle);
+        advertiserFragment.show(getSupportFragmentManager(),advertiserFragment.getTag());
     }
 }
