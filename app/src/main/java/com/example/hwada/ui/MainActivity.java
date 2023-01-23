@@ -319,22 +319,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void callFragment(Fragment fragment,String tag){
-      try {
-
-          if(getSupportFragmentManager().findFragmentByTag(tag) == null) {
-              Bundle bundle = new Bundle();
-              bundle.putParcelable("user", user);
-              fragment.setArguments(bundle);
-              fragmentManager = getSupportFragmentManager();
-              fragmentTransaction = fragmentManager.beginTransaction();
-              fragmentTransaction.setCustomAnimations(R.anim.to_up, R.anim.to_down);
-              //set Animation
-              fragmentTransaction.replace(R.id.main_fragment_container, fragment, tag);
-              fragmentTransaction.commit();
+          try {
+              if(getSupportFragmentManager().findFragmentByTag(tag) == null) {
+                  Bundle bundle = new Bundle();
+                  bundle.putParcelable("user", user);
+                  fragment.setArguments(bundle);
+                  fragmentManager = getSupportFragmentManager();
+                  fragmentTransaction = fragmentManager.beginTransaction();
+                  //fragmentTransaction.setCustomAnimations(R.anim.to_up, R.anim.to_down);
+                  //set Animation
+                  fragmentTransaction.replace(R.id.main_fragment_container, fragment, tag);
+                  fragmentTransaction.commit();
+              }
+          }catch (Exception e){
+              reportError(e);
           }
-      }catch (Exception e){
-          reportError(e);
-      }
     }
     public void callAddNewAdActivity(String category ,String subCategory , String subSubCategory){
        try {

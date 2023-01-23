@@ -43,30 +43,35 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull HomeViewHolder holder, int position) {
 
+        //post image
         Glide.with(mContext).load(list.get(position).getImagesUrl().get(0)).into(holder.userImage);
+
+        //fav image
+        if(adIsInFavList(list.get(position).getId())){
+            holder.favImage.setImageResource(R.drawable.fav_checked_icon);
+        }else holder.favImage.setImageResource(R.drawable.fav_uncheck_icon);
+
+        //title
         holder.title.setText(list.get(position).getTitle());
+
+        //description
         if(list.get(position).getDescription().length()>237){
             holder.description.setText(list.get(position).getDescription().substring(0, Math.min(list.get(position).getDescription().length(), 237))+"...");
         }else{
             holder.description.setText(list.get(position).getDescription());
         }
+
+        //rating
         holder.rating.setText(list.get(position).getRating()+"");
 
         list.get(position).setDistance(Float.valueOf(getDistance(position)));
         holder.distance.setText(list.get(position).getDistance()+"");
         holder.date.setText(handleTime(list.get(position).getDate()));
+
+        //price
         DecimalFormat decimalFormat = new DecimalFormat("#");
         String formattedValue = decimalFormat.format(list.get(position).getPrice());
-
         holder.price.setText(mContext.getString(R.string.from) + "  " + formattedValue);
-        if(user!=null){
-            //TODO list.get(position).getId();
-           String  adId = String.valueOf(position);
-            if(adIsInFavList(adId)){
-             holder.favImage.setImageResource(R.drawable.fav_checked_icon);
-            }
-        }
-
     }
 
     @Override
@@ -114,10 +119,14 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
         void getItemPosition(int position);
         void getFavItemPosition(int position , ImageView imageView);
     }
-    private boolean adIsInFavList(String id){
+    private boolean adIsInFavList(String id) {
+        for (int i =  0 ; i < user.getFavAds().size(); i++) {
+            if(user.getFavAds().get(i).getId().equals(id)){
+                return true;
+            }
+        }
         return false;
     }
-
     public String handleTime(String dateString){
         try {
             SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy , h:mm a");

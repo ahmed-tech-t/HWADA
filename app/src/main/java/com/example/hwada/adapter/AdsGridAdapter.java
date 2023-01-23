@@ -42,6 +42,12 @@ public class AdsGridAdapter extends RecyclerView.Adapter<AdsGridAdapter.HomeView
         Glide.with(mContext).load(list.get(position).getImagesUrl().get(0)).into(holder.userImage);
         holder.title.setText(list.get(position).getTitle());
 
+        //fav image
+        if(adIsInFavList(list.get(position).getId())){
+            holder.favImage.setImageResource(R.drawable.fav_checked_icon);
+        }else holder.favImage.setImageResource(R.drawable.fav_uncheck_icon);
+
+
         holder.rating.setText(list.get(position).getRating()+"");
 
         list.get(position).setDistance(Float.valueOf(getDistance(position)));
@@ -105,10 +111,14 @@ public class AdsGridAdapter extends RecyclerView.Adapter<AdsGridAdapter.HomeView
         void getItemPosition(int position);
         void getFavItemPosition(int position , ImageView imageView);
     }
-    private boolean adIsInFavList(String id){
+    private boolean adIsInFavList(String id) {
+        for (int i =  0 ; i < user.getFavAds().size(); i++) {
+            if(user.getFavAds().get(i).getId().equals(id)){
+                return true;
+            }
+        }
         return false;
     }
-
     public String handleTime(String dateString){
         try {
             SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy , h:mm a");

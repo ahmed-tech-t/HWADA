@@ -42,7 +42,7 @@ public class SplashActivity extends AppCompatActivity {
                     goToAuthInActivity();
                     finish();
                 } else {
-                    getUserFromDatabase(user.getuId());
+                    getUserFromDatabase(user.getUId());
                 }
             });
         }catch (Exception e){

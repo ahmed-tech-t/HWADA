@@ -21,6 +21,7 @@ import com.example.hwada.database.DbHandler;
 import com.example.hwada.databinding.ActivityAdsBinding;
 import com.example.hwada.ui.view.ad.AdvertiserFragment;
 import com.example.hwada.viewmodel.AdsViewModel;
+import com.example.hwada.viewmodel.FavViewModel;
 
 import java.util.ArrayList;
 
@@ -28,8 +29,9 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
 
     AdsAdapter adapter;
     ArrayList<Ad> adsList;
+    FavViewModel favViewModel ;
 
-    AdsViewModel adsViewModel = AdsViewModel.getInstance();
+    AdsViewModel adsViewModel;
     User user;
     String category;
     String subCategory;
@@ -52,6 +54,9 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
         setContentView(view);
         Intent intent = getIntent();
         user = intent.getParcelableExtra("user");
+
+        adsViewModel =  AdsViewModel.getInstance() ;
+        favViewModel = FavViewModel.getInstance() ;
 
         category = intent.getStringExtra("category");
         subCategory = intent.getStringExtra("subCategory");
@@ -100,17 +105,29 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
 
     @Override
     public void getFavItemPosition(int position, ImageView favImage) {
-        String adId = String.valueOf(position);
-        if(adIsInFavList(adId)){
-            user.removeAdFromAdsFavList(position);
+        String adId = adsList.get(position).getId();
+        int favPos = adIsInFavList(adId);
+        if (favPos != -1) {
+
+            user.getFavAds().remove(favPos);
+            favViewModel.deleteFavAd(user.getUId(),adsList.get(position));
             favImage.setImageResource(R.drawable.fav_uncheck_icon);
-        }else if(!adIsInFavList(adId))  {
-            user.setAdToFavAdsList(adsList.get(position));
+
+        } else {
+            if (user.getFavAds() == null) user.initFavAdsList();
+
+            favViewModel.addFavAd(user.getUId(),adsList.get(position));
+            user.getFavAds().add(adsList.get(position));
             favImage.setImageResource(R.drawable.fav_checked_icon);
         }
     }
-    private boolean adIsInFavList(String id){
-        return false;
+    private int adIsInFavList(String id) {
+        for (int i =  0 ; i < user.getFavAds().size(); i++) {
+            if(user.getFavAds().get(i).getId().equals(id)){
+                return i;
+            }
+        }
+        return -1;
     }
 
     private void getAllAds(String category ,String subCategory){

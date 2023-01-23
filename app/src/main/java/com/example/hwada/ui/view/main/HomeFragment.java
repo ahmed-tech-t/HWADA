@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,6 +36,7 @@ import com.example.hwada.ui.view.map.MapsFragment;
 import com.example.hwada.ui.view.ad.AdvertiserFragment;
 import com.example.hwada.viewmodel.AdsViewModel;
 import com.example.hwada.viewmodel.DebugViewModel;
+import com.example.hwada.viewmodel.FavViewModel;
 import com.example.hwada.viewmodel.UserViewModel;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
@@ -49,7 +51,8 @@ import java.util.List;
 import java.util.Locale;
 
 public class HomeFragment extends Fragment implements View.OnClickListener , AdsAdapter.OnItemListener ,MapsFragment.GettingPassedData {
-    AdsViewModel adsViewModel = AdsViewModel.getInstance();
+    AdsViewModel adsViewModel;
+    FavViewModel favViewModel ;
     AdsAdapter adapter;
     RecyclerView mainRecycler;
 
@@ -63,6 +66,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
     ArrayList<Ad> adsList;
     LinearLayout foodCategory, workerCategory, freelanceCategory, handcraftCategory;
 
+    //debounce mechanism
+    private static final long DEBOUNCE_DELAY_MILLIS = 500;
+    private boolean debouncing = false;
+    private Runnable debounceRunnable;
+    private Handler debounceHandler;
+
     private static final String TAG = "HomeFragment";
     @SuppressLint("MissingInflatedId")
     @Override
@@ -74,6 +83,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
         userAddress = v.findViewById(R.id.user_address);
         mainRecycler = v.findViewById(R.id.main_recycler);
         userAddress.setOnClickListener(this);
+        debounceHandler = new Handler();
+
         return v;
     }
 
@@ -154,6 +165,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
           user = getArguments().getParcelable("user");
           debugViewModel = ViewModelProviders.of(this).get(DebugViewModel.class);
           userViewModel = ViewModelProviders.of(getActivity()).get(UserViewModel.class);
+          adsViewModel =  AdsViewModel.getInstance() ;
+          favViewModel = FavViewModel.getInstance() ;
+
           ViewModelProviders.of(getActivity()).get(UserViewModel.class).getUser().observe(getActivity(), new Observer<User>() {
               @Override
               public void onChanged(User u) {
@@ -175,26 +189,45 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
 
     @Override
     public void getItemPosition(int position) {
-      callAdvertiserFragment(position);
+        if (debouncing) {
+            // Remove the previous runnable
+            debounceHandler.removeCallbacks(debounceRunnable);
+        } else {
+            // This is the first click, so open the item
+            debouncing = true;
+            callAdvertiserFragment(position);
+        }
+        // Start a new timer
+        debounceRunnable = () -> debouncing = false;
+        debounceHandler.postDelayed(debounceRunnable, DEBOUNCE_DELAY_MILLIS);
     }
 
     @Override
     public void getFavItemPosition(int position, ImageView favImage) {
-        String adId = String.valueOf(position);
-        if (adIsInFavList(adId)) {
-            user.removeAdFromAdsFavList(position);
-            userViewModel.setUser(user);
+        String adId = adsList.get(position).getId();
+        int favPos = adIsInFavList(adId);
+        if (favPos != -1) {
+
+            user.getFavAds().remove(favPos);
+            favViewModel.deleteFavAd(user.getUId(),adsList.get(position));
             favImage.setImageResource(R.drawable.fav_uncheck_icon);
-        } else if (!adIsInFavList(adId)) {
+
+        } else {
             if (user.getFavAds() == null) user.initFavAdsList();
-            user.setAdToFavAdsList(adsList.get(position));
-            userViewModel.setUser(user);
+
+            favViewModel.addFavAd(user.getUId(),adsList.get(position));
+            user.getFavAds().add(adsList.get(position));
             favImage.setImageResource(R.drawable.fav_checked_icon);
         }
     }
 
-    private boolean adIsInFavList(String id) {
-        return false;
+    private int adIsInFavList(String id) {
+        for (int i =  0 ; i < user.getFavAds().size(); i++) {
+            if(user.getFavAds().get(i).getId().equals(id)){
+                return i;
+            }
+        }
+        return -1;
     }
 
     private void initCategoryLayout(View v) {
@@ -247,4 +280,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
         fragment.show(getChildFragmentManager(),fragment.getTag());
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        Log.e(TAG, "onResume: " );
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.e(TAG, "onPause: " );
+    }
 }

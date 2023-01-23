@@ -75,7 +75,7 @@ private DebugRepository debugRepository;
 
     public MutableLiveData<User> createUserInFirestoreIfNotExists(User authenticatedUser) {
         MutableLiveData<User> newUserMutableLiveData = new MutableLiveData<>();
-        DocumentReference uidRef = usersRef.document(authenticatedUser.getuId());
+        DocumentReference uidRef = usersRef.document(authenticatedUser.getUId());
         uidRef.get().addOnCompleteListener(uidTask -> {
             if (uidTask.isSuccessful()) {
                 DocumentSnapshot document = uidTask.getResult();

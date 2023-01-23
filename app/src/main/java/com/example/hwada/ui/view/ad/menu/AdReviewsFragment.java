@@ -31,6 +31,7 @@ import com.example.hwada.databinding.FragmentAdReviewsBinding;
 import com.example.hwada.ui.view.ad.ReviewFragment;
 import com.example.hwada.viewmodel.AdsViewModel;
 import com.example.hwada.viewmodel.ReportViewModel;
+import com.example.hwada.viewmodel.ReviewViewModel;
 
 import java.util.ArrayList;
 
@@ -41,8 +42,10 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
     ReviewAdapter adapter;
     Ad ad ;
     User user ;
-    AdsViewModel adsViewModel ;
+
     ReportViewModel reportViewModel ;
+    ReviewViewModel reviewViewModel ;
+
     private static final String TAG = "AdReviewsFragment";
     //debounce mechanism
     private static final long DEBOUNCE_DELAY_MILLIS = 500;
@@ -73,7 +76,7 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
         }else binding.linearLayoutCommentBox.setVisibility(View.VISIBLE);
         Glide.with(getActivity()).load(user.getImage()).into(binding.userImageAdReview);
 
-        adsViewModel = AdsViewModel.getInstance();
+        reviewViewModel =ViewModelProviders.of(this).get(ReviewViewModel.class);
         binding.tvReviewsAdReviewsFragment.setText(getString(R.string.reviews)+"("+ad.getAdReviews().size()+")");
         setReviewsToRecycler();
     }
@@ -154,7 +157,7 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
 
     private boolean userMadeReview(){
         for (AdReview a: ad.getAdReviews()) {
-            if(a.getAuthorId().equals(user.getuId())){
+            if(a.getAuthorId().equals(user.getUId())){
                 return true;
             }
         }
@@ -185,11 +188,11 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
     }
 
     private boolean isUserReview(int pos){
-        return user.getuId().equals(ad.getAdReviews().get(pos).getAuthorId());
+        return user.getUId().equals(ad.getAdReviews().get(pos).getAuthorId());
     }
 
     private void deleteReview(AdReview review,int pos){
-        adsViewModel.deleteReview(user,ad,review).observe(this, new Observer<Boolean>() {
+        reviewViewModel.deleteReview(user,ad,review).observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean success) {
                 if(success){

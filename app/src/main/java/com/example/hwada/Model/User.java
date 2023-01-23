@@ -128,11 +128,11 @@ public class User implements Parcelable {
     public void setRating(float rating) {
         this.rating = rating;
     }
-    public String getuId() {
-        return uId;
+    public String getUId() {
+        return this.uId;
     }
 
-    public void setuId(String uId) {
+    public void setUId(String uId) {
         this.uId = uId;
     }
 

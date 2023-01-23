@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide;
 import com.example.hwada.Model.Ad;
 import com.example.hwada.R;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.FavoritesViewHolder> {
@@ -29,6 +30,9 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
 
     @Override
     public void onBindViewHolder(@NonNull FavoritesViewHolder holder, int position) {
+        //fav image
+        holder.favImage.setImageResource(R.drawable.fav_checked_icon);
+
         Glide.with(mContext).load(list.get(position).getImagesUrl().get(0)).into(holder.userImage);
         holder.title.setText(list.get(position).getTitle());
         if(list.get(position).getDescription().length()>237){
@@ -39,8 +43,10 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
         holder.rating.setText(list.get(position).getRating()+"");
         holder.distance.setText(list.get(position).getDistance()+"");
         holder.date.setText(list.get(position).getDate());
-        holder.price.setText(mContext.getString(R.string.from) + "  " + list.get(position).getPrice() + "");
-    }
+        //price
+        DecimalFormat decimalFormat = new DecimalFormat("#");
+        String formattedValue = decimalFormat.format(list.get(position).getPrice());
+        holder.price.setText(mContext.getString(R.string.from) + "  " + formattedValue);    }
 
     @Override
     public int getItemCount() {

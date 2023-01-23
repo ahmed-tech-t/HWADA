@@ -18,6 +18,7 @@ import com.example.hwada.Model.MyReview;
 import com.example.hwada.Model.User;
 import com.example.hwada.database.DbHandler;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -53,7 +54,7 @@ public class SplashRepository {
                user.isAuthenticated = false;
                isUserAuthenticateInFirebaseMutableLiveData.setValue(user);
            } else {
-               user.setuId( firebaseUser.getUid());
+               user.setUId(firebaseUser.getUid());
                user.isAuthenticated = true;
                isUserAuthenticateInFirebaseMutableLiveData.setValue(user);
            }
@@ -66,7 +67,6 @@ public class SplashRepository {
 
 
     public MutableLiveData<User> addUserToLiveData(String id){
-        Log.e(TAG, "getUser: 4" );
         MutableLiveData<User> userMutableLiveData = new MutableLiveData<>();
         DocumentReference userRef = rootRef.collection(DbHandler.userCollection).document(id);
         userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -74,25 +74,25 @@ public class SplashRepository {
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if(task.isSuccessful()){
 
-                    DocumentSnapshot snapshot = task.getResult();
-                    String id = snapshot.getString("uId");
-                    String username =snapshot.getString("username");
-                    LocationCustom locationCustom = snapshot.get("location",LocationCustom.class);
-                    float rating = snapshot.getDouble("rating").floatValue();
-                    String email = snapshot.getString("email");
-                    String phone =snapshot.getString("phone");
-                    String aboutYou =snapshot.getString("aboutYou");
-                    String image =snapshot.getString("image");
-                    String gender =snapshot.getString("gender");
+                    DocumentSnapshot userSnapshot = task.getResult();
+                    String userId = userSnapshot.getString("uId");
+                    String username = userSnapshot.getString("username");
+                    LocationCustom userLocation = userSnapshot.get("location",LocationCustom.class);
+                    float userRating = userSnapshot.getDouble("rating").floatValue();
+                    String userEmail = userSnapshot.getString("email");
+                    String userPhone = userSnapshot.getString("phone");
+                    String userAbout = userSnapshot.getString("aboutYou");
+                    String userImage = userSnapshot.getString("image");
+                    String userGender = userSnapshot.getString("gender");
 
 
                     ArrayList adsList = new ArrayList<>();
                     ArrayList favAdsList = new ArrayList<>();
                     ArrayList myReviewsList = new ArrayList<>();
 
-                    CollectionReference adsRef = snapshot.getReference().collection(DbHandler.adCollection);
-                    CollectionReference favRef = snapshot.getReference().collection(DbHandler.favAds);
-                    CollectionReference myReviewsRef = snapshot.getReference().collection(DbHandler.MyReviews);
+                    CollectionReference adsRef = userSnapshot.getReference().collection(DbHandler.adCollection);
+                    CollectionReference favRef = userSnapshot.getReference().collection(DbHandler.favAdsCollection);
+                    CollectionReference myReviewsRef = userSnapshot.getReference().collection(DbHandler.MyReviews);
 
                     adsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
@@ -153,70 +153,103 @@ public class SplashRepository {
                                 adsList.add(new Ad(id,authorId,authorName,authorLocation,title,description,date,distance,rating,category,subCategory,subSubCategory,adReviews,price,daysSchedule,imagesUrl,views));
 
                             }
-
-                            favRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            myReviewsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                 @Override
                                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                     for (QueryDocumentSnapshot snapshot : task.getResult()) {
 
-                                        String authorId = snapshot.getString("authorId");
-                                        LocationCustom authorLocation = (LocationCustom) snapshot.get("authorLocation");
-                                        String authorName = snapshot.getString("authorName");
+                                        String reviewId = snapshot.getString("reviewId");
+                                        String addId = snapshot.getString("addId");
                                         String category = snapshot.getString("category");
-                                        String date =snapshot.getString("date");
-                                        DaysSchedule daysSchedule = snapshot.get("daysSchedule", DaysSchedule.class);
-                                        String description = snapshot.getString("description");
-                                        float distance = (float) snapshot.getDouble("distance").floatValue();
-                                        String id =snapshot.getString("id");
-                                        ArrayList<String>imagesUrl = (ArrayList<String>) snapshot.get("imagesUrl");
-                                        double price = snapshot.getDouble("price");
-                                        float rating = (float) snapshot.getDouble("rating").floatValue();
                                         String subCategory = snapshot.getString("subCategory");
                                         String subSubCategory = snapshot.getString("subSubCategory");
-                                        String title = snapshot.getString("title");
-                                        int views = (int) snapshot.get("views");
 
-                                        ArrayList<AdReview> adReviews = new ArrayList<>();
-                                        CollectionReference reviewsRef =  snapshot.getReference().collection(DbHandler.Reviews);
-                                        reviewsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                                if (task.isSuccessful()) {
-                                                    for (QueryDocumentSnapshot reviewSnapshot : task.getResult()) {
-                                                        String id =  reviewSnapshot.getString("id");
-                                                        String authorId = reviewSnapshot.getString("authorId");
-                                                        String authorImage = reviewSnapshot.getString("authorImage");
-                                                        String authorName =reviewSnapshot.getString("authorName");
-                                                        String body = reviewSnapshot.getString("body");
-                                                        String date =reviewSnapshot.getString("date");
-                                                        float rating = reviewSnapshot.getDouble("rating").floatValue();
-                                                        adReviews.add(new AdReview(id,date,authorId,authorName,authorImage,rating,body));
-                                                    }
-                                                }
-                                            }
-                                        });
-                                        favAdsList.add(new Ad(id,authorId,authorName,authorLocation,title,description,date,distance,rating,category,subCategory,subSubCategory,adReviews,price,daysSchedule,imagesUrl,views));
 
+                                        myReviewsList.add(new MyReview(addId ,reviewId,category,subCategory,subSubCategory));
                                     }
-
-                                    myReviewsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    favRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                         @Override
                                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                            for (QueryDocumentSnapshot snapshot : task.getResult()) {
 
-                                                String reviewId = snapshot.getString("reviewId");
-                                                String addId = snapshot.getString("addId");
-                                                String category = snapshot.getString("category");
-                                                String subCategory = snapshot.getString("subCategory");
-                                                String subSubCategory = snapshot.getString("subSubCategory");
+                                            int favAdLength = task.getResult().size();
+                                            Log.e(TAG, "onComplete: "+favAdLength);
+                                            for (QueryDocumentSnapshot favSnapshot : task.getResult()) {
+                                                String adId = favSnapshot.getString("adId");
+                                                String category = favSnapshot.getString("category");
+                                                String subCategory = favSnapshot.getString("subCategory");
+                                                String subSubCategory = favSnapshot.getString("subSubCategory");
+                                                DocumentReference tempRef = getTempAdColRef(category, subCategory, subSubCategory).document(adId);
+                                                tempRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                    @Override
+                                                    public void onSuccess(DocumentSnapshot tempSnapshot) {
+                                                        Log.e(TAG, "onComplete: 3");
+                                                        String authorId = tempSnapshot.getString("authorId");
+                                                        LocationCustom authorLocation = tempSnapshot.get("authorLocation", LocationCustom.class);
+                                                        String authorName = tempSnapshot.getString("authorName");
+                                                        String category = tempSnapshot.getString("category");
+                                                        String date = tempSnapshot.getString("date");
+                                                        DaysSchedule daysSchedule = tempSnapshot.get("daysSchedule", DaysSchedule.class);
+                                                        String description = tempSnapshot.getString("description");
+                                                        float distance = 0;
+                                                        if (tempSnapshot.getDouble("distance") != null) {
+                                                            distance = tempSnapshot.getDouble("distance").floatValue();
+                                                        }
+                                                        String id = tempSnapshot.getString("id");
+                                                        ArrayList<String> imagesUrl = (ArrayList<String>) tempSnapshot.get("imagesUrl");
+                                                        double price = 0;
+                                                        if (tempSnapshot.getDouble("price") != null) {
+                                                            price = tempSnapshot.getDouble("price");
+                                                        }
+                                                        float rating = 0;
+                                                        if (tempSnapshot.getDouble("rating") != null) {
+                                                            rating = tempSnapshot.getDouble("rating").floatValue();
+                                                        }
+                                                        String subCategory = tempSnapshot.getString("subCategory");
+                                                        String subSubCategory = tempSnapshot.getString("subSubCategory");
+                                                        String title = tempSnapshot.getString("title");
+                                                        int views = 0;
+                                                        if (tempSnapshot.getLong("views") != null) {
+                                                            views = tempSnapshot.getLong("views").intValue();
+                                                        }
 
+                                                        ArrayList<AdReview> adReviews = new ArrayList<>();
+                                                        CollectionReference reviewsRef = tempSnapshot.getReference().collection(DbHandler.Reviews);
+                                                        reviewsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                                if (task.isSuccessful()) {
+                                                                    Log.e(TAG, "onComplete: 4");
+                                                                    for (QueryDocumentSnapshot reviewSnapshot : task.getResult()) {
+                                                                        String id = reviewSnapshot.getString("id");
+                                                                        String authorId = reviewSnapshot.getString("authorId");
+                                                                        String authorImage = reviewSnapshot.getString("authorImage");
+                                                                        String authorName = reviewSnapshot.getString("authorName");
+                                                                        String body = reviewSnapshot.getString("body");
+                                                                        String date = reviewSnapshot.getString("date");
+                                                                        float rating = 0;
+                                                                        if (reviewSnapshot.getDouble("rating") != null) {
+                                                                            rating = reviewSnapshot.getDouble("rating").floatValue();
+                                                                        }
+                                                                        adReviews.add(new AdReview(id, date, authorId, authorName, authorImage, rating, body));
+                                                                    }
+                                                                }
+                                                            }
+                                                        });
+                                                        favAdsList.add(new Ad(id, authorId, authorName, authorLocation, title, description, date, distance, rating, category, subCategory, subSubCategory, adReviews, price, daysSchedule, imagesUrl, views));
 
-                                                myReviewsList.add(new MyReview(addId ,reviewId,category,subCategory,subSubCategory));
+                                                        if(favAdsList.size() == favAdLength){
+                                                            User user = new User(userId,username,userLocation,favAdsList,adsList,userRating,myReviewsList,userEmail,userPhone,userAbout,userImage,userImage);
+                                                            userMutableLiveData.setValue(user);
+                                                        }
+                                                    }
+
+                                                });
                                             }
 
-                                            User user = new User(id,username,locationCustom,favAdsList,adsList,rating,myReviewsList,email,phone,aboutYou,image,gender);
-                                            Log.e(TAG, "onComplete: " );
-                                            userMutableLiveData.setValue(user);
+                                            if(favAdLength == 0){
+                                                User user = new User(userId,username,userLocation,favAdsList,adsList,userRating,myReviewsList,userEmail,userPhone,userAbout,userImage,userImage);
+                                                userMutableLiveData.setValue(user);
+                                            }
                                         }
                                     });
                                 }
@@ -230,31 +263,6 @@ public class SplashRepository {
 
     }
 
-
-/*
-    public MutableLiveData<User> addUserToLiveData(String uid) {
-        MutableLiveData<User> userMutableLiveData = new MutableLiveData<>();
-        try {
-           usersRef.document(uid).get().addOnCompleteListener(userTask -> {
-               if (userTask.isSuccessful()) {
-                   DocumentSnapshot document = userTask.getResult();
-                   if(document.exists()) {
-                       User user = document.toObject(User.class);
-                       userMutableLiveData.setValue(user);
-                   }
-               } else {
-                   reportError(userTask.getException());
-                   Log.e(TAG,userTask.getException().getMessage());
-               }
-           });
-       }catch (Exception e){
-           e.printStackTrace();
-           reportError(e);
-       }
-        return userMutableLiveData;
-    }
-
- */
     private void reportError(Exception e){
         StringWriter sw = new StringWriter();
         e.printStackTrace(new PrintWriter(sw));
@@ -266,4 +274,20 @@ public class SplashRepository {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return  sdf.format(date);
     }
+    private CollectionReference getTempAdColRef(String category , String subCategory , String subSubCategory){
+        CollectionReference adColRef;
+        if (category.equals(DbHandler.FREELANCE)){
+            adColRef = rootRef.collection(DbHandler.adCollection)
+                    .document(category)
+                    .collection(category)
+                    .document(subCategory)
+                    .collection(subSubCategory);
+        }else {
+            adColRef = rootRef.collection(DbHandler.adCollection)
+                    .document(category)
+                    .collection(subCategory);
+        }
+        return adColRef;
+    }
+
 }

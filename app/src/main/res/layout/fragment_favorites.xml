@@ -5,17 +5,20 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="60dp"
-    android:paddingBottom="?attr/actionBarSize"
 
     tools:context=".ui.view.main.FavoritesFragment">
 
         <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/main_recycler"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="20dp"
-        android:orientation="vertical">
-
-    </androidx.recyclerview.widget.RecyclerView>
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/recycle_view_background"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:paddingBottom="?actionBarSize"
+            android:clipToPadding="false"
+            android:orientation="vertical"/>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,6 +1,7 @@
 package com.example.hwada.ui.view.main;
 
 import android.annotation.SuppressLint;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,6 +13,8 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,81 +24,111 @@ import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
 import com.example.hwada.adapter.FavoritesAdapter;
+import com.example.hwada.databinding.FragmentFavoritesBinding;
 import com.example.hwada.ui.view.ad.AdvertiserFragment;
 import com.example.hwada.viewmodel.AdsViewModel;
+import com.example.hwada.viewmodel.FavViewModel;
 import com.example.hwada.viewmodel.UserViewModel;
+
+import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
 
 
 public class FavoritesFragment extends Fragment implements FavoritesAdapter.OnItemListener {
 
-    UserViewModel userViewModel ;
     User user;
+    FavViewModel favViewModel ;
+
     FavoritesAdapter adapter;
-    AdsViewModel adsViewModel = AdsViewModel.getInstance();
-    RecyclerView mainRecycler;
     ArrayList<Ad> adsList;
     String category ;
 
-    String TAG = "FavoritesFragment";
+    FragmentFavoritesBinding binding ;
+    private static final String TAG = "FavoritesFragment";
+
+
+    //debounce mechanism
+    private static final long DEBOUNCE_DELAY_MILLIS = 500;
+    private boolean debouncing = false;
+    private Runnable debounceRunnable;
+    private Handler debounceHandler;
+
     @SuppressLint("MissingInflatedId")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v= inflater.inflate(R.layout.fragment_favorites, container, false);
-         mainRecycler = v.findViewById(R.id.main_recycler);
-        return  v;
+        binding = FragmentFavoritesBinding.inflate(inflater, container, false);
+        debounceHandler = new Handler();
+
+        return  binding.getRoot();
     }
 
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        //get user from Main activity
-        userViewModel = ViewModelProviders.of(getActivity()).get(UserViewModel.class);
-        ViewModelProviders.of(getActivity()).get(UserViewModel.class).getUser().observe(getActivity(), new Observer<User>() {
-            @Override
-            public void onChanged(User u) {
-                user = u;
-            }
-        });
+
+        user = getArguments().getParcelable("user");
+        category = getArguments().getString("category");
+        favViewModel = FavViewModel.getInstance() ;
+
         setAdsToList();
+        if(adsList.size()==0) binding.mainRecycler.setBackgroundColor(Color.WHITE);
     }
 
     public void setAdsToList() {
         adapter = new FavoritesAdapter();
         try {
-            mainRecycler.setAdapter(adapter);
-
-            adsViewModel.getFavAds(user).observe(getActivity(), ads -> {
-                adsList = ads;
-                adapter.setList(ads,getContext(),this);
-            });
-            mainRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
+            Log.e(TAG, "setAdsToList: " );
+            binding.mainRecycler.setAdapter(adapter);
+            adsList = getAdsList();
+            adapter.setList(adsList,getContext(),this);
+            binding.mainRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
         }catch (Exception e){
             e.printStackTrace();
         }
     }
-
     @Override
     public void getItemPosition(int position) {
-        AdvertiserFragment fragment = new AdvertiserFragment();
-        Bundle bundle = new Bundle();
-        bundle.putParcelable("user", user);
-        bundle.putParcelable("ad",adsList.get(position));
-        fragment.setArguments(bundle);
-        fragment.show((getActivity()).getSupportFragmentManager(),fragment.getTag());
-
+        if (debouncing) {
+            // Remove the previous runnable
+            debounceHandler.removeCallbacks(debounceRunnable);
+        } else {
+            // This is the first click, so open the item
+            debouncing = true;
+            callAdvertiserFragment(position);
+        }
+        // Start a new timer
+        debounceRunnable = () -> debouncing = false;
+        debounceHandler.postDelayed(debounceRunnable, DEBOUNCE_DELAY_MILLIS);
+    }
+    @Override
+    public void getFavItemPosition(int position, ImageView favImage) {
+        String adId = adsList.get(position).getId();
+        int favPos = adIsInFavList(adId);
+        if (favPos != -1) {
+            user.getFavAds().remove(favPos);
+            favViewModel.deleteFavAd(user.getUId(),adsList.get(position));
+            adapter.removeOneItem(position);
+            favImage.setImageResource(R.drawable.fav_uncheck_icon);
+            if(adsList.size()==0) binding.mainRecycler.setBackgroundColor(Color.WHITE);
+        } else {
+            if (user.getFavAds() == null) user.initFavAdsList();
+            favViewModel.addFavAd(user.getUId(),adsList.get(position));
+            user.getFavAds().add(adsList.get(position));
+            favImage.setImageResource(R.drawable.fav_checked_icon);
+        }
     }
 
-    @Override
-    public void getFavItemPosition(int position, ImageView imageView) {
-        imageView.setImageResource(R.drawable.fav_uncheck_icon);
-        user.removeAdFromAdsFavList(position);
-        userViewModel.setUser(user);
-        adapter.removeOneItem(position);
+    private int adIsInFavList(String id) {
+        for (int i =  0 ; i < user.getFavAds().size(); i++) {
+            if(user.getFavAds().get(i).getId().equals(id)){
+                return i;
+            }
+        }
+        return -1;
     }
 
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -109,5 +142,26 @@ public class FavoritesFragment extends Fragment implements FavoritesAdapter.OnIt
         super.onResume();
         category = getArguments().getString("category");
         user = getArguments().getParcelable("user");
+    }
+
+    private ArrayList<Ad> getAdsList(){
+        ArrayList<Ad> temp = new ArrayList<>();
+        for (Ad ad : user.getFavAds()) {
+            if(ad.getCategory().equals(category)){
+                temp.add(ad);
+            }
+        }
+        return temp;
+    }
+
+    private void callAdvertiserFragment(int pos){
+        AdvertiserFragment fragment = new AdvertiserFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("user", user);
+        bundle.putParcelable("ad",adsList.get(pos));
+        bundle.putParcelableArrayList("adsList",adsList);
+        bundle.putInt("pos",pos);
+        fragment.setArguments(bundle);
+        fragment.show(getChildFragmentManager(),fragment.getTag());
     }
 }

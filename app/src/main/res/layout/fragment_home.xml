@@ -19,7 +19,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:padding="5dp"
             android:src="@drawable/arrow_up" />
 
 
@@ -282,10 +281,7 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             android:paddingBottom="?actionBarSize"
             android:clipToPadding="false"
-            android:orientation="vertical">
-
-
-        </androidx.recyclerview.widget.RecyclerView>
+            android:orientation="vertical"/>
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     </LinearLayout>

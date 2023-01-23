@@ -38,8 +38,10 @@ import com.example.hwada.Model.MyReview;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
 import com.example.hwada.databinding.FragmentReviewBinding;
+import com.example.hwada.repository.ReviewRepo;
 import com.example.hwada.ui.view.map.MapsFragment;
 import com.example.hwada.viewmodel.AdsViewModel;
+import com.example.hwada.viewmodel.ReviewViewModel;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
@@ -61,7 +63,9 @@ public class ReviewFragment extends BottomSheetDialogFragment implements View.On
     Dialog saveDialog ;
     private GettingPassedData mListener;
     int PASSED_POS ;
-    AdsViewModel adsViewModel = AdsViewModel.getInstance();
+
+    ReviewViewModel reviewViewModel ;
+
     FragmentReviewBinding binding;
     String TAG ="ReviewFragment";
     @SuppressLint("MissingInflatedId")
@@ -162,7 +166,7 @@ public class ReviewFragment extends BottomSheetDialogFragment implements View.On
 
                 adReview.setBody(binding.reviewEt.getText().toString());
                 if(tag =="add"){
-                    adReview.setAuthorId(user.getuId());
+                    adReview.setAuthorId(user.getUId());
                     adReview.setAuthorName(user.getUsername());
                     adReview.setAuthorImage(user.getImage());
                     adReview.setDate(getCurrentDate());
@@ -187,7 +191,7 @@ public class ReviewFragment extends BottomSheetDialogFragment implements View.On
     }
 
     private void editReview() {
-        adsViewModel.editReview(ad,adReview).observe(this, new Observer<AdReview>() {
+        reviewViewModel.editReview(ad,adReview).observe(this, new Observer<AdReview>() {
             @Override
             public void onChanged(AdReview review) {
                 if(saveDialog.isShowing())saveDialog.dismiss();
@@ -230,7 +234,7 @@ public class ReviewFragment extends BottomSheetDialogFragment implements View.On
         }
 
         Glide.with(getActivity()).load(user.getImage()).into(binding.userImageReview);
-
+        reviewViewModel =ViewModelProviders.of(this).get(ReviewViewModel.class);
     }
 
     private String getCurrentDate(){
@@ -240,8 +244,8 @@ public class ReviewFragment extends BottomSheetDialogFragment implements View.On
         return  sdf.format(date);
     }
     private void saveReview(){
-        adsViewModel.addReview(user,ad ,adReview);
-        adsViewModel.adReviewLiveData.observe(this, new Observer<AdReview>() {
+        reviewViewModel.addReview(user,ad ,adReview);
+        reviewViewModel.adReviewLiveData.observe(this, new Observer<AdReview>() {
             @Override
             public void onChanged(AdReview review) {
                 if(saveDialog.isShowing())saveDialog.dismiss();

@@ -21,7 +21,6 @@ public class AdsViewModel extends ViewModel {
     public static AdsViewModel adsViewModel = new AdsViewModel();
 
     public LiveData<Ad> newAdLiveData = new MutableLiveData<>();
-    public LiveData<AdReview> adReviewLiveData = new MutableLiveData<>();
 
     private static final String TAG = "AdsViewModel";
 
@@ -33,17 +32,7 @@ public class AdsViewModel extends ViewModel {
        return adsViewModel;
     }
 
-    public LiveData<Boolean> deleteReview(User user,Ad ad,AdReview review){
-        return repository.deleteReview(user , ad ,review);
-    }
 
-    public LiveData<AdReview> editReview(Ad ad , AdReview review){
-        return repository.editReview(ad,review);
-    }
-
-    public void addReview(User user,Ad ad,AdReview review){
-        adReviewLiveData = repository.addReview(user , ad ,review);
-    }
 
     public void addNewAd(Ad newAd ){
         newAdLiveData = repository.addNewAd(newAd);
@@ -61,7 +50,5 @@ public class AdsViewModel extends ViewModel {
     public LiveData<ArrayList<Ad>> getAllAds(){
         return repository.getAllAds();
     }
-
-    public LiveData<ArrayList<Ad>> getFavAds(User user){return repository.getFavAds(user);}
-
+    
 }

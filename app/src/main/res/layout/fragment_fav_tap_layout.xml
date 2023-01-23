@@ -42,11 +42,10 @@ tools:context=".ui.view.main.FavTapLayoutFragment">
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/view_pager_fav"
+
+    <FrameLayout
+        android:id="@+id/holder_fav_tab_layout_fragment"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:background="@android:color/white"/>
+        android:layout_height="match_parent"/>
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

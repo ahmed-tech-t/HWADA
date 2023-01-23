@@ -75,7 +75,7 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
     }
     private void initAd(Intent intent){
         newAd = new Ad();
-        newAd.setAuthorId(user.getuId());
+        newAd.setAuthorId(user.getUId());
         newAd.setAuthorName(user.getUsername());
         newAd.setAuthorLocation(user.getLocation());
         newAd.setCategory(intent.getStringExtra("category"));

@@ -27,6 +27,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -49,6 +50,7 @@ import com.example.hwada.ui.view.ad.menu.AdReviewsFragment;
 import com.example.hwada.ui.view.ad.menu.AdWorkingTimeFragment;
 import com.example.hwada.ui.view.map.MapPreviewFragment;
 import com.example.hwada.viewmodel.DebugViewModel;
+import com.example.hwada.viewmodel.FavViewModel;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
@@ -72,6 +74,7 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
 
     BottomSheetBehavior bottomSheetBehavior;
     BottomSheetDialog dialog ;
+    FavViewModel favViewModel ;
     ArrayList<Ad> adsList;
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
@@ -85,6 +88,14 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
     private static final String TAG = "AdvertiserFragment";
 
     FragmentAdvertiserBinding binding;
+
+
+    //debounce mechanism
+    private static final long DEBOUNCE_DELAY_MILLIS = 500;
+    private boolean debouncing = false;
+    private Runnable debounceRunnable;
+    private Handler debounceHandler;
+
     @SuppressLint("MissingInflatedId")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -93,6 +104,8 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         binding = FragmentAdvertiserBinding.inflate(inflater, container, false);
         binding.arrowAdvertiser.setOnClickListener(this);
         binding.tvAdLocationAdvertiserFragment.setOnClickListener(this);
+        debounceHandler = new Handler();
+
         return binding.getRoot();
     }
 
@@ -135,7 +148,7 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         adsList = getArguments().getParcelableArrayList("adsList");
         PASSED_POSITION = getArguments().getInt("pos");
 
-
+        favViewModel = FavViewModel.getInstance();
         binding.buttonCallAdvertiserFragment.setOnClickListener(this);
 
         binding.tvDateAdvertiserFragment.setText(handleTime(ad.getDate()));
@@ -304,14 +317,44 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
 
     @Override
     public void getItemPosition(int position) {
-        callAdvertiserFragment(position);
+        if (debouncing) {
+            // Remove the previous runnable
+            debounceHandler.removeCallbacks(debounceRunnable);
+        } else {
+            // This is the first click, so open the item
+            debouncing = true;
+            callAdvertiserFragment(position);
+        }
+        // Start a new timer
+        debounceRunnable = () -> debouncing = false;
+        debounceHandler.postDelayed(debounceRunnable, DEBOUNCE_DELAY_MILLIS);
     }
 
     @Override
-    public void getFavItemPosition(int position, ImageView imageView) {
+    public void getFavItemPosition(int position, ImageView favImage) {
+        String adId = adsList.get(position).getId();
+        int favPos = adIsInFavList(adId);
+        if (favPos != -1) {
+            user.getFavAds().remove(favPos);
+            favViewModel.deleteFavAd(user.getUId(),adsList.get(position));
+            favImage.setImageResource(R.drawable.fav_uncheck_icon);
 
+        } else {
+            if (user.getFavAds() == null) user.initFavAdsList();
+            favViewModel.addFavAd(user.getUId(),adsList.get(position));
+            user.getFavAds().add(adsList.get(position));
+            favImage.setImageResource(R.drawable.fav_checked_icon);
+        }
     }
 
+    private int adIsInFavList(String id) {
+        for (int i =  0 ; i < user.getFavAds().size(); i++) {
+            if(user.getFavAds().get(i).getId().equals(id)){
+                return i;
+            }
+        }
+        return -1;
+    }
     private void setAdGridAdapter(){
         adsGridAdapter = new AdsGridAdapter();
         adsGridAdapter.setList(user,adsList,getContext(),this);
