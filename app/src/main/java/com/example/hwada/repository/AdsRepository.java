@@ -137,18 +137,18 @@ public class AdsRepository {
                     .collection(DbHandler.homePage);
         return adColRef;
     }
-    private CollectionReference getAdColRef(Ad newAd){
+    private CollectionReference getAdColRef(Ad ad){
         CollectionReference adColRef;
-        if (newAd.getCategory().equals(DbHandler.FREELANCE)){
+        if (ad.getCategory().equals(DbHandler.FREELANCE)){
             adColRef = rootRef.collection(DbHandler.adCollection)
-                    .document(newAd.getCategory())
-                    .collection(newAd.getCategory())
-                    .document(newAd.getSubCategory())
-                    .collection(newAd.getSubSubCategory());
+                    .document(ad.getCategory())
+                    .collection(ad.getCategory())
+                    .document(ad.getSubCategory())
+                    .collection(ad.getSubSubCategory());
         }else {
             adColRef = rootRef.collection(DbHandler.adCollection)
-                    .document(newAd.getCategory())
-                    .collection(newAd.getSubCategory());
+                    .document(ad.getCategory())
+                    .collection(ad.getSubCategory());
         }
         return adColRef;
     }
@@ -351,7 +351,30 @@ public class AdsRepository {
     }
 
     //**************************************
+    public void updateViews(Ad ad){
 
+        rootRef.runTransaction(new Transaction.Function<Object>() {
+            @Nullable
+            @Override
+            public Object apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+                DocumentReference adDocRef = getAdColRef(ad).document(ad.getId());
+                DocumentReference userAdDocRef = getUserAdColRef(ad).document(ad.getId());
+                DocumentReference adHomeDocRef = getAdColHomePageRef().document(ad.getId());
+
+                DocumentSnapshot snapshot = transaction.get(adDocRef);
+                long counter = snapshot.getLong("views");
+
+                transaction.update(adDocRef, "views", counter + 1);
+                transaction.update(userAdDocRef, "views", counter + 1);
+                transaction.update(adHomeDocRef, "views", counter + 1);
+
+                return null;
+            }
+        });
+
+
+
+    }
 
   /*  public MutableLiveData<Boolean>updateImages(Ad newAd){
         MutableLiveData<Boolean> updateImagesSuccess = new MutableLiveData<>();

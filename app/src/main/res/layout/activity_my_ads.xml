@@ -56,6 +56,9 @@ tools:context=".ui.MyAdsActivity">
                 android:inputType="text"
                 android:maxLines="1"
 
+                android:focusable="false"
+                android:clickable="true"
+
                 android:paddingLeft="10dp"
                 android:paddingTop="2dp"
 

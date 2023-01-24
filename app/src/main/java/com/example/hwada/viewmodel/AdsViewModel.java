@@ -32,8 +32,6 @@ public class AdsViewModel extends ViewModel {
        return adsViewModel;
     }
 
-
-
     public void addNewAd(Ad newAd ){
         newAdLiveData = repository.addNewAd(newAd);
     }
@@ -50,5 +48,7 @@ public class AdsViewModel extends ViewModel {
     public LiveData<ArrayList<Ad>> getAllAds(){
         return repository.getAllAds();
     }
-    
+    public void updateViews(Ad ad){
+        repository.updateViews(ad);
+    }
 }

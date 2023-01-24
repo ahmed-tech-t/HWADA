@@ -62,6 +62,7 @@ public class FavTapLayoutFragment extends Fragment implements View.OnTouchListen
         super.onActivityCreated(savedInstanceState);
         user = getArguments().getParcelable("user");
         setMenuTapLayoutListener();
+
     }
 
     private void setMenuTapLayoutListener(){

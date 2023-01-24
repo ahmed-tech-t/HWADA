@@ -50,6 +50,7 @@ import com.example.hwada.ui.view.ad.menu.AdDescriptionFragment;
 import com.example.hwada.ui.view.ad.menu.AdReviewsFragment;
 import com.example.hwada.ui.view.ad.menu.AdWorkingTimeFragment;
 import com.example.hwada.ui.view.map.MapPreviewFragment;
+import com.example.hwada.viewmodel.AdsViewModel;
 import com.example.hwada.viewmodel.DebugViewModel;
 import com.example.hwada.viewmodel.FavViewModel;
 import com.example.hwada.viewmodel.UserViewModel;
@@ -84,7 +85,7 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
     DebugViewModel debugViewModel ;
 
     UserViewModel userViewModel;
-
+    AdsViewModel adsViewModel;
     int PERMISSION_ID = 3 ;
     AdsGridAdapter adsGridAdapter;
     User user;
@@ -152,6 +153,7 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         adsList = getArguments().getParcelableArrayList("adsList");
         PASSED_POSITION = getArguments().getInt("pos");
 
+        adsViewModel = AdsViewModel.getInstance();
         userViewModel =  UserViewModel.getInstance();
         favViewModel = FavViewModel.getInstance();
         binding.buttonCallAdvertiserFragment.setOnClickListener(this);
@@ -165,11 +167,15 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
             reportError(e);
         }
         setUserObserver();
+        updateViews();
         setToSlider();
         setMenuTapLayoutListener();
         setAdGridAdapter();
     }
 
+    private void updateViews(){
+        adsViewModel.updateViews(ad);
+    }
     private void setUserObserver(){
         userViewModel.getUser().observe(getActivity(), new Observer<User>() {
             @Override

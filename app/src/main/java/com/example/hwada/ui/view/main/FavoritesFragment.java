@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -79,6 +80,8 @@ public class FavoritesFragment extends Fragment implements FavoritesAdapter.OnIt
         setUserObserver();
         setAdsToList();
         if(adsList.size()==0) binding.mainRecycler.setBackgroundColor(Color.WHITE);
+        binding.mainRecycler.setNestedScrollingEnabled(false);
+
     }
     private void setUserObserver(){
         userViewModel.getUser().observe(getActivity(), new Observer<User>() {
