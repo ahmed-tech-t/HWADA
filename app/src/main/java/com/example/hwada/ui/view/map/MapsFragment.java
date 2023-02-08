@@ -188,7 +188,7 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
         super.onActivityCreated(savedInstanceState);
       try {
           user = getArguments().getParcelable("user");
-          userViewModel = ViewModelProviders.of(getActivity()).get(UserViewModel.class);
+          userViewModel = UserViewModel.getInstance();
           debugViewModel = ViewModelProviders.of(getActivity()).get(DebugViewModel.class);
       }catch (Exception e){
           reportError(e);
@@ -405,6 +405,7 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
 
 
     private void reportError(Exception e){
+
         StringWriter sw = new StringWriter();
         e.printStackTrace(new PrintWriter(sw));
         debugViewModel.reportError(new DebugModel(getCurrentDate(),e.getMessage(),sw.toString(),TAG, Build.VERSION.SDK_INT,false));

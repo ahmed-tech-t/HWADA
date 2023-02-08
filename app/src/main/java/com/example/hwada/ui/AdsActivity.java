@@ -18,6 +18,7 @@ import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
 import com.example.hwada.adapter.AdsAdapter;
+import com.example.hwada.application.App;
 import com.example.hwada.database.DbHandler;
 import com.example.hwada.databinding.ActivityAdsBinding;
 import com.example.hwada.ui.view.ad.AdvertiserFragment;
@@ -31,6 +32,7 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
 
     AdsAdapter adapter;
     ArrayList<Ad> adsList;
+    private App app;
 
     FavViewModel favViewModel ;
     UserViewModel userViewModel ;
@@ -61,6 +63,10 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
         setContentView(view);
         Intent intent = getIntent();
         user = intent.getParcelableExtra("user");
+
+        app = (App) getApplication();
+
+        binding.shimmerAdsActivity.startShimmer();
 
         userViewModel = UserViewModel.getInstance();
         adsViewModel =  AdsViewModel.getInstance() ;
@@ -95,6 +101,7 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
             if(category.equals(DbHandler.FREELANCE)){
                 getAllAds(category,subCategory,subSubCategory);
             }else getAllAds(category,subCategory);
+
             binding.recyclerAdsActivity.setLayoutManager(new LinearLayoutManager(this));
         }catch (Exception e){
             e.printStackTrace();
@@ -155,8 +162,12 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
 
         adsViewModel.getAllAds(category,subCategory).observe(this, ads -> {
             adsList = ads;
-
+            if(adsList.size()>0) binding.recyclerAdsActivity.setBackgroundResource(R.drawable.recycle_view_background);
             if(user!=null) {
+                binding.shimmerAdsActivity.setVisibility(View.GONE);
+                binding.shimmerAdsActivity.stopShimmer();
+                binding.recyclerAdsActivity.setVisibility(View.VISIBLE);
+
                 adapter.setList(user,ads,this,this);
             }
         });
@@ -165,7 +176,11 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
     private void getAllAds(String category ,String subCategory, String subSubCategory){
         adsViewModel.getAllAds(category,subCategory,subSubCategory).observe(this, ads -> {
             adsList = ads;
+            if(adsList.size()>0) binding.recyclerAdsActivity.setBackgroundResource(R.drawable.recycle_view_background);
             if(user!=null) {
+                binding.shimmerAdsActivity.setVisibility(View.GONE);
+                binding.shimmerAdsActivity.stopShimmer();
+                binding.recyclerAdsActivity.setVisibility(View.VISIBLE);
                 adapter.setList(user,ads,this,this);
             }
         });
@@ -189,5 +204,16 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
         bundle.putParcelableArrayList("adsList",adsList);
         advertiserFragment.setArguments(bundle);
         advertiserFragment.show(getSupportFragmentManager(),advertiserFragment.getTag());
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        app.setUserOnline();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        app.setUserOffline();
     }
 }

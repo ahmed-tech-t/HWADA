@@ -141,7 +141,7 @@ public class EditUserFragment extends BottomSheetDialogFragment implements View.
         if(v.getId()==binding.arrowEditUser.getId()){
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         }else if(v.getId() == binding.userImageEditUserFragment.getId()){
-            callBottomSheet(new ImageFragment());
+           // callBottomSheet(new ImageFragment());
         }else if(v.getId() == binding.saveButtonAddNewAd.getId()){
             if(fieldsNotEmpty()){
                 tempUser.setPhone(binding.phoneEditUserFragment.getText().toString());

@@ -6,7 +6,11 @@ public class DbHandler {
    public static final String debugCollection ="Debug";
    public static final String reportCollection ="Reports";
    public static final String favAdsCollection ="FavAds";
+   public static final String chatCollection ="Chat";
 
+
+   public static final String ONLINE = "online";
+   public static final String OFFLINE = "offline";
 
    public static final String Reviews = "Reviews";
    public static final String MyReviews = "MyReviews";

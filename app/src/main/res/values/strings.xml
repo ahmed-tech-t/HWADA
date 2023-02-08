@@ -133,7 +133,9 @@
     <string name="warning">Warning</string>
     <string name="unCompletedProfile">Please complete your profile first</string>
     <string name="toProfile">Complete my Profile</string>
-
+    <string name="message"><font size="18">Message</font> </string>
+    <string name="noMessages">No messages</string>
+    <string name="addCaption">Add a caption..</string>
     <string-array name="spinner_gender">
         <item>Male</item>
         <item>Female</item>

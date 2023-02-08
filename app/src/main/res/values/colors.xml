@@ -22,5 +22,12 @@
     <color name="mainBackGround">#003087</color>
     <color name="arrowColor">#003087</color>
     <color name="green">#12C443</color>
+    //chat
+<color name="phantom">#1F2C34</color>
+    <color name="gray_Chateau">#84929B</color>
+    <color name="bright_Sea_Green">#02A783</color>
+    <color name="forest_Green">#005D4B</color>
+
+    <color name="shimmer">#dddddd</color>
 
 </resources>

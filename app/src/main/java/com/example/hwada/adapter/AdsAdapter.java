@@ -3,29 +3,43 @@ package com.example.hwada.adapter;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.AdReview;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
+import com.example.hwada.util.GlideImageLoader;
+import com.google.android.material.imageview.ShapeableImageView;
+import com.squareup.picasso.Picasso;
 
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> {
     private ArrayList<Ad> list = new ArrayList();
@@ -44,7 +58,12 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
     public void onBindViewHolder(@NonNull HomeViewHolder holder, int position) {
 
         //post image
-        Glide.with(mContext).load(list.get(position).getImagesUrl().get(0)).into(holder.userImage);
+        String url = list.get(position).getImagesUrl().get(0);
+        RequestOptions options = new RequestOptions()
+                .priority(Priority.HIGH);
+        new GlideImageLoader(holder.userImage,new ProgressBar(mContext)).load(url,options);
+
+      //  Picasso.get().load(list.get(position).getImagesUrl().get(0)).into(holder.userImage);
 
         //fav image
         if(adIsInFavList(list.get(position).getId())){
@@ -64,7 +83,9 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
         //rating
         holder.rating.setText(list.get(position).getRating()+"");
 
+
         list.get(position).setDistance(Float.valueOf(getDistance(position)));
+
         holder.distance.setText(list.get(position).getDistance()+"");
         holder.date.setText(handleTime(list.get(position).getDate()));
 
@@ -82,13 +103,15 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
     public void setList(User user,ArrayList<Ad> list,Context mContext,OnItemListener onItemListener) {
         this.user = user;
         this.list = list;
-        this.mContext =mContext ;
+        this.mContext = mContext ;
         this.pOnItemListener = onItemListener;
         notifyDataSetChanged();
     }
 
+
     public class HomeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        ImageView userImage , favImage ;
+        ShapeableImageView userImage ;
+        ImageView favImage ;
         TextView title , description , date , distance , price , rating;
         OnItemListener onItemListener;
         public HomeViewHolder(@NonNull View v,OnItemListener onItemListener) {
@@ -129,7 +152,7 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
     }
     public String handleTime(String dateString){
         try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy , h:mm a");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy , h:mm a", Locale.ENGLISH);
             Date date = dateFormat.parse(dateString);
 
             Calendar today = Calendar.getInstance();
@@ -148,7 +171,7 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        return dateString;
+        return dateString.split(",")[0];
     }
 
     public String getDistance(int pos){
@@ -161,8 +184,10 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
             location2.setLatitude(list.get(pos).getAuthorLocation().getLatitude());
             location2.setLongitude(list.get(pos).getAuthorLocation().getLongitude());
 
+
             float distanceInMeters = location1.distanceTo(location2)/1000;
-            return String.format("%.2f", distanceInMeters);
+
+            return String.format(Locale.US, "%.2f", distanceInMeters);
         }
         return "-1";
     }

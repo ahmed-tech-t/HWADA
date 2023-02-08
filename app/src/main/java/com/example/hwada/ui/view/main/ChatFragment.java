@@ -1,66 +1,109 @@
 package com.example.hwada.ui.view.main;
 
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.hwada.Model.Chat;
+import com.example.hwada.Model.User;
 import com.example.hwada.R;
+import com.example.hwada.adapter.ChatAdapter;
+import com.example.hwada.databinding.FragmentChatBinding;
+import com.example.hwada.ui.ChatActivity;
+import com.example.hwada.ui.view.images.ImageMiniDialogFragment;
+import com.example.hwada.viewmodel.ChatViewModel;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ChatFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class ChatFragment extends Fragment {
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+public class ChatFragment extends Fragment implements ChatAdapter.OnItemListener {
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public ChatFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ChatFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ChatFragment newInstance(String param1, String param2) {
-        ChatFragment fragment = new ChatFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-
+    FragmentChatBinding binding ;
+    ChatViewModel chatViewModel ;
+    User user;
+    ArrayList<Chat> chatList;
+    private static final String TAG = "ChatFragment";
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_chat, container, false);
+        binding = FragmentChatBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        user = getArguments().getParcelable("user");
+        chatViewModel = ViewModelProviders.of(this).get(ChatViewModel.class);
+        chatObserver();
+    }
+
+    private void setRecycler(){
+        ChatAdapter adapter = new ChatAdapter();
+        adapter.setList(chatList,getContext(),this);
+        binding.recyclerChatFragment.setAdapter(adapter);
+        binding.recyclerChatFragment.setLayoutManager( new LinearLayoutManager(getContext()));
+    }
+
+    private void chatObserver(){
+        chatViewModel.getAllChats(user.getUId()).observe(getActivity(), new Observer<ArrayList<Chat>>() {
+            @Override
+            public void onChanged(ArrayList<Chat> chats) {
+                Collections.sort(chats, new Comparator<Chat>() {
+                    @Override
+                    public int compare(Chat o1, Chat o2) {
+                        return o1.getDate().compareTo(o2.getDate());
+                    }
+                });
+                Collections.reverse(chats);
+                chatList = chats;
+                binding.loadingChatFragment.setVisibility(View.GONE);
+
+                if (chatList.size()>0)binding.recyclerChatFragment.setBackgroundColor(Color.WHITE);
+                else binding.recyclerChatFragment.setBackgroundResource(R.drawable.empty_page);
+                setRecycler();
+            }
+        });
+    }
+
+
+    @Override
+    public void getItemPosition(int position) {
+        callChatActivity(position);
+    }
+
+    @Override
+    public void pressedImagePosition(int pos) {
+        callImageDialog(pos);
+    }
+
+    public void callImageDialog(int pos) {
+        Bundle bundle = new Bundle();
+        bundle.putString("image", chatList.get(pos).getAd().getImagesUrl().get(0));
+        ImageMiniDialogFragment fragment = new ImageMiniDialogFragment();
+        fragment.setArguments(bundle);
+        FragmentManager fragmentManager = getChildFragmentManager();
+        fragment.show(fragmentManager, fragment.getTag());
+    }
+
+    public void callChatActivity(int pos){
+        Intent intent = new Intent(getActivity(), ChatActivity.class);
+        intent.putExtra("user",user);
+        intent.putExtra("ad",chatList.get(pos).getAd());
+        startActivity(intent);
     }
 }

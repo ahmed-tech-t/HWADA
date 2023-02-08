@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.view.chat.SendImagesMessageFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="10dp"
+            android:gravity="center"
+            android:layout_margin="20dp"
+            android:paddingBottom="5dp"
+            android:elevation="10dp"
+            android:background="@drawable/delete_image_chat_background"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/delete_send_images_messages_fragment"
+                android:layout_width="23dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="5dp"
+                android:clickable="true"
+                android:layout_gravity="center_horizontal"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:padding="2dp"
+                android:src="@drawable/delete_icon" />
+        </LinearLayout>
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/vp2_send_images_messages_fragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:background="@color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_send_images_messages_fragment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="10dp"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout_10"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+       <LinearLayout
+           android:id="@+id/linearLayout_10"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:gravity="center"
+           android:padding="5dp"
+           android:orientation="vertical"
+           app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
+           app:layout_constraintEnd_toEndOf="parent"
+           app:layout_constraintStart_toStartOf="parent" >
+
+
+           <EditText
+               android:id="@+id/et_body_image_with_caption_holder"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:background="@drawable/chat_edit_text_background"
+               android:layout_alignParentStart="true"
+               android:layout_gravity="center_vertical"
+               android:hint="@string/addCaption"
+               android:paddingStart="15dp"
+               android:paddingEnd="15dp"
+               android:paddingTop="10dp"
+               android:paddingBottom="10dp"
+               android:textColor="@color/white"
+               android:textColorHint="@color/white"
+               android:layout_marginStart="10dp"
+               android:layout_marginEnd="10dp"
+               android:textSize="18dp"
+               app:layout_constraintBottom_toBottomOf="parent"
+               app:layout_constraintEnd_toEndOf="parent"
+               app:layout_constraintStart_toStartOf="parent"
+               app:layout_constraintTop_toTopOf="parent" />
+
+       </LinearLayout>
+    <RelativeLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/transparent_background"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/receiver_name_send_images_message_fragment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/receiver_name_messages_layout"
+            android:textColor="@color/white"
+            android:layout_marginStart="10dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:textSize="18dp"
+            android:text="Mohamed ismail"
+            android:layout_centerVertical="true"
+           />
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/sim_send_message_image_fragment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="bottom"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@color/bright_Sea_Green"
+            android:clickable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:src="@drawable/send_icon"
+            app:shapeAppearanceOverlay="@style/Circular"
+            app:strokeColor="@null" />
+    </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

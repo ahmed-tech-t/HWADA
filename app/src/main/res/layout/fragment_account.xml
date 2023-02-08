@@ -1,96 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/white_background"
+    android:layout_marginTop="60dp"
+    android:paddingBottom="?attr/actionBarSize"
     tools:context=".ui.view.main.AccountFragment">
-    <androidx.constraintlayout.widget.ConstraintLayout
+
+    <ImageView
+        android:id="@+id/arrow"
         android:layout_width="match_parent"
-        android:background="@drawable/white_background"
-        android:layout_marginTop="60dp"
-        android:elevation="10dp"
-        android:paddingBottom="?attr/actionBarSize"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/arrow_up" />
 
-        <ImageView
-            android:id="@+id/arrow"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:src="@drawable/arrow_up"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="30dp"
+        android:gravity="center_vertical">
 
-        <RelativeLayout
-            android:id="@+id/relative_layout"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="30dp"
-            android:gravity="center"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/arrow">
+            android:layout_height="wrap_content">
 
-            <de.hdodenhof.circleimageview.CircleImageView
+            <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/user_image_account_fragment"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:clickable="true"
                 android:src="@drawable/user_account_icon"
-                android:layout_centerHorizontal="true"
-                 />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:shapeAppearanceOverlay="@style/Circular"
+                app:strokeColor="@null" />
 
             <ImageView
                 android:id="@+id/membership_background"
                 android:layout_width="128dp"
                 android:layout_height="55dp"
-                android:layout_below="@id/user_image_account_fragment"
+                android:layout_centerInParent="true"
                 android:layout_marginTop="-25dp"
-                android:background="@drawable/blue_membership_background" />
+                android:background="@drawable/blue_membership_background"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/user_image_account_fragment" />
 
             <TextView
                 android:id="@+id/user_membership"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/blue"
-                android:layout_marginTop="8dp"
-                android:textSize="15dp"
-                android:textColor="@color/white"
                 android:layout_centerHorizontal="true"
-                android:layout_below="@id/user_image_account_fragment"
-                />
-        </RelativeLayout>
-        <TextView
-            android:id="@+id/user_name_account_fragment"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
-            android:layout_marginLeft="20dp"
-            android:text="username"
-            android:textSize="17dp"
-            android:textColor="@color/black"
-            app:layout_constraintStart_toEndOf="@+id/relative_layout"
-            app:layout_constraintTop_toBottomOf="@+id/arrow" />
+                android:text="@string/blue"
+                android:textColor="@color/white"
+                android:textSize="15dp"
+                android:layout_marginBottom="2dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <TextView
-            android:id="@+id/tv_edit_user_profile_account_fragment"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:clickable="true"
-            android:paddingEnd="10dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:text="@string/viewAndEditProfile"
-            android:textColor="@color/black"
-            app:layout_constraintStart_toEndOf="@+id/relative_layout"
-            app:layout_constraintTop_toBottomOf="@+id/user_name_account_fragment" />
+       <LinearLayout
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:layout_marginStart="20dp"
+           android:orientation="vertical">
+
+           <TextView
+               android:id="@+id/user_name_account_fragment"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:text="username"
+               android:textSize="17dp"
+               android:textColor="@color/black"
+               app:layout_constraintStart_toEndOf="@+id/relative_layout"
+               app:layout_constraintTop_toBottomOf="@+id/arrow" />
+
+           <TextView
+               android:id="@+id/tv_edit_user_profile_account_fragment"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:clickable="true"
+               android:paddingEnd="10dp"
+               android:paddingTop="10dp"
+               android:paddingBottom="10dp"
+               android:text="@string/viewAndEditProfile"
+               android:textColor="@color/black"/>
+       </LinearLayout>
+    </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="match_parent"
             android:orientation="vertical"
             android:layout_marginTop="30dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -105,8 +112,8 @@
                 android:layout_gravity="center"
                 android:background="?android:attr/selectableItemBackground"
                 android:clickable="true"
-                android:drawableLeft="@drawable/my_ads_icon"
-                android:drawableRight="@drawable/arrow_right"
+                android:drawableStart="@drawable/my_ads_icon"
+                android:drawableEnd="@drawable/arrow_right"
                 android:drawablePadding="20dp"
                 android:focusable="true"
                 android:paddingLeft="20dp"
@@ -125,13 +132,14 @@
                 android:background="@color/white_gray" />
 
             <TextView
+                android:id="@+id/join_member_ship_account_fragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:background="?android:attr/selectableItemBackground"
                 android:clickable="true"
-                android:drawableLeft="@drawable/blue_membership_icon"
-                android:drawableRight="@drawable/arrow_right"
+                android:drawableStart="@drawable/blue_membership_icon"
+                android:drawableEnd="@drawable/arrow_right"
                 android:drawablePadding="20dp"
                 android:focusable="true"
                 android:paddingLeft="20dp"
@@ -150,39 +158,16 @@
                 android:layout_marginRight="10dp"
                 android:background="@color/white_gray" />
 
+
             <TextView
+                android:id="@+id/help_support_account_fragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:background="?android:attr/selectableItemBackground"
                 android:clickable="true"
-                android:drawableLeft="@drawable/language_icon"
-                android:drawableRight="@drawable/arrow_right"
-                android:drawablePadding="20dp"
-                android:focusable="true"
-                android:paddingLeft="20dp"
-                android:paddingTop="20dp"
-                android:paddingRight="20dp"
-                android:paddingBottom="10dp"
-                android:text="@string/language"
-                android:textColor="@color/black"
-                android:textSize="18dp" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:background="@color/white_gray" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="?android:attr/selectableItemBackground"
-                android:clickable="true"
-                android:drawableLeft="@drawable/help_support_icon"
-                android:drawableRight="@drawable/arrow_right"
+                android:drawableStart="@drawable/help_support_icon"
+                android:drawableEnd="@drawable/arrow_right"
                 android:drawablePadding="20dp"
                 android:focusable="true"
                 android:paddingLeft="20dp"
@@ -201,13 +186,14 @@
                 android:background="@color/white_gray" />
 
             <TextView
+                android:id="@+id/cancel_subscription_account_fragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:background="?android:attr/selectableItemBackground"
                 android:clickable="true"
-                android:drawableLeft="@drawable/cancel_sub_icon"
-                android:drawableRight="@drawable/arrow_right"
+                android:drawableStart="@drawable/cancel_sub_icon"
+                android:drawableEnd="@drawable/arrow_right"
                 android:drawablePadding="20dp"
                 android:focusable="true"
                 android:paddingLeft="20dp"
@@ -233,7 +219,7 @@
                 android:background="?android:attr/selectableItemBackground"
                 android:clickable="true"
                 android:focusable="true"
-                android:drawableLeft="@drawable/logout_icon"
+                android:drawableStart="@drawable/logout_icon"
                 android:drawablePadding="20dp"
                 android:paddingLeft="20dp"
                 android:paddingTop="20dp"
@@ -252,7 +238,4 @@
 
 
         </LinearLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-</FrameLayout>
+    </LinearLayout>

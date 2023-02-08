@@ -20,6 +20,11 @@ public class User implements Parcelable {
     private float rating;
     private ArrayList<MyReview> myReviews;
 
+    private Chat chat ;
+
+    private String status;
+    private String lastSeen;
+
     private  String email;
     private String phone ;
     private  String aboutYou;
@@ -99,6 +104,9 @@ public class User implements Parcelable {
         ads = in.createTypedArrayList(Ad.CREATOR);
         rating = in.readFloat();
         myReviews = in.createTypedArrayList(MyReview.CREATOR);
+        chat = in.readParcelable(Chat.class.getClassLoader());
+        status = in.readString();
+        lastSeen = in.readString();
         email = in.readString();
         phone = in.readString();
         aboutYou = in.readString();
@@ -120,6 +128,14 @@ public class User implements Parcelable {
             return new User[size];
         }
     };
+
+    public Chat getChat() {
+        return chat;
+    }
+
+    public void setChat(Chat chat) {
+        this.chat = chat;
+    }
 
     public double getRating() {
         return rating;
@@ -262,6 +278,22 @@ public class User implements Parcelable {
 
     public void initFavAdsList(){ favAds=new ArrayList<>();}
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getLastSeen() {
+        return lastSeen;
+    }
+
+    public void setLastSeen(String lastSeen) {
+        this.lastSeen = lastSeen;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -283,6 +315,7 @@ public class User implements Parcelable {
                 '}';
     }
 
+
     @Override
     public int describeContents() {
         return 0;
@@ -297,6 +330,9 @@ public class User implements Parcelable {
         dest.writeTypedList(ads);
         dest.writeFloat(rating);
         dest.writeTypedList(myReviews);
+        dest.writeParcelable(chat, flags);
+        dest.writeString(status);
+        dest.writeString(lastSeen);
         dest.writeString(email);
         dest.writeString(phone);
         dest.writeString(aboutYou);

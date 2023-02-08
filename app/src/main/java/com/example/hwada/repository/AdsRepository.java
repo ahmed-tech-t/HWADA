@@ -119,6 +119,7 @@ public class AdsRepository {
             public void onComplete(@NonNull Task<Object> task) {
                 if(task.isSuccessful()){
                     addNewAdSuccess.setValue(newAd);
+                    Log.e(TAG, "onComplete: upload complete" );
                 }else {
                     addNewAdSuccess.setValue(null);
                     task.getException().printStackTrace();

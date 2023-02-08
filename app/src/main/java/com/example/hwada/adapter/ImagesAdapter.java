@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.hwada.R;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +29,7 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.ImagesView
 
     @Override
     public void onBindViewHolder(@NonNull ImagesViewHolder holder, int position) {
-        holder.imageView.setImageURI(list.get(position));
+        Picasso.get().load(list.get(position)).into(holder.imageView);
     }
 
     @Override

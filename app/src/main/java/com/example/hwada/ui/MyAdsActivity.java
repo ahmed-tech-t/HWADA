@@ -11,6 +11,7 @@ import android.widget.ImageView;
 
 import com.example.hwada.Model.User;
 import com.example.hwada.adapter.MyAdsAdapter;
+import com.example.hwada.application.App;
 import com.example.hwada.databinding.ActivityMainBinding;
 import com.example.hwada.databinding.ActivityMyAdsBinding;
 import com.example.hwada.ui.view.ad.AdvertiserFragment;
@@ -20,6 +21,7 @@ public class MyAdsActivity extends AppCompatActivity implements MyAdsAdapter.OnI
     MyAdsAdapter myAdsAdapter;
     ActivityMyAdsBinding binding ;
     User user;
+    private App app;
 
     //debounce mechanism
     private static final long DEBOUNCE_DELAY_MILLIS = 500;
@@ -36,6 +38,7 @@ public class MyAdsActivity extends AppCompatActivity implements MyAdsAdapter.OnI
         Intent intent = getIntent();
         user = intent.getParcelableExtra("user");
         debounceHandler = new Handler();
+        app = (App) getApplication();
 
         setMyAdsAdapter();
     }
@@ -72,5 +75,17 @@ public class MyAdsActivity extends AppCompatActivity implements MyAdsAdapter.OnI
         bundle.putParcelableArrayList("adsList",user.getAds());
         fragment.setArguments(bundle);
         fragment.show(getSupportFragmentManager(),fragment.getTag());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        app.setUserOnline();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        app.setUserOffline();
     }
 }

@@ -6,15 +6,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
+import com.example.hwada.util.GlideImageLoader;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -22,6 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 public class MyAdsAdapter extends RecyclerView.Adapter<MyAdsAdapter.MyAdsViewHolder> {
     private ArrayList<Ad> list = new ArrayList();
@@ -39,7 +44,12 @@ public class MyAdsAdapter extends RecyclerView.Adapter<MyAdsAdapter.MyAdsViewHol
     @Override
     public void onBindViewHolder(@NonNull MyAdsAdapter.MyAdsViewHolder holder, int position) {
 
-        Glide.with(mContext).load(list.get(position).getImagesUrl().get(0)).into(holder.userImage);
+        String url = list.get(position).getImagesUrl().get(0);
+        RequestOptions options = new RequestOptions()
+                .priority(Priority.HIGH);
+        new GlideImageLoader(holder.userImage,new ProgressBar(mContext)).load(url,options);
+
+
         holder.title.setText(list.get(position).getTitle());
         if(list.get(position).getDescription().length()>237){
             holder.description.setText(list.get(position).getDescription().substring(0, Math.min(list.get(position).getDescription().length(), 237))+"...");
@@ -103,7 +113,7 @@ public class MyAdsAdapter extends RecyclerView.Adapter<MyAdsAdapter.MyAdsViewHol
 
     public String handleTime(String dateString){
         try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy , h:mm a");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy , h:mm a", Locale.ENGLISH);
             Date date = dateFormat.parse(dateString);
 
             Calendar today = Calendar.getInstance();
@@ -122,7 +132,7 @@ public class MyAdsAdapter extends RecyclerView.Adapter<MyAdsAdapter.MyAdsViewHol
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        return dateString;
+        return dateString.split(",")[0];
     }
 
     public String getDistance(int pos){
@@ -136,7 +146,7 @@ public class MyAdsAdapter extends RecyclerView.Adapter<MyAdsAdapter.MyAdsViewHol
             location2.setLongitude(list.get(pos).getAuthorLocation().getLongitude());
 
             float distanceInMeters = location1.distanceTo(location2)/1000;
-            return String.format("%.2f", distanceInMeters);
+            return String.format(Locale.US, "%.2f", distanceInMeters);
         }
         return "-1";
     }

@@ -12,6 +12,135 @@
     <string name="login">تسجيل دخول</string>
     <string name="clientId">1067559738190-ap4407n27030u1r0lq48i6jpe90m34hi.apps.googleusercontent.com</string>
     <string name="conWithGoogle"><font size="15">تابع باستخدام جوجل</font></string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+
+    <string name="hello_blank_fragment">صفحة فارغة</string>
+    <string name="yourAddress"><font size="15">عنوانك</font></string>
+    <string name="whatDoYouWant"><font size="15">ما الذى تريد البحث عنه</font></string>
+    <string name="homeFood"><font size="12">اكل بيتى</font></string>
+    <string name="worker"><font size="12">صنايعية</font></string>
+    <string name="freelance"><font size="12">اعمال حرة</font></string>
+    <string name="handcraft"><font size="12">اعمال يدوية</font></string>
+    <string name="title"><font size="18">العنوان</font></string>
+
+    <string name="jop"><font size="18">الوظيفة</font></string>
+    <string name="km">كم</string>
+    <string name="withInRange">فى نطاق</string>
+    <string name="title_activity_map">الخرائط</string>
+    <string name="loadingYourLocation"><font size="18">جارى تحميل موقعك ...</font></string>
+    <string name="save">حفظ</string>
+    <string name="home">الرئيسية</string>
+    <string name="account">حسابى</string>
+    <string name="chat">الدردشة</string>
+    <string name="favorites">المفضلات</string>
+    <string name="myAds">اعلاناتى</string>
+    <string name="helpAndSupport">الدعم والمساعدة  </string>
+    <string name="language">اللغة</string>
+    <string name="joinBlueMemberShip">انضم للعضوية الزرقاء</string>
+    <string name="cancelSubscription">الغاء الاشتراك</string>
+    <string name="logOut">تسحيل خروج</string>
+    <string name="viewAndEditProfile"><font size="18"><u>تعديل الملف الشخصى</u></font></string>
+    <string name="blue">ازرق</string>
+    <string name="electrical">كهربائى</string>
+    <string name="ceramic_Worker">صنايعى سيراميك</string>
+    <string name="upholsterers">منجد</string>
+    <string name="builder">بناء</string>
+    <string name="carpenter">نجار</string>
+    <string name="painter">بوهيجى</string>
+    <string name="plasterer">نقاش</string>
+    <string name="technical">فنى صيانة</string>
+    <string name="plumber">سباك</string>
+    <string name="other">اخر</string>
+    <string name="maid">خادمة</string>
+    <string name="nurse">ممرضة</string>
+    <string name="delivery">خدمة نقل الطلبات</string>
+    <string name="ride">خدمة نقل المواطنين</string>
+    <string name="car">سيارة</string>
+    <string name="bus">ميكروباص</string>
+    <string name="on_foot">مشى</string>
+    <string name="cycle">عجله</string>
+    <string name="motorcycle">موتوسيكل</string>
+    <string name="tricycle">تريسيكل</string>
+    <string name="mini_van">عربيه نصف نقل</string>
+    <string name="van">عربيه نقل</string>
+    <string name="comments"><b>التعليقات</b></string>
+    <string name="comment">تعليق</string>
+
+    <string name="AddAComment"><font size="15">اضافة تعليق...</font></string>
+    <string name="username">اسم المستخدم</string>
+    <string name="what_are_you_offering">ماالذى تريد الاعلان عنه</string>
+    <string name="uploadUpTo10Photos">الاضافة حتى 10 صور</string>
+    <string name="addImages">اضافة صور</string>
+
+    <string name="tabOnIMages">اضغط على الصور لحذفها او اضغط وامسك لتغير الترتيب</string>
+    <string name="remove">مسح</string>
+    <string name="cancel">الغاء</string>
+    <string name="limitReached">لايمكن اضافة اكثر من ذالك</string>
+    <string name="alertLimitReached">يمكنك فقط اضافة 10 صور</string>
+    <string name="price">السعر *</string>
+    <string name="adTitle">العنوان *</string>
+    <string name="adDescription">الوصف *</string>
+    <string name="workingTime">مواعيد العمل *</string>
+    <string name="saturday">السبت</string>
+    <string name="sunday">الاحد</string>
+    <string name="monday">الاثنين</string>
+    <string name="tuesday">الثلاثاء</string>
+    <string name="wednesday">الاربعاء</string>
+    <string name="thursday">الخميس</string>
+    <string name="friday">الجمعة</string>
+    <string name="from">من</string>
+    <string name="to">الى</string>
+    <string name="next">التالى</string>
+    <string name="emptyFieldWarning">هذا الحقل لايمكن ان يكون فارغا </string>
+    <string name="toShortWarning">قصير جدا</string>
+    <string name="invalidData">هذه البيانات غير صالحة</string>
+    <string name="imagesListEmptyWarning">يجب ان تختار صوره واحدة على الاقل </string>
+    <string name="instructionsWorkTime">اختر ايام العمل والساعات المتاحه للعمل </string>
+    <string name="edit">تعديل</string>
+    <string name="add">اضافة</string>
+    <string name="addPeriod">اضافة فتره جديدة</string>
+    <string name="workingTimeMaxError">لا يمكنك اضافة اكثر من ثلاث فترات</string>
+    <string name="applyTo">تطبيق على  :</string>
+    <string name="failed">خطأ</string>
+    <string name="checkBoxError">يجب عليك اخيار يوم واحد على الاقل</string>
+    <string name="periodError">يجب عليك اضافة فتره واحده على الاقل</string>
+    <string name="pickTimeEmptyError">period can\'t be empty please click on the empty oval button and pick a time</string>
+    <string name="workingTimePreviewSwitchesOfError">يجب ان يكون لديك يوم واحد على الاقل</string>
+    <string name="yourName">اسمك *</string>
+    <string name="somethingAboutU">ماذا تحب ان تكتب عن نفسك *</string>
+    <string name="gender">الجنس *</string>
+    <string name="basicInfo"><b>المعلومات الاساسية</b></string>
+    <string name="contactInfo"><b>معلومات الاتصال</b></string>
+    <string name="phoneNumber">رقم الهاتف *</string>
+    <string name="deleteThisAccount"><b>مسح الحساب</b> </string>
+    <string name="deleteAcoountWarning">هل انت متاكد من انك تريد مسح هذا الحساب</string>
+    <string name="deleteAccountConfirmation">اجل , قم بمسح الحساب</string>
+    <string name="delete">مسح</string>
+    <string name="savingData">جارى حفظ المعلومات...</string>
+    <string name="savingError">خطأ فى عمليه الرفع ... من فضلك اعد المحاوله</string>
+    <string name="addingNewAd">اضافة اعلان جديد...</string>
+    <string name="today">اليوم</string>
+    <string name="yesterday">البارحة</string>
+    <string name="description"><b>الوصف</b></string>
+    <string name="reviews"><b>التقيمات</b></string>
+    <string name="workingTimeTitle"><b>مواعيد العمل</b></string>
+    <string name="reviewNote">يجب عليك اضافة تقييم للاعلان * </string>
+    <string name="addingNewReview">اضافة تقيم جديد...</string>
+    <string name="report">ابلاغ</string>
+    <string name="similarAds">اعلانات مشابهة</string>
+    <string name="toLong">طويل جدا</string>
+    <string name="updatingReview">جارى تحديث التقيم</string>
+    <string name="call">اتصال</string>
+    <string name="warning">تحذير</string>
+    <string name="unCompletedProfile">من فضلك قم باكمال الملف الشخصى الخاص بك اولا</string>
+    <string name="toProfile">الذهاب الى ملفى الشخصى</string>
+    <string name="message"><font size="18">رساله</font> </string>
+    <string name="noMessages">لا توجد رسائل</string>
+    <string name="addCaption">اضف وصفا للصورة..</string>
+    <string-array name="spinner_gender">
+        <item>ذكر</item>
+        <item>انثى</item>
+    </string-array>
 
 </resources>

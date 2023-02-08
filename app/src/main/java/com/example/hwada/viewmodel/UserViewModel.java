@@ -54,6 +54,20 @@ public class UserViewModel extends ViewModel {
     public void updateLocationUser(LocationCustom location){
         updateLocationSuccessLiveData = userRepository.updateUserLocation(location);
     }
+
+    public void setUserStatus(String status){
+        userRepository.setUserStatus(status);
+    }
+    public void setUserLastSeen(String lastSeen){
+        userRepository.setUserLastSeen(lastSeen);
+    }
+    public LiveData<String> getUserStatus(String id){
+        return userRepository.getUserStatus(id);
+    }
+    public LiveData<String> getUserLastSeen(String id){
+        return userRepository.getUserLastSeen(id);
+    }
+
     /*
     public void updateImageSuccess(User user){
         updateImageSuccessLiveData = userRepository.updateUserImage(user);

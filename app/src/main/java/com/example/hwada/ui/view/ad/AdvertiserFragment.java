@@ -26,18 +26,21 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.AdReview;
+import com.example.hwada.Model.Chat;
 import com.example.hwada.Model.DebugModel;
 import com.example.hwada.Model.LocationCustom;
 import com.example.hwada.Model.User;
@@ -46,11 +49,15 @@ import com.example.hwada.adapter.AdsGridAdapter;
 import com.example.hwada.adapter.ImageSliderAdapter;
 
 import com.example.hwada.databinding.FragmentAdvertiserBinding;
+import com.example.hwada.ui.ChatActivity;
 import com.example.hwada.ui.view.ad.menu.AdDescriptionFragment;
 import com.example.hwada.ui.view.ad.menu.AdReviewsFragment;
 import com.example.hwada.ui.view.ad.menu.AdWorkingTimeFragment;
+import com.example.hwada.ui.view.chat.SendImagesMessageFragment;
+import com.example.hwada.ui.view.images.ImagesFullDialogFragment;
 import com.example.hwada.ui.view.map.MapPreviewFragment;
 import com.example.hwada.viewmodel.AdsViewModel;
+import com.example.hwada.viewmodel.ChatViewModel;
 import com.example.hwada.viewmodel.DebugViewModel;
 import com.example.hwada.viewmodel.FavViewModel;
 import com.example.hwada.viewmodel.UserViewModel;
@@ -73,7 +80,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class AdvertiserFragment extends BottomSheetDialogFragment implements View.OnClickListener , AdsGridAdapter.OnItemListener {
+public class AdvertiserFragment extends BottomSheetDialogFragment implements View.OnClickListener , AdsGridAdapter.OnItemListener ,ImageSliderAdapter.OnItemListener{
 
     BottomSheetBehavior bottomSheetBehavior;
     BottomSheetDialog dialog ;
@@ -84,6 +91,7 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
     int PASSED_POSITION =0;
     DebugViewModel debugViewModel ;
 
+    ChatViewModel chatViewModel ;
     UserViewModel userViewModel;
     AdsViewModel adsViewModel;
     int PERMISSION_ID = 3 ;
@@ -109,6 +117,8 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         binding = FragmentAdvertiserBinding.inflate(inflater, container, false);
         binding.arrowAdvertiser.setOnClickListener(this);
         binding.tvAdLocationAdvertiserFragment.setOnClickListener(this);
+        binding.buttonChatAdvertiserFragment.setOnClickListener(this);
+        setLocationArrowWhenLanguageIsArabic();
         debounceHandler = new Handler();
 
         return binding.getRoot();
@@ -127,6 +137,7 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setBottomSheet(view);
+
     }
 
     private void setBottomSheet(View view){
@@ -156,11 +167,18 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         adsViewModel = AdsViewModel.getInstance();
         userViewModel =  UserViewModel.getInstance();
         favViewModel = FavViewModel.getInstance();
+        chatViewModel = ViewModelProviders.of(this).get(ChatViewModel.class);
+
         binding.buttonCallAdvertiserFragment.setOnClickListener(this);
 
         binding.tvDateAdvertiserFragment.setText(handleTime(ad.getDate()));
         binding.tvAdDistanceAdvertiserFragment.setText(ad.getDistance()+"");
         debugViewModel = ViewModelProviders.of(getActivity()).get(DebugViewModel.class);
+
+        if(user.getUId().equals(ad.getAuthorId())){
+            binding.llContactAdvertiserFragment.setVisibility(View.GONE);
+        }
+
         try {
             binding.tvAdLocationAdvertiserFragment.setText(getUserAddress(ad.getAuthorLocation()));
         }catch (Exception e){
@@ -194,9 +212,26 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
             callBottomSheet(new MapPreviewFragment());
         }else if(v.getId() == binding.buttonCallAdvertiserFragment.getId()){
             callCallActivity();
+        }else if (v.getId() == binding.buttonChatAdvertiserFragment.getId()){
+            Ad tempAd = new Ad(ad.getId(),ad.getAuthorId(),ad.getTitle(),ad.getCategory(),ad.getSubCategory(),ad.getSubSubCategory(),ad.getImagesUrl());
+            Chat chat = new Chat(tempAd,getCurrentDate());
+            chatViewModel.addNewChat(user.getUId(),chat).observe(this, new Observer<Boolean>() {
+                @Override
+                public void onChanged(Boolean success) {
+                    if(success){
+                        callChatActivity();
+                    }
+                }
+            });
         }
     }
 
+    public void callChatActivity(){
+        Intent intent = new Intent(getActivity(), ChatActivity.class);
+        intent.putExtra("user",user);
+        intent.putExtra("ad",ad);
+        startActivity(intent);
+    }
 
 
     private void onBackPressed(Dialog dialog){
@@ -217,9 +252,11 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
 
 
     private void setToSlider(){
-        ImageSliderAdapter adapter = new ImageSliderAdapter(getActivity(), ad.getImagesUrl());
+        ImageSliderAdapter adapter = new ImageSliderAdapter();
+        adapter.setList((ArrayList<String>) ad.getImagesUrl(),getContext(),this);
         binding.vp2ImageSliderAdvertiserFragment.setAdapter(adapter);
         binding.circleIndicator.setViewPager(binding.vp2ImageSliderAdvertiserFragment);
+
         adapter.registerAdapterDataObserver(binding.circleIndicator.getAdapterDataObserver());
     }
 
@@ -330,10 +367,12 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         e.printStackTrace(new PrintWriter(sw));
         debugViewModel.reportError(new DebugModel(getCurrentDate(),e.getMessage(),sw.toString(),TAG, Build.VERSION.SDK_INT,false));
     }
+
+
     private String getCurrentDate(){
         Calendar calendar = Calendar.getInstance();
         Date date = calendar.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("d MMM yyyy , h:mm a");
         return  sdf.format(date);
     }
 
@@ -399,5 +438,27 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
    private void callCallActivity(){
         Intent dial = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:"+user.getPhone()));
         startActivity(dial);
+    }
+    private void setLocationArrowWhenLanguageIsArabic(){
+        Locale locale = Resources.getSystem().getConfiguration().locale;
+        if (locale.getLanguage().equals("ar")) {
+            binding.tvAdLocationAdvertiserFragment.setCompoundDrawablesWithIntrinsicBounds(R.drawable.arrow_left, 0, 0, 0);
+        }
+    }
+
+
+    private void callImagesFullDialogFragment(ArrayList<String> url,int pos){
+        ImagesFullDialogFragment fragment = new ImagesFullDialogFragment();
+        Bundle bundle = new Bundle();
+        bundle.putStringArrayList("imagesUrl", url);
+        bundle.putInt("pos",pos);
+        fragment.setArguments(bundle);
+        fragment.setArguments(bundle);
+        fragment.show(getChildFragmentManager(),fragment.getTag());
+    }
+
+    @Override
+    public void getImagePosition(int position) {
+        callImagesFullDialogFragment((ArrayList<String>) ad.getImagesUrl(),position);
     }
 }

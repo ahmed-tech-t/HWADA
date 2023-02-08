@@ -61,7 +61,6 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
     private static final String TAG = "WorkTimePreviewFragment";
     ArrayList<Boolean> switches = new ArrayList<>(Arrays.asList(false,false,false,false,false,false,false));
     Ad newAd ;
-    UserViewModel userViewModel;
     AdsViewModel adsViewModel = AdsViewModel.getInstance();
     FragmentWorkTimePreviewBinding binding ;
     @SuppressLint("MissingInflatedId")
@@ -130,7 +129,6 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
         });
     }
 
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -148,8 +146,6 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
         super.onActivityCreated(savedInstanceState);
         newAd = getArguments().getParcelable("ad");
         user = getArguments().getParcelable("user");
-
-        userViewModel = ViewModelProviders.of(getActivity()).get(UserViewModel.class);
     }
 
     @Override

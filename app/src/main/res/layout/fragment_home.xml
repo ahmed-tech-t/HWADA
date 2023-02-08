@@ -101,9 +101,9 @@
                           android:background="@drawable/frame_gray"
                           android:clickable="true"
                           android:focusable="false"
-                          android:drawableLeft="@drawable/distance_icon"
+                          android:drawableStart="@drawable/distance_icon"
 
-                          android:drawableRight="@drawable/arrow_right"
+                          android:drawableEnd="@drawable/arrow_right"
                           android:drawablePadding="10dp"
 
                           android:hint="@string/yourAddress"
@@ -167,6 +167,7 @@
                                       android:layout_width="wrap_content"
                                       android:layout_height="wrap_content"
                                       android:text="@string/homeFood"
+                                      android:gravity="center"
                                       android:textColor="@color/black" />
 
                               </LinearLayout>
@@ -199,6 +200,7 @@
                                       android:layout_width="wrap_content"
                                       android:layout_height="wrap_content"
                                       android:text="@string/worker"
+                                      android:gravity="center"
                                       android:textColor="@color/black" />
 
                               </LinearLayout>
@@ -231,6 +233,7 @@
                                       android:layout_width="wrap_content"
                                       android:layout_height="wrap_content"
                                       android:text="@string/freelance"
+                                      android:gravity="center"
                                       android:textColor="@color/black" />
 
                               </LinearLayout>
@@ -263,6 +266,7 @@
                                       android:layout_width="wrap_content"
                                       android:layout_height="wrap_content"
                                       android:text="@string/handcraft"
+                                      android:gravity="center"
                                       android:textColor="@color/black" />
 
                               </LinearLayout>
@@ -271,13 +275,35 @@
                   </LinearLayout>
                 </com.google.android.material.appbar.CollapsingToolbarLayout>
             </com.google.android.material.appbar.AppBarLayout>
+
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:id="@+id/shimmer_home_fragment">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+                <include layout="@layout/shimmer_item_view"/>
+                <include layout="@layout/shimmer_item_view"/>
+                <include layout="@layout/shimmer_item_view"/>
+                <include layout="@layout/shimmer_item_view"/>
+
+
+            </LinearLayout>
+
+        </com.facebook.shimmer.ShimmerFrameLayout>
+
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/main_recycler"
+            android:id="@+id/recycler_home_fragment"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="5dp"
             android:layout_margin="10dp"
-            android:background="@drawable/recycle_view_background"
+            android:background="@drawable/empty_page"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             android:paddingBottom="?actionBarSize"
             android:clipToPadding="false"

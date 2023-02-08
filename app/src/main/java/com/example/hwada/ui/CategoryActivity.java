@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
 
+import com.example.hwada.application.App;
 import com.example.hwada.database.DbHandler;
 import com.example.hwada.databinding.ActivityCategoryBinding;
 import com.example.hwada.ui.view.category.freelance.DeliveryFragment;
@@ -29,6 +30,7 @@ public class CategoryActivity extends AppCompatActivity {
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
     User user;
+    private App app;
 
     String target;
 
@@ -43,6 +45,9 @@ public class CategoryActivity extends AppCompatActivity {
         user = (User) intent.getParcelableExtra("user");
         target = intent.getStringExtra("target");
         String tagFragment = intent.getStringExtra("tag");
+
+        app = (App) getApplication();
+
         fragmentManager = getSupportFragmentManager();
         handleFragmentsCall(tagFragment);
     }
@@ -137,5 +142,15 @@ public class CategoryActivity extends AppCompatActivity {
         intent.putExtra("subSubCategory",subSubCategory);
         startActivity(intent);
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        app.setUserOnline();
+    }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        app.setUserOffline();
+    }
 }

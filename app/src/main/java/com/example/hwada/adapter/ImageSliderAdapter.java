@@ -5,13 +5,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.hwada.R;
 import com.example.hwada.databinding.ImageSliderLayoutBinding;
+import com.example.hwada.util.GlideImageLoader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,11 +25,6 @@ public class ImageSliderAdapter extends RecyclerView.Adapter<ImageSliderAdapter.
     OnItemListener pOnItemListener;
     private Context mContext;
 
-    ImageSliderLayoutBinding binding;
-    public ImageSliderAdapter(Context context, List<String> imageUrls) {
-        this.mContext = context;
-        this.list = imageUrls;
-    }
 
 
     @NonNull
@@ -37,7 +36,10 @@ public class ImageSliderAdapter extends RecyclerView.Adapter<ImageSliderAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull ImageSliderViewHolder holder, int position) {
-        Glide.with(mContext).load(list.get(position)).into(holder.imageView);
+        String url = list.get(position);
+        RequestOptions options = new RequestOptions()
+                .priority(Priority.HIGH);
+        new GlideImageLoader(holder.imageView,new ProgressBar(mContext)).load(url,options);
     }
 
     @Override
@@ -45,8 +47,9 @@ public class ImageSliderAdapter extends RecyclerView.Adapter<ImageSliderAdapter.
         return list.size();
     }
 
-    public void setList(ArrayList<String> list, OnItemListener onItemListener) {
+    public void setList(ArrayList<String> list,Context mContext, OnItemListener onItemListener) {
         this.list = list;
+        this.mContext = mContext;
         this.pOnItemListener = onItemListener;
         notifyDataSetChanged();
     }
@@ -65,11 +68,11 @@ public class ImageSliderAdapter extends RecyclerView.Adapter<ImageSliderAdapter.
 
         @Override
         public void onClick(View v) {
-           // onItemListener.getItemPosition(getAdapterPosition());
+            onItemListener.getImagePosition(getAdapterPosition());
         }
     }
 
     public interface OnItemListener {
-        void getItemPosition(int position);
+        void getImagePosition(int position);
     }
 }

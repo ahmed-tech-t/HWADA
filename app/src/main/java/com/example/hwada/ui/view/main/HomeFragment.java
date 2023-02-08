@@ -1,6 +1,7 @@
 package com.example.hwada.ui.view.main;
 
 import android.annotation.SuppressLint;
+import android.content.res.Resources;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -31,6 +32,7 @@ import com.example.hwada.Model.User;
 import com.example.hwada.R;
 import com.example.hwada.adapter.AdsAdapter;
 import com.example.hwada.database.DbHandler;
+import com.example.hwada.databinding.FragmentHomeBinding;
 import com.example.hwada.ui.MainActivity;
 import com.example.hwada.ui.view.map.MapsFragment;
 import com.example.hwada.ui.view.ad.AdvertiserFragment;
@@ -54,9 +56,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
     AdsViewModel adsViewModel;
     FavViewModel favViewModel ;
     AdsAdapter adapter;
-    RecyclerView mainRecycler;
 
-    EditText userAddress;
     UserViewModel userViewModel;
 
     String target = "toAdsActivity";
@@ -64,7 +64,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
     DebugViewModel debugViewModel ;
     private User user;
     ArrayList<Ad> adsList;
-    LinearLayout foodCategory, workerCategory, freelanceCategory, handcraftCategory;
 
     AdvertiserFragment advertiserFragment ;
 
@@ -74,34 +73,42 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
     private Runnable debounceRunnable;
     private Handler debounceHandler;
 
+    FragmentHomeBinding binding ;
+
     private static final String TAG = "HomeFragment";
     @SuppressLint("MissingInflatedId")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_home, container, false);
-        initCategoryLayout(v);
-        userAddress = v.findViewById(R.id.user_address);
-        mainRecycler = v.findViewById(R.id.main_recycler);
-        userAddress.setOnClickListener(this);
+       binding = FragmentHomeBinding.inflate(inflater, container, false);
+        initCategoryLayout();
+        binding.shimmerHomeFragment.startShimmer();
+
+        binding.userAddress.setOnClickListener(this);
+
+        setLocationArrowWhenLanguageIsArabic();
+
         debounceHandler = new Handler();
         advertiserFragment = new AdvertiserFragment();
-        return v;
+        return binding.getRoot();
     }
 
     public void setAdsToList() {
         try {
             adapter = new AdsAdapter();
-            mainRecycler.setAdapter(adapter);
-            // TODO
+            binding.recyclerHomeFragment.setAdapter(adapter);
             adsViewModel.getAllAds().observe(getActivity(), ads -> {
                 adsList = ads;
+                if(adsList.size()>0)binding.recyclerHomeFragment.setBackgroundResource(R.drawable.recycle_view_background);
                 if (user != null) {
+                    binding.shimmerHomeFragment.setVisibility(View.GONE);
+                    binding.shimmerHomeFragment.stopShimmer();
+                    binding.recyclerHomeFragment.setVisibility(View.VISIBLE);
                     adapter.setList(user, ads, getContext(),this);
                 }
             });
-            mainRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
+            binding.recyclerHomeFragment.setLayoutManager(new LinearLayoutManager(getActivity()));
         } catch (Exception e) {
             e.printStackTrace();
             reportError(e);
@@ -124,15 +131,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
     @Override
     public void onClick(View v) {
        try {
-           if (v.getId() == userAddress.getId()) {
+           if (v.getId() == binding.userAddress.getId()) {
                callBottomSheet(new MapsFragment());
-           } else if (v.getId() == foodCategory.getId()) {
+           } else if (v.getId() == binding.homeFoodCategory.getId()) {
                ((MainActivity) getActivity()).callAdsActivity(DbHandler.HOME_FOOD, DbHandler.HOME_FOOD,"");
-           } else if (v.getId() == workerCategory.getId()) {
+           } else if (v.getId() == binding.workerCategory.getId()) {
                ((MainActivity) getActivity()).callCategoryActivity(DbHandler.WORKER, target);
-           } else if (v.getId() == freelanceCategory.getId()) {
+           } else if (v.getId() == binding.freelanceCategory.getId()) {
                ((MainActivity) getActivity()).callCategoryActivity(DbHandler.FREELANCE, target);
-           } else if (v.getId() == handcraftCategory.getId()) {
+           } else if (v.getId() == binding.handcraftCategory.getId()) {
                ((MainActivity) getActivity()).callAdsActivity(DbHandler.HANDCRAFT, DbHandler.HANDCRAFT,"");
            }
        }catch (Exception e){
@@ -191,7 +198,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
                 }
 
                 if(user.getLocation()!=null){
-                    if (isAdded()) userAddress.setText(getUserAddress(user.getLocation()));
+                    if (isAdded()) binding.userAddress.setText(getUserAddress(user.getLocation()));
                 }else {
                     reportError("location is null in home fragment");
                 }            }
@@ -218,7 +225,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
         String adId = adsList.get(position).getId();
         int favPos = adIsInFavList(adId);
         if (favPos != -1) {
-
             user.getFavAds().remove(favPos);
             userViewModel.setUser(user);
             favViewModel.deleteFavAd(user.getUId(),adsList.get(position));
@@ -243,15 +249,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
         return -1;
     }
 
-    private void initCategoryLayout(View v) {
-        foodCategory = v.findViewById(R.id.home_food_category);
-        workerCategory = v.findViewById(R.id.worker_category);
-        freelanceCategory = v.findViewById(R.id.freelance_category);
-        handcraftCategory = v.findViewById(R.id.handcraft_category);
-        foodCategory.setOnClickListener(this);
-        workerCategory.setOnClickListener(this);
-        freelanceCategory.setOnClickListener(this);
-        handcraftCategory.setOnClickListener(this);
+    private void initCategoryLayout() {
+        binding.homeFoodCategory.setOnClickListener(this);
+        binding.workerCategory.setOnClickListener(this);
+        binding.freelanceCategory.setOnClickListener(this);
+        binding.handcraftCategory.setOnClickListener(this);
     }
 
     public void callBottomSheet(BottomSheetDialogFragment fragment) {
@@ -266,7 +268,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
     public void newLocation(Location location) {
         LocationCustom locationCustom = new LocationCustom(location.getLatitude(),location.getLongitude());
         user.setLocation(locationCustom);
-        userAddress.setText(getUserAddress(user.getLocation()));
+        binding.userAddress.setText(getUserAddress(user.getLocation()));
     }
     private void reportError(Exception e){
         StringWriter sw = new StringWriter();
@@ -279,29 +281,27 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
     private String getCurrentDate(){
         Calendar calendar = Calendar.getInstance();
         Date date = calendar.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("d MMM yyyy , h:mm a");
         return  sdf.format(date);
     }
     private void callAdvertiserFragment(int pos){
-        Bundle bundle = new Bundle();
-        bundle.putParcelable("user", user);
-        bundle.putParcelable("ad",adsList.get(pos));
-        bundle.putParcelableArrayList("adsList",adsList);
-        bundle.putInt("pos",pos);
-        advertiserFragment.setArguments(bundle);
-        advertiserFragment.show(getChildFragmentManager(),advertiserFragment.getTag());
+        if(!advertiserFragment.isAdded()){
+            Bundle bundle = new Bundle();
+            bundle.putParcelable("user", user);
+            bundle.putParcelable("ad",adsList.get(pos));
+            bundle.putParcelableArrayList("adsList",adsList);
+            bundle.putInt("pos",pos);
+            advertiserFragment.setArguments(bundle);
+            advertiserFragment.show(getChildFragmentManager(),advertiserFragment.getTag());
+        }
+
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
 
-        Log.e(TAG, "onResume: " );
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        Log.e(TAG, "onPause: " );
-    }
+  private void setLocationArrowWhenLanguageIsArabic(){
+      Locale locale = Resources.getSystem().getConfiguration().locale;
+      if (locale.getLanguage().equals("ar")) {
+          binding.userAddress.setCompoundDrawablesWithIntrinsicBounds(R.drawable.arrow_left, 0, R.drawable.distance_icon, 0);
+      }
+  }
 }

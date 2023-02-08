@@ -33,6 +33,7 @@ import com.example.hwada.Model.LocationCustom;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
 import com.example.hwada.adapter.ImagesAdapter;
+import com.example.hwada.application.App;
 import com.example.hwada.databinding.ActivityAddNewAdBinding;
 import com.example.hwada.ui.view.map.MapsFragment;
 import com.example.hwada.ui.view.WorkTimePreviewFragment;
@@ -48,10 +49,10 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
     User user ;
     ActivityAddNewAdBinding binding ;
     ImagesAdapter imagesAdapter;
+    private App app;
 
     Ad newAd;
     private static final String TAG = "AddNewAdActivity";
-    private static final int PICK_IMAGE_REQUEST = 2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +63,9 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
         Intent intent = getIntent();
         user = (User) intent.getParcelableExtra("user");
          initAd(intent);
+
+        app = (App) getApplication();
+
         //******************
         binding.userAddressMapFragment.setText(getUserAddress(user.getLocation()));
 
@@ -127,10 +131,10 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
        if(v.getId() ==binding.arrowAddNewAd.getId()) {
             super.onBackPressed();
        } else if(v.getId() == binding.addNewImage.getId()) {
-            if(checkPermissions()){
+            if(app.checkStoragePermissions()){
                 pickImagesHandler();
            }else {
-                requestPermissions();
+                app.requestStoragePermissions(this);
             }
         }else if (v.getId() == binding.nextButtonAddNewAd.getId()){
             setFieldsWarning();
@@ -242,35 +246,12 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
         }
     }
 
-    private void requestPermissions() {
 
-        Log.e(TAG, "requestPermissions: "+Build.VERSION.SDK_INT );
-        if(Build.VERSION.SDK_INT <= 32){
-            ActivityCompat.requestPermissions(this, new String[]{
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE}, PICK_IMAGE_REQUEST);
-        }else if( Build.VERSION.SDK_INT >=33){
-            ActivityCompat.requestPermissions(this, new String[]{
-                    Manifest.permission.READ_MEDIA_IMAGES
-            }, PICK_IMAGE_REQUEST);
-        }
-
-    }
-    private boolean checkPermissions() {
-        if(Build.VERSION.SDK_INT <=32){
-            return ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-
-        }else if( Build.VERSION.SDK_INT >=33){
-            return ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED ;
-
-        }
-        return false;
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == PICK_IMAGE_REQUEST) {
+        if (requestCode == app.PICK_IMAGE_REQUEST) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED ) {
                 pickImagesHandler();
             }
@@ -312,5 +293,17 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
         intent.putExtra("user",user);
         startActivity(intent);
         finish();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        app.setUserOnline();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        app.setUserOffline();
     }
 }

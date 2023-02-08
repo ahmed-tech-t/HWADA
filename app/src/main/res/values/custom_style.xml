@@ -10,13 +10,19 @@
     <style name="RoundedSquare">
         <item name="cornerSize">10%</item>
     </style>
-
+    <style name="ChatImages">
+        <item name="cornerSize">5dp</item>
+    </style>
 
     <!-- bottom sheet style -->
     <style name="CustomBottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/CustomBottomSheetStyle</item>
         <item name="android:windowSoftInputMode">adjustResize</item>
+    </style>
 
+    <!-- dialog fragment style -->
+    <style name="CustomDialogFragmentTheme" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:windowSoftInputMode">adjustResize</item>
     </style>
 
     <style name="CustomBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">

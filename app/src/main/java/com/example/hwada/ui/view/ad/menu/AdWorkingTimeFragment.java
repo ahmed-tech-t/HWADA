@@ -42,19 +42,22 @@ public class AdWorkingTimeFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         ad = getArguments().getParcelable("ad");
-        Log.e(TAG, "onActivityCreated: "+ad.getId() );
         setWorkingTimeToAdapter();
     }
     private void setWorkingTimeToAdapter(){
         ArrayList<String> days = getDays();
-        ArrayList<ArrayList<WorkingTime>> schedule = getSchedule();
-        for (int i = 0 ; i<schedule.size();i++ ) {
-            if(schedule.get(i).size()==0){
-                days.remove(i);
-                schedule.remove(i);
+        ArrayList<ArrayList<WorkingTime>> tempSchedule = getSchedule();
+        ArrayList<ArrayList<WorkingTime>> schedule = new ArrayList<>();
+
+        Log.e(TAG, "setWorkingTimeToAdapter: "+schedule );
+
+        for (int i = 0; i < tempSchedule.size();i++) {
+            if(tempSchedule.get(i).size() > 0){
+                schedule.add(tempSchedule.get(i));
             }
         }
 
+        Log.e(TAG, "setWorkingTimeToAdapter: "+schedule);
         adapter = new WorkingTimePreviewDaysAdapter();
         adapter.setDaysSchedule(schedule,days,getContext());
         binding.recyclerAdWorkingTimeFragment.setAdapter(adapter);

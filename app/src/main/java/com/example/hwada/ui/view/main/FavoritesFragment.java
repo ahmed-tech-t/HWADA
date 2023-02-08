@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,6 +25,7 @@ import android.widget.ImageView;
 import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
+import com.example.hwada.adapter.AdsGridAdapter;
 import com.example.hwada.adapter.FavoritesAdapter;
 import com.example.hwada.databinding.FragmentFavoritesBinding;
 import com.example.hwada.ui.view.ad.AdvertiserFragment;
@@ -36,14 +38,12 @@ import org.checkerframework.checker.units.qual.A;
 import java.util.ArrayList;
 
 
-public class FavoritesFragment extends Fragment implements FavoritesAdapter.OnItemListener {
+public class FavoritesFragment extends Fragment implements AdsGridAdapter.OnItemListener {
 
     User user;
     FavViewModel favViewModel ;
     UserViewModel userViewModel ;
-    FavoritesAdapter adapter;
-    ArrayList<Ad> adsList;
-    String category ;
+    AdsGridAdapter adapter;
 
     FragmentFavoritesBinding binding ;
     private static final String TAG = "FavoritesFragment";
@@ -73,13 +73,11 @@ public class FavoritesFragment extends Fragment implements FavoritesAdapter.OnIt
         super.onActivityCreated(savedInstanceState);
 
         user = getArguments().getParcelable("user");
-        category = getArguments().getString("category");
         favViewModel = FavViewModel.getInstance() ;
         userViewModel = UserViewModel.getInstance();
 
         setUserObserver();
         setAdsToList();
-        if(adsList.size()==0) binding.mainRecycler.setBackgroundColor(Color.WHITE);
         binding.mainRecycler.setNestedScrollingEnabled(false);
 
     }
@@ -94,13 +92,14 @@ public class FavoritesFragment extends Fragment implements FavoritesAdapter.OnIt
         });
     }
     public void setAdsToList() {
-        adapter = new FavoritesAdapter();
+        if(user.getFavAds().size()>0){
+            binding.mainRecycler.setBackgroundResource(R.drawable.recycle_view_background);
+        }
+        adapter = new AdsGridAdapter();
         try {
-            Log.e(TAG, "setAdsToList: " );
             binding.mainRecycler.setAdapter(adapter);
-            adsList = getAdsList();
-            adapter.setList(adsList,getContext(),this);
-            binding.mainRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
+            adapter.setList(user,user.getFavAds(),getContext(),this);
+            binding.mainRecycler.setLayoutManager(new GridLayoutManager(getActivity(),2));
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -121,35 +120,16 @@ public class FavoritesFragment extends Fragment implements FavoritesAdapter.OnIt
     }
     @Override
     public void getFavItemPosition(int position, ImageView favImage) {
-        String adId = adsList.get(position).getId();
-        int favPos = adIsInFavList(adId);
-        if (favPos != -1) {
-            user.getFavAds().remove(favPos);
-            userViewModel.setUser(user);
-            favViewModel.deleteFavAd(user.getUId(),adsList.get(position));
-            adapter.removeOneItem(position);
-            favImage.setImageResource(R.drawable.fav_uncheck_icon);
-            if(adsList.size()==0) binding.mainRecycler.setBackgroundColor(Color.WHITE);
-        } else {
-            if (user.getFavAds() == null) user.initFavAdsList();
-            favViewModel.addFavAd(user.getUId(),adsList.get(position));
-            user.getFavAds().add(adsList.get(position));
-            userViewModel.setUser(user);
-            favImage.setImageResource(R.drawable.fav_checked_icon);
-        }
-    }
+        favViewModel.deleteFavAd(user.getUId(),user.getFavAds().get(position));
+        adapter.removeOneItem(position);
+        userViewModel.setUser(user);
+        Log.e(TAG, "getFavItemPosition: "+user.getFavAds().size() );
+        if(user.getFavAds().size() == 0) binding.mainRecycler.setBackgroundResource(R.drawable.empty_page);
 
-    private int adIsInFavList(String id) {
-        for (int i =  0 ; i < user.getFavAds().size(); i++) {
-            if(user.getFavAds().get(i).getId().equals(id)){
-                return i;
-            }
-        }
-        return -1;
     }
+    
 
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        category = getArguments().getString("category");
         user = getArguments().getParcelable("user");
 
     }
@@ -157,25 +137,14 @@ public class FavoritesFragment extends Fragment implements FavoritesAdapter.OnIt
     @Override
     public void onResume() {
         super.onResume();
-        category = getArguments().getString("category");
         user = getArguments().getParcelable("user");
-    }
-
-    private ArrayList<Ad> getAdsList(){
-        ArrayList<Ad> temp = new ArrayList<>();
-        for (Ad ad : user.getFavAds()) {
-            if(ad.getCategory().equals(category)){
-                temp.add(ad);
-            }
-        }
-        return temp;
     }
 
     private void callAdvertiserFragment(int pos){
         Bundle bundle = new Bundle();
         bundle.putParcelable("user", user);
-        bundle.putParcelable("ad",adsList.get(pos));
-        bundle.putParcelableArrayList("adsList",adsList);
+        bundle.putParcelable("ad",user.getFavAds().get(pos));
+        bundle.putParcelableArrayList("adsList",user.getFavAds());
         bundle.putInt("pos",pos);
         advertiserFragment.setArguments(bundle);
         advertiserFragment.show(getChildFragmentManager(),advertiserFragment.getTag());

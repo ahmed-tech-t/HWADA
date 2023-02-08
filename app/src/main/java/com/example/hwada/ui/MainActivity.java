@@ -38,12 +38,13 @@ import com.example.hwada.Model.DebugModel;
 import com.example.hwada.Model.LocationCustom;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
+import com.example.hwada.application.App;
 import com.example.hwada.databinding.ActivityMainBinding;
 import com.example.hwada.ui.view.EditUserFragment;
 import com.example.hwada.ui.view.category.CategoryFragment;
-import com.example.hwada.ui.view.main.FavTapLayoutFragment;
 import com.example.hwada.ui.view.main.AccountFragment;
 import com.example.hwada.ui.view.main.ChatFragment;
+import com.example.hwada.ui.view.main.FavoritesFragment;
 import com.example.hwada.ui.view.main.HomeFragment;
 import com.example.hwada.viewmodel.DebugViewModel;
 import com.example.hwada.viewmodel.UserViewModel;
@@ -74,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private UserViewModel userViewModel ;
     FusedLocationProviderClient mFusedLocationClient;
     DebugViewModel debugViewModel;
+    private App app;
 
 
     String TAG = "MainActivity";
@@ -96,6 +98,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
           navBarOnSelected();
           userViewModel = UserViewModel.getInstance();
           debugViewModel = ViewModelProviders.of(this).get(DebugViewModel.class);
+
+          app = (App) getApplication();
+
 
           setUserObserver();
 
@@ -166,7 +171,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onResume() {
         super.onResume();
-       try {
+        app.setUserOnline();
+
+        try {
            if(user.getLocation()==null){
                if(isLocationEnabled()){
                    setLocationDialog();
@@ -307,7 +314,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                       callFragment(new ChatFragment(),"chat");
                         break;
                     case R.id.favorites:
-                     callFragment(new FavTapLayoutFragment(),"fav");
+                     callFragment(new FavoritesFragment(),"fav");
                         break;
                     case R.id.account:
                       callFragment(new AccountFragment(),"account");
@@ -376,8 +383,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
        try {
            Bundle bundle = new Bundle();
            bundle.putParcelable("user", user);
-           fragment.setArguments(bundle);
-           fragment.show(getSupportFragmentManager(),fragment.getTag());
+               fragment.setArguments(bundle);
+               fragment.show(getSupportFragmentManager(),fragment.getTag());
        }catch (Exception e){
            reportError(e);
        }
@@ -450,4 +457,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 })
                 .show();
     }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        app.setUserOffline();
+    }
+
+
 }

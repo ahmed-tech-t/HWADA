@@ -6,15 +6,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
+import com.example.hwada.util.GlideImageLoader;
+import com.google.android.material.imageview.ShapeableImageView;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -22,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 public class AdsGridAdapter extends RecyclerView.Adapter<AdsGridAdapter.HomeViewHolder> {
     private ArrayList<Ad> list = new ArrayList();
@@ -39,7 +45,12 @@ public class AdsGridAdapter extends RecyclerView.Adapter<AdsGridAdapter.HomeView
     @Override
     public void onBindViewHolder(@NonNull HomeViewHolder holder, int position) {
 
-        Glide.with(mContext).load(list.get(position).getImagesUrl().get(0)).into(holder.userImage);
+        String url = list.get(position).getImagesUrl().get(0);
+        RequestOptions options = new RequestOptions()
+                .priority(Priority.HIGH);
+        new GlideImageLoader(holder.userImage,new ProgressBar(mContext)).load(url,options);
+
+
         holder.title.setText(list.get(position).getTitle());
 
         //fav image
@@ -81,7 +92,8 @@ public class AdsGridAdapter extends RecyclerView.Adapter<AdsGridAdapter.HomeView
     }
 
     public class HomeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        ImageView userImage , favImage ;
+        ShapeableImageView userImage ;
+        ImageView favImage ;
         TextView title  , date , distance , price , rating;
         OnItemListener onItemListener;
         public HomeViewHolder(@NonNull View v,OnItemListener onItemListener) {
@@ -121,7 +133,7 @@ public class AdsGridAdapter extends RecyclerView.Adapter<AdsGridAdapter.HomeView
     }
     public String handleTime(String dateString){
         try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy , h:mm a");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy , h:mm a", Locale.ENGLISH);
             Date date = dateFormat.parse(dateString);
 
             Calendar today = Calendar.getInstance();
@@ -140,7 +152,7 @@ public class AdsGridAdapter extends RecyclerView.Adapter<AdsGridAdapter.HomeView
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        return dateString;
+        return dateString.split(",")[0];
     }
 
     public String getDistance(int pos){
@@ -154,7 +166,12 @@ public class AdsGridAdapter extends RecyclerView.Adapter<AdsGridAdapter.HomeView
 
         float distanceInMeters = location1.distanceTo(location2)/1000;
 
-        return String.format("%.2f", distanceInMeters);
+        return String.format(Locale.US, "%.2f", distanceInMeters);
 
+    }
+    public void removeOneItem(int position){
+        list.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position,list.size());
     }
 }
