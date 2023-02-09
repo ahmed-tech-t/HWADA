@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModel;
 import com.example.hwada.Model.LocationCustom;
 import com.example.hwada.Model.User;
 import com.example.hwada.repository.UserRepository;
+import com.google.firebase.Timestamp;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,11 +56,11 @@ public class UserViewModel extends ViewModel {
         updateLocationSuccessLiveData = userRepository.updateUserLocation(location);
     }
 
-    public void setUserStatus(String status){
-        userRepository.setUserStatus(status);
+    public void setUserStatus(String status,String userId){
+        userRepository.setUserStatus(status,userId);
     }
-    public void setUserLastSeen(String lastSeen){
-        userRepository.setUserLastSeen(lastSeen);
+    public void setUserLastSeen(Timestamp lastSeen, String userId){
+        userRepository.setUserLastSeen(lastSeen,userId);
     }
     public LiveData<String> getUserStatus(String id){
         return userRepository.getUserStatus(id);

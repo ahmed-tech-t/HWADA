@@ -90,11 +90,11 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
     }
 
     public void setReviewsToRecycler() {
-        adapter = new ReviewAdapter();
+        adapter = new ReviewAdapter(getContext());
         try {
             binding.reviewRecyclerAdReviewFragment.setAdapter(adapter);
             if (ad.getAdReviews()==null) ad.initAdReviewsList();
-            adapter.setList(ad.getAdReviews(),getContext(),this);
+            adapter.setList(ad.getAdReviews(),this);
             binding.reviewRecyclerAdReviewFragment.setLayoutManager(new LinearLayoutManager(getActivity()));
         }catch (Exception e){
             e.printStackTrace();

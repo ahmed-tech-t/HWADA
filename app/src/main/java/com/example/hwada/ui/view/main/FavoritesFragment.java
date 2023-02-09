@@ -26,7 +26,6 @@ import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
 import com.example.hwada.adapter.AdsGridAdapter;
-import com.example.hwada.adapter.FavoritesAdapter;
 import com.example.hwada.databinding.FragmentFavoritesBinding;
 import com.example.hwada.ui.view.ad.AdvertiserFragment;
 import com.example.hwada.viewmodel.AdsViewModel;
@@ -95,10 +94,10 @@ public class FavoritesFragment extends Fragment implements AdsGridAdapter.OnItem
         if(user.getFavAds().size()>0){
             binding.mainRecycler.setBackgroundResource(R.drawable.recycle_view_background);
         }
-        adapter = new AdsGridAdapter();
+        adapter = new AdsGridAdapter(getContext());
         try {
             binding.mainRecycler.setAdapter(adapter);
-            adapter.setList(user,user.getFavAds(),getContext(),this);
+            adapter.setList(user,user.getFavAds(),this);
             binding.mainRecycler.setLayoutManager(new GridLayoutManager(getActivity(),2));
         }catch (Exception e){
             e.printStackTrace();

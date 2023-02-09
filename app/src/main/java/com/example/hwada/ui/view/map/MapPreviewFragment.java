@@ -46,6 +46,7 @@ import com.example.hwada.Model.DebugModel;
 import com.example.hwada.Model.LocationCustom;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
+import com.example.hwada.application.App;
 import com.example.hwada.databinding.FragmentAdReviewsBinding;
 import com.example.hwada.databinding.FragmentMapPreviewBinding;
 import com.example.hwada.databinding.FragmentMapsBinding;
@@ -92,6 +93,7 @@ public class MapPreviewFragment extends BottomSheetDialogFragment implements OnM
     FragmentMapPreviewBinding binding ;
     DebugViewModel debugViewModel ;
 
+    App app ;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -99,6 +101,7 @@ public class MapPreviewFragment extends BottomSheetDialogFragment implements OnM
                              @Nullable Bundle savedInstanceState) {
         binding = FragmentMapPreviewBinding.inflate(inflater, container, false);
         binding.arrowMapPreviewFragment.setOnClickListener(this);
+        app = (App) getContext().getApplicationContext();
         return binding.getRoot();
     }
 
@@ -206,7 +209,7 @@ public class MapPreviewFragment extends BottomSheetDialogFragment implements OnM
             if (locationButton != null)
                 locationButton.setVisibility(View.GONE);
         }catch (Exception e){
-            reportError(e);
+            app.reportError(e,getContext());
         }
     }
 
@@ -233,7 +236,7 @@ public class MapPreviewFragment extends BottomSheetDialogFragment implements OnM
             mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.empty_map_style));
 
         }catch (Exception e){
-            reportError(e);
+            app.reportError(e,getContext());
         }
     }
 
@@ -259,7 +262,7 @@ public class MapPreviewFragment extends BottomSheetDialogFragment implements OnM
                     locationButton.callOnClick();
             }
         }catch (Exception e){
-            reportError(e);
+            app.reportError(e,getContext());
         }
     }
 
@@ -272,7 +275,7 @@ public class MapPreviewFragment extends BottomSheetDialogFragment implements OnM
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                     Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_ID);
         }catch (Exception e){
-            reportError(e);
+            app.reportError(e,getContext());
         }
     }
     @Override
@@ -288,7 +291,7 @@ public class MapPreviewFragment extends BottomSheetDialogFragment implements OnM
                 }
             }
         }catch (Exception e){
-            reportError(e);
+            app.reportError(e,getContext());
         }
     }
     private String getUserAddress(LocationCustom location) {
@@ -311,24 +314,10 @@ public class MapPreviewFragment extends BottomSheetDialogFragment implements OnM
             return address ;
         } catch (IOException e) {
             e.printStackTrace();
-            reportError(e);
+            app.reportError(e,getContext());
         }
         return "";
     }
 
 
-    private void reportError(Exception e){
-        StringWriter sw = new StringWriter();
-        e.printStackTrace(new PrintWriter(sw));
-        debugViewModel.reportError(new DebugModel(getCurrentDate(),e.getMessage(),sw.toString(),TAG, Build.VERSION.SDK_INT,false));
-    }
-    private String getCurrentDate(){
-        Calendar calendar = Calendar.getInstance();
-        Date date = calendar.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        return  sdf.format(date);
-    }
-    private void reportError(String s){
-        debugViewModel.reportError(new DebugModel(getCurrentDate(),s,s,TAG, Build.VERSION.SDK_INT,false));
-    }
 }

@@ -44,7 +44,6 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:padding="5dp"
-                android:text="Name"
                 android:textColor="@color/white"
                 android:textSize="18dp" />
         </LinearLayout>

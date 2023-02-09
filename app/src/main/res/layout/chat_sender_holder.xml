@@ -69,12 +69,11 @@
                     android:text="6:55 pm"/>
                 <ImageView
                     android:id="@+id/im_message_status_chat_sender_holder"
-                    android:layout_width="10dp"
-                    android:layout_height="10dp"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
                     android:layout_marginEnd="3dp"
                     android:layout_gravity="center"
                     android:layout_marginStart="5dp"
-                    android:src="@drawable/message_not_sent"
                     />
             </LinearLayout>
         </LinearLayout>

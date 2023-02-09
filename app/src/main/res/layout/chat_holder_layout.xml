@@ -61,16 +61,25 @@
 
                 <ImageView
                     android:id="@+id/message_status_chat_holder"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
                     android:layout_marginEnd="5dp"
-                    android:src="@drawable/message_un_read"
+                    android:src="@drawable/message_not_sent"
                    />
+                <ImageView
+                    android:id="@+id/image_icon_chat_holder"
+                    android:layout_gravity="center"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_marginEnd="5dp"
+                    android:visibility="gone"
+                    android:src="@drawable/image_icon"
+                    />
                 <TextView
                     android:id="@+id/last_message_chat_holder"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="اخر رساله"
                     android:maxLines="1"
                     android:layout_gravity="center"
                     android:textSize="15dp"

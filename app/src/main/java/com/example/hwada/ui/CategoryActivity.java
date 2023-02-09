@@ -145,12 +145,12 @@ public class CategoryActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        app.setUserOnline();
+        app.setUserOnline(user.getUId());
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        app.setUserOffline();
+        app.setUserOffline(user.getUId());
     }
 }

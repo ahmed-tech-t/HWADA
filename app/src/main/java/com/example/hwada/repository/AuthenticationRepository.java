@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.example.hwada.Model.DebugModel;
 import com.example.hwada.Model.User;
+import com.example.hwada.application.App;
 import com.example.hwada.database.DbHandler;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -41,12 +42,14 @@ private MutableLiveData<Boolean> userLoggedMutableLiveData ;
 private FirebaseAuth auth ;
 private DebugRepository debugRepository;
 
+    App app;
     MutableLiveData<User> authenticatedUserMutableLiveData;
 
 //*********************
 
     private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
     private CollectionReference usersRef = rootRef.collection(DbHandler.userCollection);
+
 
     public MutableLiveData<User> firebaseSignInWithGoogle(AuthCredential googleAuthCredential) {
         auth.signInWithCredential(googleAuthCredential).addOnCompleteListener(authTask -> {
@@ -64,7 +67,7 @@ private DebugRepository debugRepository;
                     authenticatedUserMutableLiveData.setValue(user);
                 }
             } else {
-                reportError(authTask.getException());
+                app.reportError(authTask.getException(),application);
                 Toast.makeText(application, authTask.getException().getMessage(), Toast.LENGTH_SHORT).show();
                 Log.e(TAG, "firebaseSignInWithGoogle: "+authTask.getException().getMessage() );
             }
@@ -93,7 +96,7 @@ private DebugRepository debugRepository;
                     newUserMutableLiveData.setValue(authenticatedUser);
                 }
             } else {
-                reportError(uidTask.getException());
+                app.reportError(uidTask.getException(),application);
                 Toast.makeText(application, uidTask.getException().getMessage(), Toast.LENGTH_SHORT).show();
                 Log.e(TAG, "createUserInFirestoreIfNotExists: "+uidTask.getException().getMessage());
             }
@@ -104,6 +107,7 @@ private DebugRepository debugRepository;
 
     public AuthenticationRepository(Application application) {
         this.application = application;
+        app = (App) application.getApplicationContext();
         authenticatedUserMutableLiveData = new MutableLiveData<>();
         userLoggedMutableLiveData =new MutableLiveData<>();
         auth = FirebaseAuth.getInstance();
@@ -128,7 +132,7 @@ private DebugRepository debugRepository;
                             authenticatedUserMutableLiveData.setValue(user);
                          }
                 }else {
-                    reportError(task.getException());
+                    app.reportError(task.getException(),application);
                     Toast.makeText(application, task.getException().getMessage(), Toast.LENGTH_LONG).show();
                     Log.e(TAG, task.getException().getMessage());
                 }
@@ -150,7 +154,7 @@ private DebugRepository debugRepository;
                         authenticatedUserMutableLiveData.setValue(user);
                     }
                 }else {
-                    reportError(task.getException());
+                    app.reportError(task.getException(),application);
                     Toast.makeText(application, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
@@ -164,15 +168,4 @@ private DebugRepository debugRepository;
     }
 
 
-    private void reportError(Exception e){
-        StringWriter sw = new StringWriter();
-        e.printStackTrace(new PrintWriter(sw));
-        debugRepository.reportError(new DebugModel(getCurrentDate(),e.getMessage(),sw.toString(),TAG, Build.VERSION.SDK_INT,false));
-    }
-    private String getCurrentDate(){
-        Calendar calendar = Calendar.getInstance();
-        Date date = calendar.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        return  sdf.format(date);
-    }
 }

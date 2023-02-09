@@ -23,6 +23,7 @@ import com.example.hwada.Model.User;
 import com.example.hwada.database.DbHandler;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -133,15 +134,15 @@ public class UserRepository {
         return updateMyReviewsSuccess;
     }
 
-    public void setUserStatus(String status){
+    public void setUserStatus(String status,String userId){
         Map<String, Object> data = new HashMap<>();
         data.put("status",status);
-        rootRef.collection(DbHandler.userCollection).document(auth.getUid()).update(data);
+        rootRef.collection(DbHandler.userCollection).document(userId).update(data);
     }
-    public void setUserLastSeen(String lastSeen){
+    public void setUserLastSeen(Timestamp lastSeen, String userId){
         Map<String, Object> data = new HashMap<>();
         data.put("lastSeen",lastSeen);
-        rootRef.collection(DbHandler.userCollection).document(auth.getUid()).update(data);
+        rootRef.collection(DbHandler.userCollection).document(userId).update(data);
     }
 
     public MutableLiveData<String> getUserStatus(String id) {

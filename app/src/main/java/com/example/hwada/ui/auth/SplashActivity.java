@@ -9,10 +9,13 @@ import android.os.Build;
 import android.os.Bundle;
 
 import com.example.hwada.Model.DebugModel;
+import com.example.hwada.application.App;
 import com.example.hwada.ui.MainActivity;
 import com.example.hwada.Model.User;
 import com.example.hwada.viewmodel.DebugViewModel;
 import com.example.hwada.viewmodel.SplashViewModel;
+
+import org.checkerframework.checker.units.qual.A;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -23,13 +26,14 @@ import java.util.Date;
 public class SplashActivity extends AppCompatActivity {
     SplashViewModel splashViewModel;
     DebugViewModel debugViewModel;
+    App app;
     private static final String TAG = "SplashActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         debugViewModel = ViewModelProviders.of(this).get(DebugViewModel.class);
         splashViewModel = new ViewModelProvider(this).get(SplashViewModel.class);
-
+        app =(App)getApplication();
         checkIfUserIsAuthenticated();
     }
 
@@ -47,7 +51,7 @@ public class SplashActivity extends AppCompatActivity {
             });
         }catch (Exception e){
             e.printStackTrace();
-            reportError(e);
+            app.reportError(e,this);
         }
     }
     
@@ -59,7 +63,7 @@ public class SplashActivity extends AppCompatActivity {
                   finish();
               });
           }catch (Exception e){
-              reportError(e);
+              app.reportError(e,this);
           }
     }
     private void goToMainActivity(User user) {
@@ -75,15 +79,5 @@ public class SplashActivity extends AppCompatActivity {
     }
 
 
-    private void reportError(Exception e){
-        StringWriter sw = new StringWriter();
-        e.printStackTrace(new PrintWriter(sw));
-        debugViewModel.reportError(new DebugModel(getCurrentDate(),e.getMessage(),sw.toString(),TAG, Build.VERSION.SDK_INT,false));
-    }
-    private String getCurrentDate(){
-        Calendar calendar = Calendar.getInstance();
-        Date date = calendar.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        return  sdf.format(date);
-    }
+
 }

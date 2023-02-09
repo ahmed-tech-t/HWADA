@@ -48,6 +48,7 @@ import com.example.hwada.R;
 import com.example.hwada.adapter.AdsGridAdapter;
 import com.example.hwada.adapter.ImageSliderAdapter;
 
+import com.example.hwada.application.App;
 import com.example.hwada.databinding.FragmentAdvertiserBinding;
 import com.example.hwada.ui.ChatActivity;
 import com.example.hwada.ui.view.ad.menu.AdDescriptionFragment;
@@ -66,6 +67,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.firebase.Timestamp;
 
 import org.checkerframework.checker.units.qual.A;
 
@@ -98,6 +100,7 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
     AdsGridAdapter adsGridAdapter;
     User user;
     Ad ad;
+    App app;
     private static final String TAG = "AdvertiserFragment";
 
     FragmentAdvertiserBinding binding;
@@ -120,7 +123,7 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         binding.buttonChatAdvertiserFragment.setOnClickListener(this);
         setLocationArrowWhenLanguageIsArabic();
         debounceHandler = new Handler();
-
+        app = (App) getContext().getApplicationContext();
         return binding.getRoot();
     }
 
@@ -214,22 +217,27 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
             callCallActivity();
         }else if (v.getId() == binding.buttonChatAdvertiserFragment.getId()){
             Ad tempAd = new Ad(ad.getId(),ad.getAuthorId(),ad.getTitle(),ad.getCategory(),ad.getSubCategory(),ad.getSubSubCategory(),ad.getImagesUrl());
-            Chat chat = new Chat(tempAd,getCurrentDate());
-            chatViewModel.addNewChat(user.getUId(),chat).observe(this, new Observer<Boolean>() {
+            tempAd.setAuthorName(ad.getAuthorName());
+
+            Log.e(TAG, "sender: "+ user.getUId() );
+            Log.e(TAG, "rec: "+ad.getAuthorId() );
+            Chat chat = new Chat(tempAd,app.getCurrentDate(),ad.getAuthorId());
+            chatViewModel.addNewChat(user.getUId(),chat).observe(this, new Observer<Chat>() {
                 @Override
-                public void onChanged(Boolean success) {
-                    if(success){
-                        callChatActivity();
-                    }
+                public void onChanged(Chat chat) {
+                    Log.e(TAG, "sender: "+ user.getUId() );
+                    Log.e(TAG, "rec: "+chat.getReceiverId() );
+
+                    callChatActivity(chat);
                 }
             });
         }
     }
 
-    public void callChatActivity(){
+    public void callChatActivity(Chat chat){
         Intent intent = new Intent(getActivity(), ChatActivity.class);
         intent.putExtra("user",user);
-        intent.putExtra("ad",ad);
+        intent.putExtra("chat",chat);
         startActivity(intent);
     }
 
@@ -365,16 +373,9 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
     private void reportError(Exception e){
         StringWriter sw = new StringWriter();
         e.printStackTrace(new PrintWriter(sw));
-        debugViewModel.reportError(new DebugModel(getCurrentDate(),e.getMessage(),sw.toString(),TAG, Build.VERSION.SDK_INT,false));
+        debugViewModel.reportError(new DebugModel(app.getCurrentDate(),e.getMessage(),sw.toString(),TAG, Build.VERSION.SDK_INT,false));
     }
 
-
-    private String getCurrentDate(){
-        Calendar calendar = Calendar.getInstance();
-        Date date = calendar.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("d MMM yyyy , h:mm a");
-        return  sdf.format(date);
-    }
 
     @Override
     public void getItemPosition(int position) {
@@ -419,8 +420,8 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         return -1;
     }
     private void setAdGridAdapter(){
-        adsGridAdapter = new AdsGridAdapter();
-        adsGridAdapter.setList(user,adsList,getContext(),this);
+        adsGridAdapter = new AdsGridAdapter(getContext());
+        adsGridAdapter.setList(user,adsList,this);
         binding.recyclerGridFragmentAdvertiser.setAdapter(adsGridAdapter);
         binding.recyclerGridFragmentAdvertiser.setLayoutManager(new GridLayoutManager(getContext(),2));
     }

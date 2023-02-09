@@ -7,6 +7,7 @@ public class DbHandler {
    public static final String reportCollection ="Reports";
    public static final String favAdsCollection ="FavAds";
    public static final String chatCollection ="Chat";
+   public static final String messagesCollection ="Messages";
 
 
    public static final String ONLINE = "online";

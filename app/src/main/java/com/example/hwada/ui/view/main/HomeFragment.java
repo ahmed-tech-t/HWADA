@@ -31,6 +31,7 @@ import com.example.hwada.Model.LocationCustom;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
 import com.example.hwada.adapter.AdsAdapter;
+import com.example.hwada.application.App;
 import com.example.hwada.database.DbHandler;
 import com.example.hwada.databinding.FragmentHomeBinding;
 import com.example.hwada.ui.MainActivity;
@@ -67,6 +68,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
 
     AdvertiserFragment advertiserFragment ;
 
+    App app ;
     //debounce mechanism
     private static final long DEBOUNCE_DELAY_MILLIS = 500;
     private boolean debouncing = false;
@@ -82,6 +84,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
        binding = FragmentHomeBinding.inflate(inflater, container, false);
+       app =(App) getContext().getApplicationContext();
         initCategoryLayout();
         binding.shimmerHomeFragment.startShimmer();
 
@@ -91,12 +94,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
 
         debounceHandler = new Handler();
         advertiserFragment = new AdvertiserFragment();
+
+
         return binding.getRoot();
     }
 
     public void setAdsToList() {
         try {
-            adapter = new AdsAdapter();
+            adapter = new AdsAdapter(getContext());
             binding.recyclerHomeFragment.setAdapter(adapter);
             adsViewModel.getAllAds().observe(getActivity(), ads -> {
                 adsList = ads;
@@ -105,13 +110,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
                     binding.shimmerHomeFragment.setVisibility(View.GONE);
                     binding.shimmerHomeFragment.stopShimmer();
                     binding.recyclerHomeFragment.setVisibility(View.VISIBLE);
-                    adapter.setList(user, ads, getContext(),this);
+                    adapter.setList(user, ads,this);
                 }
             });
             binding.recyclerHomeFragment.setLayoutManager(new LinearLayoutManager(getActivity()));
         } catch (Exception e) {
             e.printStackTrace();
-            reportError(e);
+            app.reportError(e,getContext());
         }
     }
 
@@ -143,7 +148,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
                ((MainActivity) getActivity()).callAdsActivity(DbHandler.HANDCRAFT, DbHandler.HANDCRAFT,"");
            }
        }catch (Exception e){
-           reportError(e);
+           app.reportError(e,getContext());
        }
     }
 
@@ -161,7 +166,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
             return address;
         } catch (IOException e) {
             e.printStackTrace();
-            reportError(e);
+            app.reportError(e,getContext());
         }
         return "";
     }
@@ -182,7 +187,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
           newAdObserver();
 
       }catch (Exception e){
-          reportError(e);
+          app.reportError(e,getContext());
       }
     }
 
@@ -200,7 +205,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
                 if(user.getLocation()!=null){
                     if (isAdded()) binding.userAddress.setText(getUserAddress(user.getLocation()));
                 }else {
-                    reportError("location is null in home fragment");
+                    app.reportError("location is null in home fragment",getContext());
                 }            }
         });
     }
@@ -270,14 +275,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
         user.setLocation(locationCustom);
         binding.userAddress.setText(getUserAddress(user.getLocation()));
     }
-    private void reportError(Exception e){
-        StringWriter sw = new StringWriter();
-        e.printStackTrace(new PrintWriter(sw));
-        debugViewModel.reportError(new DebugModel(getCurrentDate(),e.getMessage(),sw.toString(),TAG, Build.VERSION.SDK_INT,false));
-    }
-    private void reportError(String s){
-        debugViewModel.reportError(new DebugModel(getCurrentDate(),s,s,TAG, Build.VERSION.SDK_INT,false));
-    }
+
     private String getCurrentDate(){
         Calendar calendar = Calendar.getInstance();
         Date date = calendar.getTime();

@@ -18,6 +18,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
+import com.example.hwada.application.App;
 import com.example.hwada.util.GlideImageLoader;
 import com.google.android.material.imageview.ShapeableImageView;
 
@@ -35,7 +36,11 @@ public class AdsGridAdapter extends RecyclerView.Adapter<AdsGridAdapter.HomeView
     OnItemListener pOnItemListener;
     Context mContext;
     private static final String TAG = "AdsGridAdapter";
-
+    App app;
+    public AdsGridAdapter (Context context){
+        this.mContext =context;
+        app = (App) context.getApplicationContext();
+    }
     @NonNull
     @Override
     public HomeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -83,7 +88,7 @@ public class AdsGridAdapter extends RecyclerView.Adapter<AdsGridAdapter.HomeView
         return list.size();
     }
 
-    public void setList(User user,ArrayList<Ad> list,Context mContext,OnItemListener onItemListener) {
+    public void setList(User user,ArrayList<Ad> list,OnItemListener onItemListener) {
         this.user = user;
         this.list = list;
         this.mContext =mContext ;
@@ -133,7 +138,7 @@ public class AdsGridAdapter extends RecyclerView.Adapter<AdsGridAdapter.HomeView
     }
     public String handleTime(String dateString){
         try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy , h:mm a", Locale.ENGLISH);
+            SimpleDateFormat dateFormat = app.timeFormat();
             Date date = dateFormat.parse(dateString);
 
             Calendar today = Calendar.getInstance();

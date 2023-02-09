@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
           getLastLocation();
 
       }catch (Exception e){
-          reportError(e);
+          app.reportError(e,this);
       }
     }
 
@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
          locationDialog.setCancelable(false);
          locationDialog.show();
      }catch (Exception e){
-         reportError(e);
+         app.reportError(e,this);
      }
     }
 
@@ -164,14 +164,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
               this.finishAffinity();
           }
       }catch (Exception e){
-          reportError(e);
+          app.reportError(e,this);
       }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        app.setUserOnline();
+        app.setUserOnline(user.getUId());
 
         try {
            if(user.getLocation()==null){
@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                }
            }
        }catch (Exception e){
-           reportError(e);
+            app.reportError(e,this);
        }
     }
     public void askUserToOpenGps() {
@@ -199,14 +199,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
            alertDialog.setCancelable(false);
            alertDialog.show();
        }catch (Exception e){
-           reportError(e);
+           app.reportError(e,this);
        }
     }
     private boolean checkPermissions() {
        try {
            return ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
        }catch (Exception e){
-           reportError(e);
+           app.reportError(e,this);
        }
         return false;
 
@@ -217,7 +217,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                   Manifest.permission.ACCESS_COARSE_LOCATION,
                   Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_ID);
       }catch (Exception e){
-          reportError(e);
+          app.reportError(e,this);
       }
     }
     private boolean isLocationEnabled() {
@@ -226,7 +226,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
         }catch (Exception e){
-            reportError(e);
+            app.reportError(e,this);
         }
         return false;
     }
@@ -254,7 +254,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                               }
                           });
                       }catch (Exception e){
-                          reportError(e);
+                          app.reportError(e,this);
                       }
 
                   } else {
@@ -265,7 +265,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
               }
           }
       }catch (Exception e){
-          reportError(e);
+          app.reportError(e,this);
       }
     }
 
@@ -286,7 +286,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
            mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
            mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
        }catch (Exception e){
-           reportError(e);
+           app.reportError(e,this);
        }
     }
     private LocationCallback mLocationCallback = new LocationCallback() {
@@ -298,7 +298,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                //save to database
                updateLocation(locationCustom);
            }catch (Exception e){
-             reportError(e);
+               app.reportError(e,getApplication());
            }
        }
     };
@@ -322,7 +322,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }catch (Exception e){
                 e.printStackTrace();
-               reportError(e);
+                app.reportError(e,this);
             }
             return true;
         });
@@ -343,7 +343,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                   fragmentTransaction.commit();
               }
           }catch (Exception e){
-              reportError(e);
+              app.reportError(e,this);
           }
     }
     public void callAddNewAdActivity(String category ,String subCategory , String subSubCategory){
@@ -355,7 +355,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
            intent.putExtra("subSubCategory",subSubCategory);
            startActivity(intent);
        }catch (Exception e){
-           reportError(e);
+           app.reportError(e,this);
        }
     }
 
@@ -376,17 +376,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         }catch (Exception e){
-            reportError(e);
+            app.reportError(e,this);
         }
     }
     public void callBottomSheet(BottomSheetDialogFragment fragment){
        try {
-           Bundle bundle = new Bundle();
-           bundle.putParcelable("user", user);
+               Log.e(TAG, "callBottomSheet: " );
+               Bundle bundle = new Bundle();
+               bundle.putParcelable("user", user);
                fragment.setArguments(bundle);
                fragment.show(getSupportFragmentManager(),fragment.getTag());
+
        }catch (Exception e){
-           reportError(e);
+           app.reportError(e,this);
        }
     }
     public void callCategoryActivity(String tag,String target){
@@ -397,7 +399,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
            intent.putExtra("target",target);
            startActivity(intent);
        }catch (Exception e){
-           reportError(e);
+           app.reportError(e,this);
        }
     }
     public void callAdsActivity(String category,String subCategory,String subSubCategory){
@@ -409,7 +411,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
            intent.putExtra("subSubCategory",subSubCategory);
            startActivity(intent);
        }catch (Exception e){
-           reportError(e);
+           app.reportError(e,this);
        }
     }
     private void updateLocation(LocationCustom location) {
@@ -426,19 +428,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                }
            });
        }catch (Exception e){
-           reportError(e);
+           app.reportError(e,this);
        }
-    }
-    private void reportError(Exception e){
-        StringWriter sw = new StringWriter();
-        e.printStackTrace(new PrintWriter(sw));
-        debugViewModel.reportError(new DebugModel(getCurrentDate(),e.getMessage(),sw.toString(),TAG, Build.VERSION.SDK_INT,false));
-    }
-    private String getCurrentDate(){
-        Calendar calendar = Calendar.getInstance();
-        Date date = calendar.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        return  sdf.format(date);
     }
 
     private void showDialog(String title ,String body){
@@ -462,7 +453,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onPause() {
         super.onPause();
-        app.setUserOffline();
+        app.setUserOffline(user.getUId());
     }
 
 

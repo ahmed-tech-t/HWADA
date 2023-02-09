@@ -28,6 +28,7 @@ import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.AdReview;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
+import com.example.hwada.application.App;
 import com.example.hwada.util.GlideImageLoader;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.squareup.picasso.Picasso;
@@ -47,6 +48,12 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
     OnItemListener pOnItemListener;
     Context mContext;
     private static final String TAG = "AdsAdapter";
+
+    App app ;
+    public AdsAdapter (Context context){
+      this.mContext =context ;
+      app = (App) mContext.getApplicationContext();
+    }
 
     @NonNull
     @Override
@@ -100,7 +107,7 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
         return list.size();
     }
 
-    public void setList(User user,ArrayList<Ad> list,Context mContext,OnItemListener onItemListener) {
+    public void setList(User user,ArrayList<Ad> list,OnItemListener onItemListener) {
         this.user = user;
         this.list = list;
         this.mContext = mContext ;
@@ -152,7 +159,7 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
     }
     public String handleTime(String dateString){
         try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy , h:mm a", Locale.ENGLISH);
+            SimpleDateFormat dateFormat = app.timeFormat();
             Date date = dateFormat.parse(dateString);
 
             Calendar today = Calendar.getInstance();

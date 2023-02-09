@@ -1,26 +1,41 @@
 package com.example.hwada.viewmodel;
 
+import android.app.Application;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.Chat;
+import com.example.hwada.Model.Message;
+import com.example.hwada.Model.User;
 import com.example.hwada.repository.ChatRepo;
 
 import java.util.ArrayList;
 
-public class ChatViewModel extends ViewModel {
+public class ChatViewModel extends AndroidViewModel {
 
     ChatRepo repo ;
 
-    public ChatViewModel() {
-         repo = new ChatRepo();
+    public ChatViewModel(@NonNull Application application) {
+        super(application);
+        repo = new ChatRepo(application);
     }
 
-    public LiveData<Boolean> addNewChat(String fromUserId , Chat chat){
+
+    public LiveData<Chat> addNewChat(String fromUserId , Chat chat){
         return repo.addNewChat(fromUserId,chat);
     }
 
     public LiveData<ArrayList<Chat>> getAllChats(String userId){
         return  repo.getALlChats(userId);
+    }
+    public LiveData<ArrayList<Chat>> chatListener(String userId){
+        return repo.chatListener(userId);
+    }
+    public LiveData<User>getReceiverInfo(String id){
+        return repo.getReceiverInfo(id);
     }
 }

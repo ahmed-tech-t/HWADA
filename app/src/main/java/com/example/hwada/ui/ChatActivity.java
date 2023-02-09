@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -36,6 +37,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.hwada.Model.Ad;
+import com.example.hwada.Model.Chat;
 import com.example.hwada.Model.Message;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
@@ -47,6 +49,7 @@ import com.example.hwada.databinding.ActivityMainBinding;
 import com.example.hwada.ui.view.chat.SendImagesMessageFragment;
 import com.example.hwada.ui.view.images.ImagesFullDialogFragment;
 import com.example.hwada.viewmodel.ChatViewModel;
+import com.example.hwada.viewmodel.MessageViewModel;
 import com.example.hwada.viewmodel.UserViewModel;
 
 import java.io.File;
@@ -63,14 +66,16 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     ActivityChatBinding binding ;
     User user;
     UserViewModel userViewModel ;
+    ChatViewModel chatViewModel;
     private App app;
     MessageAdapter adapter ;
     private String mCurrentPhotoPath;
-
+    Chat chat;
     int REQUEST_IMAGE_CAPTURE = 4 ;
     Ad ad;
 
-    String receiverName = "";
+    User receiverInfo;
+    MessageViewModel messageViewModel;
 
     private static final String TAG = "ChatActivity";
     @Override
@@ -82,17 +87,59 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         // get user data
         Intent intent = getIntent();
         user =  intent.getParcelableExtra("user");
-        ad = intent.getParcelableExtra("ad");
-        receiverName = ad.getAuthorName();
+        chat = intent.getParcelableExtra("chat");
+
+        ad = chat.getAd();
+
         app = (App) getApplication();
 
         setSendImageWhenLanguageIsArabic();
 
         userViewModel =  UserViewModel.getInstance();
+        messageViewModel = ViewModelProviders.of(this).get(MessageViewModel.class);
+        chatViewModel = ViewModelProviders.of(this).get(ChatViewModel.class);
+
+        adapter = new MessageAdapter(this,chat.getId(),messageViewModel);
+        messagesList = new ArrayList<>();
+
+        getReceiverInfo();
         setListeners();
         getUserStatus();
         setDataToFields();
-        setRecycler();
+        getAllMessages();
+
+    }
+
+    private void getReceiverInfo() {
+        chatViewModel.getReceiverInfo(chat.getReceiverId()).observe(this, new Observer<User>() {
+            @Override
+            public void onChanged(User user) {
+                receiverInfo = user;
+                binding.usernameChatActivity.setText(receiverInfo.getUsername());
+            }
+        });
+    }
+
+
+    private void messagesObserver(){
+        messageViewModel.messagesListener(user.getUId(),chat.getId()).observe(this, new Observer<ArrayList<Message>>() {
+            @Override
+            public void onChanged(ArrayList<Message> messages) {
+                if (messages != null) {
+                    for (Message m : messages) {
+                        int index = messagesList.indexOf(m);
+                        if (index != -1) {
+                                messagesList.set(index, m);
+                                adapter.notifyDataSetChanged();
+                        } else {
+                            messagesList.add(m);
+                            adapter.notifyItemInserted(messagesList.size()-1);
+                        }
+                    }
+                    binding.recyclerChatActivity.smoothScrollToPosition(messagesList.size() - 1);
+                }
+            }
+        });
 
     }
 
@@ -122,7 +169,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         binding.mediaChatActivity.setOnClickListener(this);
     }
     private void setDataToFields(){
-        binding.usernameChatActivity.setText(ad.getAuthorName());
         binding.tvAdTitleChatActivity.setText(ad.getTitle());
         Glide.with(this).load(ad.getImagesUrl().get(0)).into(binding.simAdChatActivity);
     }
@@ -144,47 +190,53 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onResume() {
         super.onResume();
-        app.setUserOnline();
+        app.setUserOnline(user.getUId());
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        app.setUserOffline();
+        app.setUserOffline(user.getUId());
     }
 
     private void setRecycler(){
-        adapter = new MessageAdapter();
-        //TODO get from DataBase
-        messagesList = new ArrayList<>();
-
-        adapter.setList(messagesList ,user.getUId(),this,this);
+        adapter.setList(messagesList ,user.getUId(),this);
         binding.recyclerChatActivity.setAdapter(adapter);
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
-        binding.recyclerChatActivity.setLayoutManager(mLayoutManager);
+        binding.recyclerChatActivity.setLayoutManager(new LinearLayoutManager(this));
+
         binding.recyclerChatActivity.setItemAnimator(new DefaultItemAnimator());
         binding.recyclerChatActivity.setNestedScrollingEnabled(false);
         binding.recyclerChatActivity.setHasFixedSize(true);
 
+        messagesObserver();
+    }
+
+    private void getAllMessages(){
+        messageViewModel.getAllMessages(user.getUId(),chat.getId()).observe(this, new Observer<ArrayList<Message>>() {
+            @Override
+            public void onChanged(ArrayList<Message> messages) {
+                messagesList = messages;
+                setRecycler();
+            }
+        });
     }
 
     private void sendMessage(String body){
         String s = body.trim();
-        Message newMessage = new Message(app.getCurrentDateByMlSec(),s,user.getUId(),ad.getAuthorId());
-        saveMessage(newMessage);
-    }
-    private void sendMessage(Uri uri,String text){
-        String s = text.trim();
-        Message newMessage = new Message(app.getCurrentDateByMlSec(),s,uri,user.getUId(),ad.getAuthorId());
-        saveMessage(newMessage);
-    }
-    private void sendMessage(Uri uri){
-        Message newMessage = new Message(app.getCurrentDateByMlSec(),uri,user.getUId(),ad.getAuthorId());
-        saveMessage(newMessage);
+
+        Message newMessage = new Message(app.getCurrentDate(),s,user.getUId(),chat.getReceiverId());
+
+        saveMessage(messageViewModel.getMessageId(newMessage,ad));
     }
     private void saveMessage(Message newMessage){
-        //TODO to DataBase
-
+        messageViewModel.sendMessage(newMessage,ad).observe(this, new Observer<Message>() {
+            @Override
+            public void onChanged(Message message) {
+                if(message!=null){
+                    changeMessageStatusToSend(message);
+                }
+            }
+        });
         adapter.addItem(newMessage);
         binding.recyclerChatActivity.smoothScrollToPosition(messagesList.size()-1);
     }
@@ -270,7 +322,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
              ArrayList<String> list  = new ArrayList<>();
                 list.add(uri.toString());
 
-                tempMessages.add(new Message(app.getCurrentDateByMlSec(),uri,user.getUId(),ad.getAuthorId()));
+                tempMessages.add(new Message(app.getCurrentDate(),uri,user.getUId(),chat.getReceiverId()));
 
                 //TODO
                  callSendImagesFragment(tempMessages,list);
@@ -295,7 +347,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
           ArrayList<Message>tempMessages = new ArrayList<>();
           try {
               for (Uri uri: uris) {
-                  tempMessages.add(new Message(app.getCurrentDateByMlSec(),uri,user.getUId(),ad.getAuthorId()));
+                  tempMessages.add(new Message(app.getCurrentDate(),uri,user.getUId(),chat.getReceiverId()));
               }
 
               ArrayList<String> uriList = new ArrayList<>(uris.size());
@@ -313,7 +365,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             Bundle bundle = new Bundle();
             bundle.putParcelableArrayList("messages", messages);
             bundle.putStringArrayList("imagesUri",uris);
-            bundle.putString("receiverName",receiverName);
+            bundle.putString("receiverName",receiverInfo.getUsername());
             fragment.setArguments(bundle);
             fragment.setArguments(bundle);
             fragment.show(getSupportFragmentManager(),fragment.getTag());
@@ -322,7 +374,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void getSendMessage(ArrayList<Message> messages) {
         for (int i = 0;i<messages.size();i++) {
-            saveMessage(messages.get(i));
+            saveMessage(messageViewModel.getMessageId(messages.get(i),ad));
         }
     }
 
@@ -353,5 +405,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         fragment.setArguments(bundle);
         fragment.setArguments(bundle);
         fragment.show(getSupportFragmentManager(),fragment.getTag());
+    }
+    private void changeMessageStatusToSend(Message message){
+        for (int i = 0; i < messagesList.size(); i++) {
+            if(messagesList.get(i).getId().equals(message.getId())){
+                messagesList.get(i).setSent(true);
+                adapter.notifyDataSetChanged();
+            }
+        }
     }
 }

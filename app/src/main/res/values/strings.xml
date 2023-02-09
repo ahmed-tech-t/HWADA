@@ -141,4 +141,6 @@
         <item>Female</item>
     </string-array>
 
+    <string name="photo">Photo</string>
+
 </resources>

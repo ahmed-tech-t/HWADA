@@ -35,6 +35,7 @@ import com.example.hwada.Model.DebugModel;
 import com.example.hwada.Model.LocationCustom;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
+import com.example.hwada.application.App;
 import com.example.hwada.databinding.FragmentMapsBinding;
 import com.example.hwada.viewmodel.DebugViewModel;
 import com.example.hwada.viewmodel.UserViewModel;
@@ -79,6 +80,7 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
     UserViewModel userViewModel ;
 
     DebugViewModel debugViewModel ;
+    App app;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -86,6 +88,7 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
                              @Nullable Bundle savedInstanceState) {
         binding = FragmentMapsBinding.inflate(inflater, container, false);
         binding.arrowMapFragment.setOnClickListener(this);
+        app = (App) getContext().getApplicationContext();
         return binding.getRoot();
     }
 
@@ -102,7 +105,7 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
              Log.e(TAG, "onViewCreated: " );
          }
      }catch (Exception e){
-         reportError(e);
+         app.reportError(e,getContext());
      }
     }
 
@@ -123,10 +126,10 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
                 setUserLocation(user.getLocation());
                 getUserAddress(user.getLocation());
             }else {
-                reportError("location is null in Map fragment");
+                app.reportError("location is null in Map fragment",getContext());
             }
         }catch (Exception e){
-            reportError(e);
+            app.reportError(e,getContext());
         }
     }
 
@@ -191,7 +194,7 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
           userViewModel = UserViewModel.getInstance();
           debugViewModel = ViewModelProviders.of(getActivity()).get(DebugViewModel.class);
       }catch (Exception e){
-          reportError(e);
+          app.reportError(e,getContext());
       }
     }
 
@@ -202,7 +205,7 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
           if (locationButton != null)
               locationButton.setVisibility(View.GONE);
       }catch (Exception e){
-          reportError(e);
+          app.reportError(e,getContext());
       }
     }
 
@@ -222,7 +225,7 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
 
            }
        }catch (Exception e){
-            reportError(e);
+           app.reportError(e,getContext());
        }
     }
 
@@ -254,7 +257,7 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
             binding.userAddressFragment.setText(address);
         } catch (IOException e) {
             e.printStackTrace();
-            reportError(e);
+            app.reportError(e,getContext());
         }
     }
 
@@ -278,7 +281,7 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
 
           }
       }catch (Exception e){
-          reportError(e);
+          app.reportError(e,getContext());
       }
     }
 
@@ -292,7 +295,7 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
            LocationCustom location =new LocationCustom(getCameraLocation().getLatitude(),getCameraLocation().getLongitude());
            getUserAddress(location);
        }catch (Exception e){
-           reportError(e);
+           app.reportError(e,getContext());
        }
     }
 
@@ -304,7 +307,7 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
            location.setLatitude(position.target.latitude);
            location.setLongitude(position.target.longitude);
        }catch (Exception e){
-           reportError(e);
+           app.reportError(e,getContext());
        }
         return location;
     }
@@ -318,7 +321,7 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
                    Manifest.permission.ACCESS_COARSE_LOCATION,
                    Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_ID);
        }catch (Exception e){
-           reportError(e);
+           app.reportError(e,getContext());
        }
     }
     @Override
@@ -334,7 +337,7 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
                }
            }
        }catch (Exception e){
-           reportError(e);
+           app.reportError(e,getContext());
        }
     }
 
@@ -346,7 +349,7 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
           binding.btSaveNewLocationFragment.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.white_gray));
 
       }catch (Exception e){
-          reportError(e);
+          app.reportError(e,getContext());
       }
     }
 
@@ -361,7 +364,7 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
             if(getParentFragment() == null) mListener = (GettingPassedData) getActivity();
             else  mListener = (GettingPassedData) getParentFragment();
         } catch (ClassCastException e) {
-            reportError(e);
+            app.reportError(e,getContext());
             throw new ClassCastException(context.toString()
                     + " must implement OnDataPassListener");
         }
@@ -381,7 +384,7 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
           saveDialog.setCancelable(false);
           saveDialog.show();
       }catch (Exception e){
-          reportError(e);
+          app.reportError(e,getContext());
       }
     }
 
@@ -399,24 +402,9 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
                }
            });
        }catch (Exception e){
-           reportError(e);
+          app.reportError(e,getContext());
        }
     }
 
 
-    private void reportError(Exception e){
-
-        StringWriter sw = new StringWriter();
-        e.printStackTrace(new PrintWriter(sw));
-        debugViewModel.reportError(new DebugModel(getCurrentDate(),e.getMessage(),sw.toString(),TAG, Build.VERSION.SDK_INT,false));
-    }
-    private String getCurrentDate(){
-        Calendar calendar = Calendar.getInstance();
-        Date date = calendar.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        return  sdf.format(date);
-    }
-    private void reportError(String s){
-        debugViewModel.reportError(new DebugModel(getCurrentDate(),s,s,TAG, Build.VERSION.SDK_INT,false));
-    }
 }

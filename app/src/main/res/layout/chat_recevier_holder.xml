@@ -43,12 +43,11 @@
                     app:shapeAppearanceOverlay="@style/ChatImages"
                     android:elevation="2dp"
                     android:scaleType="centerCrop"
-                    android:layout_height="0dp"/>
+                    android:layout_height="250dp"/>
                 <TextView
                     android:id="@+id/tv_body_chat_receiver_holder"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="3dp"
                     android:textColor="@color/white"
                     android:textSize="18dp" />
             </LinearLayout>
@@ -66,6 +65,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/gray_Chateau"
                     android:textSize="12dp"
+                    android:layout_marginEnd="3dp"
                     android:text="6:55 pm"/>
             </LinearLayout>
 

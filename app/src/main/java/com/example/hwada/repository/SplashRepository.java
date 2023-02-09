@@ -3,6 +3,7 @@ package com.example.hwada.repository;
 
 import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
+import android.app.Application;
 import android.os.Build;
 import android.util.Log;
 
@@ -16,6 +17,7 @@ import com.example.hwada.Model.DebugModel;
 import com.example.hwada.Model.LocationCustom;
 import com.example.hwada.Model.MyReview;
 import com.example.hwada.Model.User;
+import com.example.hwada.application.App;
 import com.example.hwada.database.DbHandler;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -45,7 +47,13 @@ public class SplashRepository {
     private CollectionReference usersRef = rootRef.collection(DbHandler.userCollection);
     private static final String TAG = "SplashRepository";
     DebugRepository debugRepository = new DebugRepository();
+    Application application;
+    App app;
 
+    public SplashRepository(Application application){
+        this.application =application ;
+        app =(App) application.getApplicationContext();
+    }
     public MutableLiveData<User> checkIfUserIsAuthenticatedInFirebase() {
         MutableLiveData<User> isUserAuthenticateInFirebaseMutableLiveData = new MutableLiveData<>();
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
@@ -60,7 +68,7 @@ public class SplashRepository {
            }
        }catch (Exception e){
            e.printStackTrace();
-           reportError(e);
+           app.reportError(e,application);
        }
         return isUserAuthenticateInFirebaseMutableLiveData;
     }
@@ -263,17 +271,8 @@ public class SplashRepository {
 
     }
 
-    private void reportError(Exception e){
-        StringWriter sw = new StringWriter();
-        e.printStackTrace(new PrintWriter(sw));
-        debugRepository.reportError(new DebugModel(getCurrentDate(),e.getMessage(),sw.toString(),TAG, Build.VERSION.SDK_INT,false));
-    }
-    private String getCurrentDate(){
-        Calendar calendar = Calendar.getInstance();
-        Date date = calendar.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        return  sdf.format(date);
-    }
+
+
     private CollectionReference getTempAdColRef(String category , String subCategory , String subSubCategory){
         CollectionReference adColRef;
         if (category.equals(DbHandler.FREELANCE)){

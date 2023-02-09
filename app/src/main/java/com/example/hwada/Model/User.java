@@ -6,6 +6,7 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.database.Exclude;
 
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public class User implements Parcelable {
     private Chat chat ;
 
     private String status;
-    private String lastSeen;
+    private Timestamp lastSeen;
 
     private  String email;
     private String phone ;
@@ -106,7 +107,7 @@ public class User implements Parcelable {
         myReviews = in.createTypedArrayList(MyReview.CREATOR);
         chat = in.readParcelable(Chat.class.getClassLoader());
         status = in.readString();
-        lastSeen = in.readString();
+        lastSeen = in.readParcelable(Timestamp.class.getClassLoader());
         email = in.readString();
         phone = in.readString();
         aboutYou = in.readString();
@@ -286,11 +287,11 @@ public class User implements Parcelable {
         this.status = status;
     }
 
-    public String getLastSeen() {
+    public Timestamp getLastSeen() {
         return lastSeen;
     }
 
-    public void setLastSeen(String lastSeen) {
+    public void setLastSeen(Timestamp lastSeen) {
         this.lastSeen = lastSeen;
     }
 
@@ -332,7 +333,7 @@ public class User implements Parcelable {
         dest.writeTypedList(myReviews);
         dest.writeParcelable(chat, flags);
         dest.writeString(status);
-        dest.writeString(lastSeen);
+        dest.writeParcelable(lastSeen, flags);
         dest.writeString(email);
         dest.writeString(phone);
         dest.writeString(aboutYou);

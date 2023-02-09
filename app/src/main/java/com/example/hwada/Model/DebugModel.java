@@ -5,8 +5,10 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import com.google.firebase.Timestamp;
+
 public class DebugModel implements Parcelable {
-    String date ;
+    Timestamp timeStamp;
     String body;
     String massage ;
     boolean fixed;
@@ -14,8 +16,8 @@ public class DebugModel implements Parcelable {
     String tag;
 
 
-    public DebugModel(String date,String massage, String body, String tag, int androidSdk, boolean fixed) {
-        this.date = date;
+    public DebugModel(Timestamp timeStamp,String massage, String body, String tag, int androidSdk, boolean fixed) {
+        this.timeStamp = timeStamp;
         this.massage = massage ;
         this.body = body;
         this.androidSdk = androidSdk;
@@ -29,7 +31,7 @@ public class DebugModel implements Parcelable {
 
 
     protected DebugModel(Parcel in) {
-        date = in.readString();
+        timeStamp = in.readParcelable(Timestamp.class.getClassLoader());
         body = in.readString();
         massage = in.readString();
         fixed = in.readByte() != 0;
@@ -39,7 +41,7 @@ public class DebugModel implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(date);
+        dest.writeParcelable(timeStamp, flags);
         dest.writeString(body);
         dest.writeString(massage);
         dest.writeByte((byte) (fixed ? 1 : 0));
@@ -88,12 +90,12 @@ public class DebugModel implements Parcelable {
         this.tag = tag;
     }
 
-    public String getDate() {
-        return date;
+    public Timestamp getTimeStamp() {
+        return timeStamp;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setTimeStamp(Timestamp timeStamp) {
+        this.timeStamp = timeStamp;
     }
 
     public String getBody() {

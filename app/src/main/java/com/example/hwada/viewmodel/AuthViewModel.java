@@ -25,7 +25,6 @@ public class AuthViewModel extends AndroidViewModel {
     public AuthViewModel(@NonNull Application application) {
         super(application);
         repository = new AuthenticationRepository(application);
-
     }
 
     public void signUpWithEmail (User user ,String password ){

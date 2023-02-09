@@ -95,7 +95,7 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
     }
 
     private void initRecycler() {
-        adapter = new AdsAdapter();
+        adapter = new AdsAdapter(this);
         try {
             binding.recyclerAdsActivity.setAdapter(adapter);
             if(category.equals(DbHandler.FREELANCE)){
@@ -168,7 +168,7 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
                 binding.shimmerAdsActivity.stopShimmer();
                 binding.recyclerAdsActivity.setVisibility(View.VISIBLE);
 
-                adapter.setList(user,ads,this,this);
+                adapter.setList(user,ads,this);
             }
         });
     }
@@ -181,7 +181,7 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
                 binding.shimmerAdsActivity.setVisibility(View.GONE);
                 binding.shimmerAdsActivity.stopShimmer();
                 binding.recyclerAdsActivity.setVisibility(View.VISIBLE);
-                adapter.setList(user,ads,this,this);
+                adapter.setList(user,ads,this);
             }
         });
     }
@@ -208,12 +208,12 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
     @Override
     protected void onResume() {
         super.onResume();
-        app.setUserOnline();
+        app.setUserOnline(user.getUId());
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        app.setUserOffline();
+        app.setUserOffline(user.getUId());
     }
 }

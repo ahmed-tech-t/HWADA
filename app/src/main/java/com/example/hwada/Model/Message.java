@@ -7,11 +7,12 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import com.google.firebase.Timestamp;
+
 
 public class Message implements Parcelable {
 
     String id ;
-    String date ;
     String body ;
     String url ;
     Uri uri ;
@@ -20,35 +21,47 @@ public class Message implements Parcelable {
     boolean sent ;
     String senderId;
     String receiverId;
-
+    Timestamp timeStamp;
     public Message() {
         seen = false ;
         delivered = false ;
         sent = false ;
     }
 
-    public Message(String date, String body, String senderId, String receiverId) {
-        this.date = date;
+    public Message(String id, Timestamp timeStamp, String body, String url ,boolean seen, boolean delivered, boolean sent, String senderId, String receiverId) {
+        this.id = id;
+        this.timeStamp = timeStamp;
+        this.body = body;
+        this.url = url;
+        this.seen = seen;
+        this.delivered = delivered;
+        this.sent = sent;
+        this.senderId = senderId;
+        this.receiverId = receiverId;
+    }
+
+    public Message(Timestamp timeStamp, String body, String senderId, String receiverId) {
+        this.timeStamp = timeStamp;
         this.body = body;
         this.senderId = senderId;
         this.receiverId = receiverId;
     }
-    public Message(String date, String body,Uri uri, String senderId, String receiverId) {
-        this.date = date;
+    public Message(Timestamp timeStamp, String body,Uri uri, String senderId, String receiverId) {
+        this.timeStamp = timeStamp;
         this.body = body;
         this.uri = uri;
         this.senderId = senderId;
         this.receiverId = receiverId;
     }
-    public Message(String date, Uri uri, String senderId, String receiverId) {
-        this.date = date;
+    public Message(Timestamp timeStamp, Uri uri, String senderId, String receiverId) {
+        this.timeStamp = timeStamp;
         this.uri = uri;
         this.senderId = senderId;
         this.receiverId = receiverId;
     }
 
-    public Message(String date, String body, String url) {
-        this.date = date;
+    public Message(Timestamp timeStamp, String body, String url) {
+        this.timeStamp = timeStamp;
         this.body = body;
         this.url = url;
         seen = false ;
@@ -59,7 +72,6 @@ public class Message implements Parcelable {
 
     protected Message(Parcel in) {
         id = in.readString();
-        date = in.readString();
         body = in.readString();
         url = in.readString();
         uri = in.readParcelable(Uri.class.getClassLoader());
@@ -68,6 +80,21 @@ public class Message implements Parcelable {
         sent = in.readByte() != 0;
         senderId = in.readString();
         receiverId = in.readString();
+        timeStamp = in.readParcelable(Timestamp.class.getClassLoader());
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(body);
+        dest.writeString(url);
+        dest.writeParcelable(uri, flags);
+        dest.writeByte((byte) (seen ? 1 : 0));
+        dest.writeByte((byte) (delivered ? 1 : 0));
+        dest.writeByte((byte) (sent ? 1 : 0));
+        dest.writeString(senderId);
+        dest.writeString(receiverId);
+        dest.writeParcelable(timeStamp, flags);
     }
 
     public static final Creator<Message> CREATOR = new Creator<Message>() {
@@ -123,14 +150,6 @@ public class Message implements Parcelable {
         this.uri = uri;
     }
 
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
-    }
-
     public String getBody() {
         return body;
     }
@@ -169,25 +188,19 @@ public class Message implements Parcelable {
         return 0;
     }
 
-    @Override
-    public void writeToParcel(@NonNull Parcel dest, int flags) {
-        dest.writeString(id);
-        dest.writeString(date);
-        dest.writeString(body);
-        dest.writeString(url);
-        dest.writeParcelable(uri, flags);
-        dest.writeByte((byte) (seen ? 1 : 0));
-        dest.writeByte((byte) (delivered ? 1 : 0));
-        dest.writeByte((byte) (sent ? 1 : 0));
-        dest.writeString(senderId);
-        dest.writeString(receiverId);
+    public Timestamp getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(Timestamp timeStamp) {
+        this.timeStamp = timeStamp;
     }
 
     @Override
     public String toString() {
         return "Message{" +
                 "id='" + id + '\'' +
-                ", date='" + date + '\'' +
+                ", timeStamp='" + timeStamp + '\'' +
                 ", body='" + body + '\'' +
                 ", url='" + url + '\'' +
                 ", uri=" + uri +
@@ -196,6 +209,15 @@ public class Message implements Parcelable {
                 ", sent=" + sent +
                 ", senderId='" + senderId + '\'' +
                 ", receiverId='" + receiverId + '\'' +
-                '}';
+                '}'+"\n";
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Message) {
+            Message message = (Message) obj;
+            return this.getId().equals(message.getId());
+        }
+        return false;
     }
 }

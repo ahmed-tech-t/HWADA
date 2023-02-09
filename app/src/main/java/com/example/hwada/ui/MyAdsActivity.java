@@ -44,8 +44,8 @@ public class MyAdsActivity extends AppCompatActivity implements MyAdsAdapter.OnI
     }
 
     private void setMyAdsAdapter(){
-        myAdsAdapter = new MyAdsAdapter();
-        myAdsAdapter.setList(user,this ,this);
+        myAdsAdapter = new MyAdsAdapter(this);
+        myAdsAdapter.setList(user ,this);
         binding.myAdsRecycler.setAdapter(myAdsAdapter);
         binding.myAdsRecycler.setLayoutManager(new LinearLayoutManager(this));
     }
@@ -80,12 +80,12 @@ public class MyAdsActivity extends AppCompatActivity implements MyAdsAdapter.OnI
     @Override
     protected void onResume() {
         super.onResume();
-        app.setUserOnline();
+        app.setUserOnline(user.getUId());
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        app.setUserOffline();
+        app.setUserOffline(user.getUId());
     }
 }

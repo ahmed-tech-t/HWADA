@@ -31,14 +31,7 @@ public class DebugRepository {
         this.application = application;
     }
     public void reportError(DebugModel debugModel){
-        Map<String,Object> data = new HashMap<>();
-        data.put("tag",debugModel.getTag());
-        data.put("massage",debugModel.getMassage());
-        data.put("date",debugModel.getDate());
-        data.put("body",debugModel.getBody());
-        data.put("androidSdk",debugModel.getAndroidSdk());
-        data.put("fixed",debugModel.isFixed());
-        debugRef.document(getCurrentDate()).set(data);
+        debugRef.document(getCurrentDate()).set(debugModel);
     }
     private String getCurrentDate(){
         Calendar calendar = Calendar.getInstance();

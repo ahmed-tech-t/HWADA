@@ -2,6 +2,7 @@ package com.example.hwada.adapter;
 
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +18,9 @@ import com.bumptech.glide.Priority;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.hwada.Model.Message;
 import com.example.hwada.R;
+import com.example.hwada.application.App;
 import com.example.hwada.util.GlideImageLoader;
+import com.example.hwada.viewmodel.MessageViewModel;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.squareup.picasso.Picasso;
 
@@ -29,16 +32,23 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
      String userId ;
      private Picasso picassoInstance;
 
+     MessageViewModel messageViewModel ;
      private static final String TAG = "MessageAdapter";
      Context mContext;
+     String chatId ;
      private static final int SENDER = 1;
      private static final int RECEIVER = 2;
 
+     App app;
     OnItemListener pOnItemListener;
 
 
 
-    public MessageAdapter(){
+    public MessageAdapter(Context context,String chatId,MessageViewModel messageViewModel){
+        this.mContext =context;
+        this.chatId =chatId;
+        this.messageViewModel = messageViewModel;
+        app = (App) mContext.getApplicationContext();
        setHasStableIds(true);
        picassoInstance = Picasso.get();
        picassoInstance.setLoggingEnabled(true);
@@ -78,8 +88,10 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             //set date
             setDate(position , ((SenderViewHolder) holder).date_tv);
 
+
             // set status
             setStatus(position , ((SenderViewHolder) holder).status_im);
+
         }
         else if (holder instanceof ReceiverViewHolder){
             holder.setIsRecyclable(false);
@@ -99,6 +111,8 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             }
 
             setDate(position , ((ReceiverViewHolder) holder).date_tv);
+
+            setMessageStatusToSeen(position);
         }
     }
 
@@ -118,6 +132,14 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
+    private void setMessageStatusToSeen(int pos){
+        Message message = list.get(pos);
+        if(userId.equals(message.getReceiverId())){
+            if(!message.isSeen()){
+                messageViewModel.setMessagesStatusToSeen(message,chatId);
+            }
+        }
+    }
      private void setLayoutToVertical( LinearLayout llParent , LinearLayout llBodyChild ){
        llParent.setOrientation(LinearLayout.VERTICAL);
         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) llBodyChild.getLayoutParams();
@@ -146,28 +168,30 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
        }else {
 
            String url = list.get(pos).getUrl();
-           RequestOptions options = new RequestOptions()
-                   .priority(Priority.HIGH);
+           Picasso.get()
+                   .load(url)
+                   .placeholder(R.color.forest_Green)
+                   .into(image);
 
-           new GlideImageLoader(image,new ProgressBar(mContext)).load(url,options);
-
-        }
+       }
      }
 
      private void setDate(int pos , TextView date_tv){
-        String date = list.get(pos).getDate() ;
-        String time =date.split(",")[1]+date.split(",")[3];
+        String date = app.getDateFromTimeStamp(list.get(pos).getTimeStamp()) ;
+        Log.w(TAG, "setDate: "+date );
+        String time = date.split(",")[1]+date.split(",")[3];
         date_tv.setText(time);
     }
 
     private void setStatus(int pos , ImageView status_im){
-        if(list.get(pos).isSeen()){
+        Message message =  list.get(pos);
+        if(message.isSeen()){
             status_im.setImageResource(R.drawable.message_read);
-        }else if(list.get(pos).isDelivered()){
+        }else if(!message.isSeen()&&message.isDelivered()){
             status_im.setImageResource(R.drawable.message_un_read);
-        }else if(list.get(pos).isSent()){
+        }else if(!message.isDelivered() && message.isSent()){
             status_im.setImageResource(R.drawable.message_sent);
-        }else {
+        }else if(!message.isSent()) {
             status_im.setImageResource(R.drawable.message_not_sent);
         }
     }
@@ -175,7 +199,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public int getItemViewType(int position) {
        Message message = list.get(position);
-        if (message.getSenderId() == userId) {
+        if (message.getSenderId().equals(userId)) {
 
             return SENDER;
         } else{
@@ -189,7 +213,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return list.size();
     }
 
-    public void setList(ArrayList<Message> list , String userId ,Context mContext, OnItemListener onItemListener) {
+    public void setList(ArrayList<Message> list , String userId , OnItemListener onItemListener) {
         this.list = list;
         this.mContext = mContext;
         this.userId = userId ;
@@ -240,7 +264,6 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             llParent = v.findViewById(R.id.ll_parent_bubble_chat_receiver);
             llChatBody =v.findViewById(R.id.ll_child_body_bubble_chat_receiver);
             llBackground=v.findViewById(R.id.ll_background_bubble_chat_receiver);
-
             this.onItemListener = onItemListener;
             v.setOnClickListener(this);
         }
@@ -259,4 +282,12 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public interface OnItemListener {
         void getImagePosition(int position);
     }
+    public ArrayList<Message> getList(){
+        return list;
+    }
+    public void updateItem(int position, Message message) {
+        list.set(position, message);
+        notifyItemChanged(position);
+    }
+
 }

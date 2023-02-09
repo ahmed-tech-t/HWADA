@@ -13,8 +13,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.hwada.Model.Chat;
+import com.example.hwada.Model.Message;
 import com.example.hwada.R;
+import com.example.hwada.application.App;
 import com.github.chrisbanes.photoview.PhotoView;
+import com.google.firebase.Timestamp;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -27,28 +30,82 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
     private ArrayList<Chat> list = new ArrayList();
     OnItemListener pOnItemListener;
     Context mContext;
-
+    String userId;
+    App app;
     private static final String TAG = "ChatAdapter";
+
+    public ChatAdapter(Context context){
+        this.mContext = context;
+        if(mContext!=null){
+            app = (App) mContext.getApplicationContext();
+        }
+        setHasStableIds(true);
+    }
     @NonNull
     @Override
     public ChatViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new ChatViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.chat_holder_layout, parent, false), pOnItemListener);
     }
 
+
+    @Override
+    public long getItemId(int position) {
+        return super.getItemId(position);
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return super.getItemViewType(position);
+    }
+
     @Override
     public void onBindViewHolder(@NonNull ChatViewHolder holder, int position) {
+        holder.setIsRecyclable(false);
         Glide.with(mContext).load(list.get(position).getAd().getImagesUrl().get(0)).into(holder.adImage);
         holder.title.setText(list.get(position).getAd().getTitle());
-        if(list.get(position).getLastMessage() == null){
+
+
+        if (list.get(position).getLastMessage() == null) {
             holder.messageStatus.setVisibility(View.GONE);
-            holder.date.setText(handleTime(list.get(position).getDate()));
+            holder.date.setText(handleTime(list.get(position).getTimeStamp()));
             holder.lastMessage.setText(mContext.getString(R.string.noMessages));
-        }else {
-            holder.date.setText(handleTime(list.get(position).getLastMessage().getDate()));
-            if(list.get(position).getLastMessage().isSeen())
-                holder.messageStatus.setImageResource(R.drawable.message_read);
-            else holder.messageStatus.setImageResource(R.drawable.message_un_read);
-            holder.lastMessage.setText(list.get(position).getLastMessage().getBody());
+        } else {
+            if(list.get(position).getLastMessage().getBody() != null){
+                String body = list.get(position).getLastMessage().getBody();
+                if(body.length()>0){
+                    holder.lastMessage.setText(list.get(position).getLastMessage().getBody());
+                }else {
+                    holder.lastMessage.setText(mContext.getString(R.string.photo));
+                    holder.imageIcon.setVisibility(View.VISIBLE);
+                }
+            }else {
+                holder.lastMessage.setText(mContext.getString(R.string.photo));
+                holder.imageIcon.setVisibility(View.VISIBLE);
+            }
+
+
+
+            //set status
+            if (!list.get(position).getLastMessage().getSenderId().equals(userId)) {
+                holder.messageStatus.setVisibility(View.GONE);
+            } else {
+                setStatus(position, holder.messageStatus);
+            }
+        }
+
+        holder.date.setText(handleTime(list.get(position).getLastMessage().getTimeStamp()));
+    }
+    private void setStatus(int pos , ImageView status_im){
+        Message message =list.get(pos).getLastMessage();
+
+        if(message.isSeen()){
+            status_im.setImageResource(R.drawable.message_read);
+        }else if(!message.isSeen()&&message.isDelivered()){
+            status_im.setImageResource(R.drawable.message_un_read);
+        }else if(!message.isDelivered() && message.isSent()){
+            status_im.setImageResource(R.drawable.message_sent);
+        }else if(!message.isSent()) {
+            status_im.setImageResource(R.drawable.message_not_sent);
         }
     }
 
@@ -57,9 +114,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
         return list.size();
     }
 
-    public void setList(ArrayList<Chat> list,Context mContext, OnItemListener onItemListener) {
+    public void setList(String userId ,ArrayList<Chat> list, OnItemListener onItemListener) {
+        this.userId=userId;
         this.list = list;
-        this.mContext = mContext;
         this.pOnItemListener = onItemListener;
         notifyDataSetChanged();
     }
@@ -69,7 +126,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
         OnItemListener onItemListener;
         TextView date ,title, lastMessage;
 
-        ImageView adImage, messageStatus;
+        ImageView adImage, messageStatus ,imageIcon;
         public ChatViewHolder(@NonNull View v, OnItemListener onItemListener) {
             super(v);
             date = v.findViewById(R.id.date_last_message_chat_holder);
@@ -77,7 +134,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
             lastMessage =v.findViewById(R.id.last_message_chat_holder);
             adImage =v.findViewById(R.id.chat_image_chat_holder);
             messageStatus = v.findViewById(R.id.message_status_chat_holder);
-
+            imageIcon = v.findViewById(R.id.image_icon_chat_holder);
 
             this.onItemListener = onItemListener;
             v.setOnClickListener(this);
@@ -97,26 +154,38 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
         void pressedImagePosition(int pos);
     }
 
-    public String handleTime(String dateString){
+    public String handleTime(Timestamp timestamp){
+        Date date = timestamp.toDate();
+        String dateString = app.getDateFromTimeStamp(timestamp);
         try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy , h:mm a", Locale.ENGLISH);
-            Date date = dateFormat.parse(dateString);
-
             Calendar today = Calendar.getInstance();
             Calendar inputDate = Calendar.getInstance();
             inputDate.setTime(date);
 
             if (inputDate.get(Calendar.YEAR) == today.get(Calendar.YEAR)
                     && inputDate.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR)) {
-                return dateString.split(",")[1] ;
+                return dateString.split(",")[1]+dateString.split(",")[3] ;
             }
             else {
                 return dateString.split(",")[0] ;
             }
 
-        } catch (ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return dateString;
     }
+    public void updateLastMessage(int pos, Message lastMessage){
+        list.get(pos).setLastMessage(lastMessage);
+        moveToTop(list.get(pos));
+    }
+    private void moveToTop(Chat chat) {
+        list.remove(chat);
+        list.add(0, chat);
+        notifyDataSetChanged();
+    }
+    public ArrayList<Chat>getList(){
+        return list;
+    }
+
 }
