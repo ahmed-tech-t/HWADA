@@ -22,6 +22,7 @@
     <color name="mainBackGround">#003087</color>
     <color name="arrowColor">#003087</color>
     <color name="green">#12C443</color>
+    <color name="red">#FF0000</color>
     //chat
 <color name="phantom">#1F2C34</color>
     <color name="gray_Chateau">#84929B</color>

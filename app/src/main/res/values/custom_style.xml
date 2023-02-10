@@ -11,7 +11,7 @@
         <item name="cornerSize">10%</item>
     </style>
     <style name="ChatImages">
-        <item name="cornerSize">5dp</item>
+        <item name="cornerSize">10dp</item>
     </style>
 
     <!-- bottom sheet style -->

@@ -133,6 +133,9 @@ public class SendImagesMessageFragment extends DialogFragment implements Message
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
+                //hide delete button
+                if(messages.size()<=1) binding.llDeleteSendImagesMessagesFragment.setVisibility(View.GONE);
+
                 if(messages.get(position).getBody()!=null) binding.etBodyImageWithCaptionHolder.setText(messages.get(position).getBody());
                 else binding.etBodyImageWithCaptionHolder.setText("");
                imagesIndicatorAdapter.setSelectedPosition(position);
@@ -154,7 +157,8 @@ public class SendImagesMessageFragment extends DialogFragment implements Message
 
             @Override
             public void afterTextChanged(Editable s) {
-                messages.get(binding.vp2SendImagesMessagesFragment.getCurrentItem()).setBody(s.toString());
+                String body = s.toString().trim();
+                messages.get(binding.vp2SendImagesMessagesFragment.getCurrentItem()).setBody(body);
             }
         });
     }

@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -17,6 +18,7 @@ import com.example.hwada.Model.Message;
 import com.example.hwada.R;
 import com.example.hwada.application.App;
 import com.github.chrisbanes.photoview.PhotoView;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.Timestamp;
 
 import java.text.ParseException;
@@ -61,6 +63,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
     @Override
     public void onBindViewHolder(@NonNull ChatViewHolder holder, int position) {
         holder.setIsRecyclable(false);
+        Message lastMessage = list.get(position).getLastMessage();
+
         Glide.with(mContext).load(list.get(position).getAd().getImagesUrl().get(0)).into(holder.adImage);
         holder.title.setText(list.get(position).getAd().getTitle());
 
@@ -70,10 +74,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
             holder.date.setText(handleTime(list.get(position).getTimeStamp()));
             holder.lastMessage.setText(mContext.getString(R.string.noMessages));
         } else {
-            if(list.get(position).getLastMessage().getBody() != null){
-                String body = list.get(position).getLastMessage().getBody();
+            if(lastMessage.getBody() != null){
+                String body = lastMessage.getBody();
                 if(body.length()>0){
-                    holder.lastMessage.setText(list.get(position).getLastMessage().getBody());
+                    holder.lastMessage.setText(lastMessage.getBody());
                 }else {
                     holder.lastMessage.setText(mContext.getString(R.string.photo));
                     holder.imageIcon.setVisibility(View.VISIBLE);
@@ -86,10 +90,22 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
 
 
             //set status
-            if (!list.get(position).getLastMessage().getSenderId().equals(userId)) {
+            if (!lastMessage.getSenderId().equals(userId)) {
                 holder.messageStatus.setVisibility(View.GONE);
             } else {
                 setStatus(position, holder.messageStatus);
+            }
+
+
+            //set alert if their is new messages
+            if(lastMessage.getReceiverId().equals(userId)){
+                Log.e(TAG, "onBindViewHolder: "+lastMessage.getReceiverId());
+                Log.e(TAG, "onBindViewHolder: "+userId);
+                Log.e(TAG, "onBindViewHolder: "+ lastMessage.isSeen());
+                if(!lastMessage.isSeen()){
+                    holder.newMessageNotification.setVisibility(View.VISIBLE);
+                    holder.date.setTextColor(ContextCompat.getColor(mContext,R.color.background));
+                }
             }
         }
 
@@ -127,6 +143,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
         TextView date ,title, lastMessage;
 
         ImageView adImage, messageStatus ,imageIcon;
+        ShapeableImageView newMessageNotification;
         public ChatViewHolder(@NonNull View v, OnItemListener onItemListener) {
             super(v);
             date = v.findViewById(R.id.date_last_message_chat_holder);
@@ -135,6 +152,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
             adImage =v.findViewById(R.id.chat_image_chat_holder);
             messageStatus = v.findViewById(R.id.message_status_chat_holder);
             imageIcon = v.findViewById(R.id.image_icon_chat_holder);
+            newMessageNotification = v.findViewById(R.id.new_message_notification_chat_holder);
 
             this.onItemListener = onItemListener;
             v.setOnClickListener(this);

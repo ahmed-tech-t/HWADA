@@ -6,77 +6,110 @@
     android:layout_gravity="end"
     android:layout_marginTop="10dp"
     android:layout_marginStart="40dp"
-    android:layout_height="wrap_content">
+    android:layout_marginEnd="10dp"
 
-    <LinearLayout
-        android:id="@+id/ll_background_bubble_chat_sender"
+    android:layout_height="wrap_content">
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:background="@drawable/square_chat_bubble_sender">
-        <LinearLayout
-            android:id="@+id/ll_parent_bubble_chat_sender"
+
+        <!-- image with progressBar -->
+        <RelativeLayout
+            android:id="@+id/rl_image_chat_sender_holder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="3dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/sim_body_chat_sender_holder"
+                android:layout_width="250dp"
+                android:layout_height="250dp"
+                android:layout_centerInParent="true"
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop"
+                android:src="@drawable/img"
+                app:shapeAppearanceOverlay="@style/ChatImages"
+                app:strokeColor="@null" />
+
+            <ProgressBar
+                android:id="@+id/progressBar_image_chat_sender_holder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:indeterminate="true"
+                android:indeterminateTint="@color/white"
+                android:indeterminateTintMode="src_atop"
+                android:visibility="gone" />
+        </RelativeLayout>
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_body_image_chat_sender_holder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="5dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginBottom="5dp"
-            android:layout_marginEnd="15dp">
+            android:layout_margin="2dp"
 
-            <LinearLayout
-                android:id="@+id/ll_child_body_bubble_chat_sender"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/sim_body_chat_sender_holder"
-                    android:layout_width="250dp"
-                    android:layout_weight="1"
-                    app:strokeColor="@null"
-                    android:visibility="gone"
-                    app:shapeAppearanceOverlay="@style/ChatImages"
-                    android:adjustViewBounds="true"
-                    android:elevation="2dp"
-                    android:scaleType="centerCrop"
-                    android:layout_height="250dp"/>
-                <TextView
-                    android:id="@+id/tv_body_chat_sender_holder"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginStart="3dp"
-                    android:textSize="18dp" />
-            </LinearLayout>
-
-            <LinearLayout
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+            <!--app:layout_constraintTop_toBottomOf="@+id/rl_image_chat_sender_holder"-->
+            <TextView
+                android:id="@+id/tv_body_chat_sender_holder"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="end"
-                android:layout_marginStart="6dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:textColor="@color/white"
+                android:textSize="18dp"
+
+                android:padding="4dp"
+                android:visibility="visible"
+                app:layout_constraintEnd_toStartOf="@+id/ll_date_chat_sender_holder"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+            <!--  app:layout_constraintEnd_toStartOf="@+id/linearLayout_6" -->
+            <!--  app:layout_constraintEnd_toEndOf="parent" -->
+
+            <!-- set date layout -->
+            <LinearLayout
+                android:id="@+id/ll_date_chat_sender_holder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
-                android:orientation="horizontal">
+                android:layout_marginEnd="5dp"
+                android:layout_marginBottom="4dp"
+                android:gravity="end"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+                <!-- app:layout_constraintTop_toBottomOf="@+id/tv_body_chat_sender_holder"  -->
                 <TextView
                     android:id="@+id/tv_date_chat_sender_holder"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/gray_Chateau"
-                    android:textSize="12dp"
                     android:layout_marginTop="3dp"
                     android:gravity="bottom"
-                    android:text="6:55 pm"/>
+                    android:text="6:55 pm"
+                    android:textColor="@color/gray_Chateau"
+                    android:textSize="12dp" />
+
                 <ImageView
                     android:id="@+id/im_message_status_chat_sender_holder"
                     android:layout_width="15dp"
                     android:layout_height="15dp"
-                    android:layout_marginEnd="3dp"
                     android:layout_gravity="center"
                     android:layout_marginStart="5dp"
-                    />
+                    android:layout_marginEnd="3dp"
+                    android:src="@drawable/message_un_read" />
             </LinearLayout>
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </LinearLayout>

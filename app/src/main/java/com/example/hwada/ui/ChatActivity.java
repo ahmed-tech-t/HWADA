@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -32,7 +33,9 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -60,7 +63,7 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 @RequiresApi(api = Build.VERSION_CODES.N)
-public class ChatActivity extends AppCompatActivity implements View.OnClickListener , SendImagesMessageFragment.SendMessage , MessageAdapter.OnItemListener{
+public class ChatActivity extends AppCompatActivity implements View.OnClickListener , SendImagesMessageFragment.SendMessage , MessageAdapter.OnItemListener {
     ArrayList<Message> messagesList;
 
     ActivityChatBinding binding ;
@@ -88,6 +91,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         Intent intent = getIntent();
         user =  intent.getParcelableExtra("user");
         chat = intent.getParcelableExtra("chat");
+        binding.shimmerChatActivity.startShimmer();
 
         ad = chat.getAd();
 
@@ -104,7 +108,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
         getReceiverInfo();
         setListeners();
-        getUserStatus();
         setDataToFields();
         getAllMessages();
 
@@ -116,6 +119,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             public void onChanged(User user) {
                 receiverInfo = user;
                 binding.usernameChatActivity.setText(receiverInfo.getUsername());
+                getUserStatus();
             }
         });
     }
@@ -167,6 +171,17 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         });
         binding.cameraChatActivity.setOnClickListener(this);
         binding.mediaChatActivity.setOnClickListener(this);
+
+
+    }
+    private void scrollRecycleViewToBottom(){
+        //scroll recycle to the bottom
+        binding.recyclerChatActivity.addOnLayoutChangeListener((view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+            if (bottom < oldBottom) {
+                Log.e(TAG, "setListeners: inside");
+                binding.recyclerChatActivity.getLayoutManager().smoothScrollToPosition(binding.recyclerChatActivity, null, messagesList.size());
+            }
+        });
     }
     private void setDataToFields(){
         binding.tvAdTitleChatActivity.setText(ad.getTitle());
@@ -174,7 +189,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void getUserStatus(){
-        userViewModel.getUserStatus(ad.getAuthorId()).observe(this, new Observer<String>() {
+        userViewModel.getUserStatus(receiverInfo.getUId()).observe(this, new Observer<String>() {
             @Override
             public void onChanged(String s) {
                 setUserStatusToView(s);
@@ -207,7 +222,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         binding.recyclerChatActivity.setItemAnimator(new DefaultItemAnimator());
         binding.recyclerChatActivity.setNestedScrollingEnabled(false);
         binding.recyclerChatActivity.setHasFixedSize(true);
-
+        scrollRecycleViewToBottom();
         messagesObserver();
     }
 
@@ -216,6 +231,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onChanged(ArrayList<Message> messages) {
                 messagesList = messages;
+                binding.shimmerChatActivity.setVisibility(View.GONE);
+                binding.shimmerChatActivity.stopShimmer();
+                binding.recyclerChatActivity.setVisibility(View.VISIBLE);
                 setRecycler();
             }
         });
@@ -272,9 +290,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             }
         } if (requestCode == app.PICK_IMAGE_REQUEST) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                pickImagesHandler();
+                //pickImagesHandler();
             } else {
-                Toast.makeText(this, "Storage permission is required to to access images.",
+                Toast.makeText(this, "Storage permission is required for app to worked well.",
                         Toast.LENGTH_SHORT).show();
             }
         }
@@ -386,15 +404,18 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    public void getImagePosition(int position) {
+    public void getImagePosition(String uri) {
         String path ="";
-        if(messagesList.get(position).getUrl()!=null)path = messagesList.get(position).getUrl();
-        else if(messagesList.get(position).getUri()!=null) path = String.valueOf(messagesList.get(position).getUri());
-        if(path.length()>0){
-            ArrayList<String> url = new ArrayList<>();
-            url.add(path);
-            callImagesFullDialogFragment(url,0);
-        }
+        //if(messagesList.get(position).getUrl()!=null)path = messagesList.get(position).getUrl();
+        //else if(messagesList.get(position).getUri()!=null) path = String.valueOf(messagesList.get(position).getUri());
+       // if(path.length()>0){
+        if(app.checkStoragePermissions()){
+            ArrayList<String> uris = new ArrayList<>();
+            uris.add(uri);
+            callImagesFullDialogFragment(uris,0);
+        }else app.requestStoragePermissions(this);
+
+        //}
     }
 
     private void callImagesFullDialogFragment(ArrayList<String> url,int pos){
@@ -414,4 +435,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     }
+
+
+
+
 }

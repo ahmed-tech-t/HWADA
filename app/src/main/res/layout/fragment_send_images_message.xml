@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <LinearLayout
+            android:id="@+id/ll_delete_send_images_messages_fragment"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:orientation="horizontal"

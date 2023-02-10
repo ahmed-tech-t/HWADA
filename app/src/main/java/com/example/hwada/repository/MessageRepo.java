@@ -127,7 +127,7 @@ public class MessageRepo {
             @Override
             public void onComplete(@NonNull Task<Object> task) {
                 if(task.isSuccessful()){
-                    changeMessageStatusToSent(docSenderRef,chatSenderDocRef);
+                    changeMessageStatusToSent(message,chatId);
                     sendMessage.setValue(message);
                 }
             }
@@ -239,7 +239,13 @@ public class MessageRepo {
         });
         return mutableLiveData;
     }
-    private void changeMessageStatusToSent(DocumentReference docRef,DocumentReference chatDocRef){
+    private void changeMessageStatusToSent(Message message , String chatId){
+        DocumentReference  docSenderRef = getSenderMessagesColRef(message,chatId).document(message.getId());
+        DocumentReference chatSenderDocRef = getChatCocRef(message.getSenderId(),chatId);
+
+        DocumentReference  docReceiverRef = getReceiverMessagesColRef(message,chatId).document(message.getId());
+        DocumentReference chatReceiverDocRef = getChatCocRef(message.getReceiverId(),chatId);
+
         rootRef.runTransaction(new Transaction.Function<Object>() {
 
             @Nullable
@@ -247,11 +253,13 @@ public class MessageRepo {
             public Object apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
                 Map<String,Object>messageData = new HashMap<>();
                 messageData.put("sent",true);
-                transaction.update(docRef,messageData);
+                transaction.update(docSenderRef,messageData);
+                transaction.update(docReceiverRef,messageData);
 
                 Map<String,Object>chatData = new HashMap<>();
                 chatData.put("lastMessage.sent",true);
-                transaction.update(chatDocRef,chatData);
+                transaction.update(chatSenderDocRef,chatData);
+                transaction.update(chatReceiverDocRef,chatData);
 
                 return null;
             }
@@ -259,22 +267,26 @@ public class MessageRepo {
     }
 
     public void setMessagesStatusToSeen(Message message , String chatId){
+        DocumentReference  docSenderRef = getSenderMessagesColRef(message,chatId).document(message.getId());
+        DocumentReference chatSenderDocRef = getChatCocRef(message.getSenderId(),chatId);
+
+        DocumentReference  docReceiverRef = getReceiverMessagesColRef(message,chatId).document(message.getId());
+        DocumentReference chatReceiverDocRef = getChatCocRef(message.getReceiverId(),chatId);
         rootRef.runTransaction(new Transaction.Function<Object>() {
-            DocumentReference  messageDocRef = getSenderMessagesColRef(message,chatId).document(message.getId());
-            DocumentReference chatDocRef = getChatCocRef(message.getSenderId(),chatId);
+
 
             @Nullable
             @Override
             public Object apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
                 Map<String,Object>messageData = new HashMap<>();
                 messageData.put("seen",true);
-
-                transaction.update(messageDocRef,messageData);
+                transaction.update(docSenderRef,messageData);
+                transaction.update(docReceiverRef,messageData);
 
                 Map<String,Object>chatData = new HashMap<>();
                 chatData.put("lastMessage.seen",true);
-                transaction.update(chatDocRef,chatData);
-
+                transaction.update(chatSenderDocRef,chatData);
+                transaction.update(chatReceiverDocRef,chatData);
                 return null;
             }
         });

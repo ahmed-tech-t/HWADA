@@ -56,7 +56,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-
                 android:orientation="horizontal">
 
                 <ImageView
@@ -65,6 +64,7 @@
                     android:layout_width="15dp"
                     android:layout_height="15dp"
                     android:layout_marginEnd="5dp"
+                    android:layout_alignParentStart="true"
                     android:src="@drawable/message_not_sent"
                    />
                 <ImageView
@@ -78,13 +78,27 @@
                     />
                 <TextView
                     android:id="@+id/last_message_chat_holder"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
                     android:layout_gravity="center"
+                    android:layout_marginEnd="5dp"
                     android:textSize="15dp"
+                    android:text="gdfgdgdfgd"
                     android:textColor="@color/gray"/>
-
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/new_message_notification_chat_holder"
+                    android:layout_gravity="center"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_marginEnd="15dp"
+                    android:visibility="gone"
+                    app:shapeAppearanceOverlay="@style/Circular"
+                    app:strokeColor="@null"
+                    android:background="@color/background"
+                    android:layout_alignParentEnd="true"
+                    />
             </LinearLayout>
         </LinearLayout>
 
