@@ -79,7 +79,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
-                android:layout_marginEnd="5dp"
+                android:layout_marginEnd="10dp"
                 android:layout_marginBottom="4dp"
                 android:gravity="end"
                 android:orientation="horizontal"
@@ -93,17 +93,9 @@
                     android:layout_marginTop="3dp"
                     android:gravity="bottom"
                     android:text="6:55 pm"
+
                     android:textColor="@color/gray_Chateau"
                     android:textSize="12dp" />
-
-                <ImageView
-                    android:id="@+id/im_message_status_chat_receiver_holder"
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginEnd="3dp"
-                    android:src="@drawable/message_un_read" />
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -100,11 +100,13 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
             //set date
             setDate(position , ((SenderViewHolder) holder).date_tv);
-            if(message.getBody()!= null && message.getBody().length()==0){
-                ((SenderViewHolder) holder).date_tv.setTextColor(ContextCompat.getColor(mContext,R.color.white));
+
+            if(message.getBody()!= null && message.getBody().length()==0 || message.getBody()== null){
+                ((SenderViewHolder) holder).date_tv.setTextColor(ContextCompat.getColor(mContext,R.color.whiteCoffee));
             }
 
-                // set status
+
+            // set status
             setStatus(position , ((SenderViewHolder) holder).status_im);
 
         }
@@ -129,8 +131,8 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
             setDate(position , ((ReceiverViewHolder) holder).date_tv);
 
-            if(message.getBody()!= null && message.getBody().length()==0){
-                ((ReceiverViewHolder) holder).date_tv.setTextColor(ContextCompat.getColor(mContext,R.color.white));
+            if(message.getBody()!= null && message.getBody().length()==0||(message.getBody()== null)) {
+                ((ReceiverViewHolder) holder).date_tv.setTextColor(ContextCompat.getColor(mContext, R.color.whiteCoffee));
             }
 
             setMessageStatusToSeen(position);

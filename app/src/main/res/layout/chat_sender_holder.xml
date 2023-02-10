@@ -106,7 +106,7 @@
                     android:layout_gravity="center"
                     android:layout_marginStart="5dp"
                     android:layout_marginEnd="3dp"
-                    android:src="@drawable/message_un_read" />
+                  />
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
