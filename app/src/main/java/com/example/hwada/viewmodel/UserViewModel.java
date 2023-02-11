@@ -13,6 +13,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.LocationCustom;
 import com.example.hwada.Model.User;
 import com.example.hwada.repository.UserRepository;
@@ -69,6 +70,10 @@ public class UserViewModel extends ViewModel {
         return userRepository.getUserLastSeen(id);
     }
 
+    public LiveData<ArrayList<Ad>> getAllUserAds(String id){
+
+        return userRepository.getAllUserAds(id);
+    }
     /*
     public void updateImageSuccess(User user){
         updateImageSuccessLiveData = userRepository.updateUserImage(user);

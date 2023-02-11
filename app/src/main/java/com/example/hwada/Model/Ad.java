@@ -40,6 +40,13 @@ public class Ad implements Parcelable {
         this.distance = 0;
     }
 
+    public Ad(String id, String category, String subCategory, String subSubCategory) {
+        this.id = id;
+        this.category = category;
+        this.subCategory = subCategory;
+        this.subSubCategory = subSubCategory;
+    }
+
     public Ad(String id, String authorId, String title, String category, String subCategory, String subSubCategory, List<String> imagesUrl) {
         this.id = id;
         this.authorId = authorId;

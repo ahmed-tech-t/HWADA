@@ -75,22 +75,25 @@ public class FavoritesFragment extends Fragment implements AdsGridAdapter.OnItem
         favViewModel = FavViewModel.getInstance() ;
         userViewModel = UserViewModel.getInstance();
 
+        binding.shimmerFavFragment.startShimmer();
+
+        handelData();
         setUserObserver();
-        setAdsToList();
-        binding.mainRecycler.setNestedScrollingEnabled(false);
 
     }
     private void setUserObserver(){
         userViewModel.getUser().observe(getActivity(), new Observer<User>() {
             @Override
             public void onChanged(User u) {
-                Log.e(TAG, "onChanged: user observer " );
                 user = u;
                 if(advertiserFragment.isAdded()) setAdsToList();
             }
         });
     }
     public void setAdsToList() {
+        closeShimmer();
+
+        binding.mainRecycler.setVisibility(View.VISIBLE);
         if(user.getFavAds().size()>0){
             binding.mainRecycler.setBackgroundResource(R.drawable.recycle_view_background);
         }
@@ -99,9 +102,15 @@ public class FavoritesFragment extends Fragment implements AdsGridAdapter.OnItem
             binding.mainRecycler.setAdapter(adapter);
             adapter.setList(user,user.getFavAds(),this);
             binding.mainRecycler.setLayoutManager(new GridLayoutManager(getActivity(),2));
+            binding.mainRecycler.setNestedScrollingEnabled(false);
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    private void closeShimmer(){
+        binding.shimmerFavFragment.setVisibility(View.GONE);
+        binding.shimmerFavFragment.stopShimmer();
     }
     @Override
     public void getItemPosition(int position) {
@@ -147,5 +156,21 @@ public class FavoritesFragment extends Fragment implements AdsGridAdapter.OnItem
         bundle.putInt("pos",pos);
         advertiserFragment.setArguments(bundle);
         advertiserFragment.show(getChildFragmentManager(),advertiserFragment.getTag());
+    }
+    private void getAllFavAds(){
+        favViewModel.getAllFavAds(user.getFavAds()).observe(getActivity(), new Observer<ArrayList<Ad>>() {
+            @Override
+            public void onChanged(ArrayList<Ad> ads) {
+                user.setFavAds(ads);
+                setAdsToList();
+            }
+        });
+
+    }
+
+    private void handelData(){
+        if(user.getFavAds().get(0).getTitle()== null || user.getFavAds().get(0).getTitle().length()==0){
+            getAllFavAds();
+        }else setAdsToList();
     }
 }

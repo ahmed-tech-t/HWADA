@@ -34,6 +34,8 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.checkerframework.checker.units.qual.A;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
@@ -182,5 +184,47 @@ public class UserRepository {
         return mutableLiveData;
     }
 
+    public MutableLiveData<ArrayList<Ad>> getAllUserAds(String id){
+        MutableLiveData<ArrayList<Ad>> mutableLiveData = new MutableLiveData<>();
+        userDocumentRef(id).collection(DbHandler.adCollection).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()){
+                    ArrayList<Ad>ads = new ArrayList<>();
+                    QuerySnapshot adQuerySnapshot = task.getResult();
+                    for (QueryDocumentSnapshot document : adQuerySnapshot) {
+                        Ad ad = document.toObject(Ad.class);
+                        ArrayList<AdReview> reviews = new ArrayList<>();
+                        document.getReference().collection(DbHandler.Reviews).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful()){
+                                    QuerySnapshot reviewQuerySnapshot = task.getResult();
+                                    for (QueryDocumentSnapshot document : reviewQuerySnapshot) {
+                                        reviews.add(document.toObject(AdReview.class));
+                                    }
+                                    ad.setAdReviews(reviews);
+                                    ads.add(ad);
+                                    if(adQuerySnapshot.size()==ads.size()){
+                                        Log.e(TAG, "onComplete: finished" );
+                                        Log.e(TAG, "onComplete: "+ads.size() );
+                                        mutableLiveData.setValue(ads);
+                                        return;
+                                    }
+                                }else {
+                                    Log.e(TAG, "onComplete: faild to get user Ads" );
+                                    mutableLiveData.setValue(new ArrayList<>());
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        });
+        return mutableLiveData;
+    }
 
+    private DocumentReference userDocumentRef(String id){
+        return rootRef.collection(DbHandler.userCollection).document(id);
+    }
 }

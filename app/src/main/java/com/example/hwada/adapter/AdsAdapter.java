@@ -172,7 +172,7 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
             }
             else if (inputDate.get(Calendar.YEAR) == today.get(Calendar.YEAR)
                     && inputDate.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR) - 1) {
-                return mContext.getString(R.string.yesterday)+"  "+ dateString.split(",")[1];
+                return mContext.getString(R.string.yesterday);
             }
 
         } catch (ParseException e) {
