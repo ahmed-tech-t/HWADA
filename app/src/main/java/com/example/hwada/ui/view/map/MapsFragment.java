@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.Manifest;
@@ -29,6 +30,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.example.hwada.Model.DebugModel;
@@ -38,7 +40,10 @@ import com.example.hwada.R;
 import com.example.hwada.application.App;
 import com.example.hwada.databinding.FragmentMapsBinding;
 import com.example.hwada.viewmodel.DebugViewModel;
+import com.example.hwada.viewmodel.UserAddressViewModel;
 import com.example.hwada.viewmodel.UserViewModel;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -66,10 +71,10 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
 
     private User user;
     private GoogleMap mMap;
-    int PERMISSION_ID = 1;
     View mapView;
     View locationButton;
-    boolean firstOpen = true;
+    UserAddressViewModel userAddressViewModel ;
+
     Dialog saveDialog;
     GettingPassedData mListener;
     BottomSheetBehavior bottomSheetBehavior ;
@@ -114,7 +119,7 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
     public void onMapReady(@NonNull GoogleMap googleMap) {
         try {
             mMap = googleMap;
-            if (!checkPermissions()) requestPermissions();
+            if (!app.checkLocationPermissions(getContext()))app.requestLocationPermissions(getActivity());
             Log.e(TAG, "onMapReady: Map is ready ");
             mMap.setOnCameraIdleListener(this);
             mMap.setOnCameraMoveStartedListener(this);
@@ -122,6 +127,7 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
             binding.imArrowFragment.setOnClickListener(this);
             binding.userAddressFragment.setOnClickListener(this);
             binding.btSaveNewLocationFragment.setOnClickListener(this);
+
             if(user.getLocation()!=null){
                 setUserLocation(user.getLocation());
                 getUserAddress(user.getLocation());
@@ -193,6 +199,8 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
           user = getArguments().getParcelable("user");
           userViewModel = UserViewModel.getInstance();
           debugViewModel = ViewModelProviders.of(getActivity()).get(DebugViewModel.class);
+          userAddressViewModel = ViewModelProviders.of(this).get(UserAddressViewModel.class);
+
       }catch (Exception e){
           app.reportError(e,getContext());
       }
@@ -209,6 +217,7 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
       }
     }
 
+
     @SuppressLint("MissingPermission")
     public void setUserLocation(LocationCustom location) {
        try {
@@ -217,50 +226,31 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 16);
            mMap.animateCamera(cameraUpdate);
 
-           if (checkPermissions()) {
-               mMap.setMyLocationEnabled(true);
-               mMap.getUiSettings().setMyLocationButtonEnabled(true);
-               initLocationButton();
-               mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.empty_map_style));
+          handelMapIfLocationGranted();
 
-           }
        }catch (Exception e){
            app.reportError(e,getContext());
        }
     }
 
-
-    private void getUserAddress(LocationCustom location) {
-        try {
-
-            LocationCustom locationCustom = new LocationCustom(location.getLatitude(),location.getLongitude());
-            Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
-
-            String address = "loading your location...";
-            List<Address> addresses = geocoder.getFromLocation(locationCustom.getLatitude(), locationCustom.getLongitude(), 1);
-
-            if(firstOpen){
-                firstOpen = false ;
-                locationButton.callOnClick();
-            }else if(addresses.size()>0) {
-
-                address = addresses.get(0).getAddressLine(0);
-                for (String s: address.split(",")) {
-                    if(address.split(",").length<3){
-                        address +=s;
-                    }
-                }
-
-            }else if(addresses.size()==0) {
-                locationButton.callOnClick();
+    @SuppressLint("MissingPermission")
+    private void handelMapIfLocationGranted(){
+        if (app.checkLocationPermissions(getContext())) {
+            if(mMap!=null){
+                mMap.setMyLocationEnabled(true);
+                mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.empty_map_style));
+                initLocationButton();
             }
-            binding.userAddressFragment.setText(address);
-        } catch (IOException e) {
-            e.printStackTrace();
-            app.reportError(e,getContext());
         }
     }
-
+    public void getUserAddress(LocationCustom location) {
+        userAddressViewModel.getUserAddress(location).observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                binding.userAddressFragment.setText(s);
+            }
+        });
+    }
     @SuppressLint("SuspiciousIndentation")
     @Override
     public void onClick(View v) {
@@ -269,8 +259,16 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
               bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
           } else if (v.getId() == binding.icLocationFragment.getId()) {
-              if (locationButton != null)
-                  locationButton.callOnClick();
+              if (locationButton != null){
+                  if(app.isLocationEnabled()){
+                      locationButton.callOnClick();
+                  }else {
+                      app.askUserToOpenGps(getActivity());
+                  }
+              }else{
+                showToast(getString(R.string.locationPermissionWarning));
+              }
+
           } else if (v.getId() == binding.btSaveNewLocationFragment.getId()) {
               //Todo save to data base
               setSavingDialog();
@@ -284,7 +282,27 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
           app.reportError(e,getContext());
       }
     }
+    private Toast mCurrentToast;
+    public void showToast(String message) {
+        if (mCurrentToast == null) {
+            mCurrentToast = Toast.makeText(getActivity().getApplicationContext(), message, Toast.LENGTH_SHORT);
+            mCurrentToast.show();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                mCurrentToast.addCallback(new Toast.Callback() {
+                    @Override
+                    public void onToastShown() {
+                        super.onToastShown();
+                    }
 
+                    @Override
+                    public void onToastHidden() {
+                        super.onToastHidden();
+                        mCurrentToast = null;
+                    }
+                });
+            }
+        }
+    }
     @Override
     public void onCameraIdle() {
        try {
@@ -312,25 +330,15 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
         return location;
     }
 
-    private boolean checkPermissions() {
-        return ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-    }
-    private void requestPermissions() {
-       try {
-           ActivityCompat.requestPermissions(getActivity(), new String[]{
-                   Manifest.permission.ACCESS_COARSE_LOCATION,
-                   Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_ID);
-       }catch (Exception e){
-           app.reportError(e,getContext());
-       }
-    }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
        try {
-           if (requestCode == PERMISSION_ID) {
+           if (requestCode == app.LOCATION_PERMISSION_ID) {
+               Log.e(TAG, "onRequestPermissionsResult: " );
                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED ) {
                    Log.e(TAG, "onRequestPermissionsResult: " );
+                   initLocationButton();
                    //  Log.e(TAG, "onRequestPermissionsResult: permission granted and get new location");
                }else {
                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
@@ -406,5 +414,9 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
        }
     }
 
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        handelMapIfLocationGranted();
+    }
 }

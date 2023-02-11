@@ -73,4 +73,5 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.ImagesView
         list.addAll(position, temp);
         notifyItemRangeInserted(position, temp.size());
     }
+
 }

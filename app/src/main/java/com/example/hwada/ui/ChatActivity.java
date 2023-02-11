@@ -285,15 +285,36 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 openCamera();
             } else {
-                Toast.makeText(this, "Camera permission is required to use camera functionality.",
-                        Toast.LENGTH_SHORT).show();
+                showToast(getString(R.string.cameraPermissionWarning));
             }
         } if (requestCode == app.PICK_IMAGE_REQUEST) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 //pickImagesHandler();
             } else {
-                Toast.makeText(this, "Storage permission is required for app to worked well.",
-                        Toast.LENGTH_SHORT).show();
+                showToast(getString(R.string.storagePermissionWarning));
+            }
+        }
+    }
+
+
+    private Toast mCurrentToast;
+    public void showToast(String message) {
+        if (mCurrentToast == null) {
+            mCurrentToast = Toast.makeText(this.getApplicationContext(), message, Toast.LENGTH_SHORT);
+            mCurrentToast.show();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                mCurrentToast.addCallback(new Toast.Callback() {
+                    @Override
+                    public void onToastShown() {
+                        super.onToastShown();
+                    }
+
+                    @Override
+                    public void onToastHidden() {
+                        super.onToastHidden();
+                        mCurrentToast = null;
+                    }
+                });
             }
         }
     }

@@ -6,6 +6,8 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,6 +39,7 @@ import com.example.hwada.application.App;
 import com.example.hwada.databinding.ActivityAddNewAdBinding;
 import com.example.hwada.ui.view.map.MapsFragment;
 import com.example.hwada.ui.view.WorkTimePreviewFragment;
+import com.example.hwada.viewmodel.UserAddressViewModel;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
@@ -49,6 +52,8 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
     User user ;
     ActivityAddNewAdBinding binding ;
     ImagesAdapter imagesAdapter;
+    UserAddressViewModel userAddressViewModel ;
+
     private App app;
 
     Ad newAd;
@@ -66,8 +71,10 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
 
         app = (App) getApplication();
 
+        userAddressViewModel = ViewModelProviders.of(this).get(UserAddressViewModel.class);
+
         //******************
-        binding.userAddressMapFragment.setText(getUserAddress(user.getLocation()));
+        getUserAddress(user.getLocation());
 
         binding.addNewImage.setOnClickListener(this);
         binding.nextButtonAddNewAd.setOnClickListener(this);
@@ -266,18 +273,13 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
         fragment.show(getSupportFragmentManager(),fragment.getTag());
     }
 
-    private String getUserAddress(LocationCustom location) {
-        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-        try {
-            List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-            String address = addresses.get(0).getAddressLine(0);
-            address = address.split(",")[0] + address.split(",")[1]+address.split(",")[2]+address.split(",")[3];
-
-            return address;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return "loading...";
+    public void getUserAddress(LocationCustom location) {
+        userAddressViewModel.getUserAddress(location).observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                binding.userAddressMapFragment.setText(s);
+            }
+        });
     }
 
     @Override
@@ -285,7 +287,7 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
         LocationCustom locationCustom = new LocationCustom(location.getLatitude(),location.getLongitude());
 
         newAd.setAuthorLocation(locationCustom);
-        binding.userAddressMapFragment.setText(getUserAddress(locationCustom));
+        getUserAddress(locationCustom);
     }
 
     public void callMainActivity(){

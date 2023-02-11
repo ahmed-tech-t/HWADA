@@ -4,11 +4,17 @@ import static android.content.ContentValues.TAG;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Application;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.os.Build;
+import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -17,8 +23,10 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.example.hwada.Model.DebugModel;
 import com.example.hwada.database.DbHandler;
+import com.example.hwada.repository.UserAddressRepo;
 import com.example.hwada.viewmodel.DebugViewModel;
 import com.example.hwada.viewmodel.UserViewModel;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.Timestamp;
 
 import java.io.PrintWriter;
@@ -34,6 +42,8 @@ public class App extends Application {
 
     public final int PICK_IMAGE_REQUEST = 2;
     public final int REQUEST_CAMERA_PERMISSION = 3;
+    public final int LOCATION_PERMISSION_ID = 1;
+
     DebugViewModel debugViewModel;
     private static final String TAG = "App";
     UserViewModel userViewModel ;
@@ -131,6 +141,60 @@ public class App extends Application {
     public void reportError(String s , Context context){
         debugViewModel = ViewModelProviders.of((FragmentActivity) context).get(DebugViewModel.class);
         debugViewModel.reportError(new DebugModel(getCurrentDate(),s,s,TAG, Build.VERSION.SDK_INT,false));
+    }
+
+    public boolean checkLocationPermissions(Context context) {
+        try {
+            return ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+        }catch (Exception e){
+            reportError(e,context);
+        }
+        return false;
+
+    }
+    public boolean isLocationEnabled() {
+        try {
+            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+        }catch (Exception e){
+            reportError(e,this);
+        }
+        return false;
+    }
+
+    public void requestLocationPermissions(Context context) {
+        try {
+            ActivityCompat.requestPermissions((Activity) context, new String[]{
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_ID);
+        }catch (Exception e){
+            reportError(e,context);
+        }
+    }
+    public void askUserToOpenGps(final Activity activity) {
+        try {
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(activity);
+            alertDialog.setTitle("GPS setting!");
+            alertDialog.setMessage("GPS is not enabled, Do you want to go to settings menu? ");
+            alertDialog.setPositiveButton("Setting", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    activity.startActivity(intent);
+                }
+            });
+            alertDialog.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            alertDialog.setCancelable(false);
+            alertDialog.show();
+        } catch (Exception e) {
+            reportError(e, this);
+        }
     }
 
 }

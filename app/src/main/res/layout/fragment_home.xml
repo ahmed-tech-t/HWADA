@@ -106,7 +106,7 @@
                           android:drawableEnd="@drawable/arrow_right"
                           android:drawablePadding="10dp"
 
-                          android:hint="@string/yourAddress"
+                          android:hint="@string/loadingYourLocation"
 
                           android:inputType="text"
                           android:maxLines="1"

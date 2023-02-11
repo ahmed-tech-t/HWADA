@@ -22,6 +22,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
@@ -31,6 +32,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.hwada.Model.Ad;
@@ -47,6 +49,7 @@ import com.example.hwada.ui.view.main.ChatFragment;
 import com.example.hwada.ui.view.main.FavoritesFragment;
 import com.example.hwada.ui.view.main.HomeFragment;
 import com.example.hwada.viewmodel.DebugViewModel;
+import com.example.hwada.viewmodel.UserAddressViewModel;
 import com.example.hwada.viewmodel.UserViewModel;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -56,6 +59,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -68,17 +72,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     ActivityMainBinding binding;
     Dialog locationDialog;
-    int PERMISSION_ID = 1;
     private User user;
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
     private UserViewModel userViewModel ;
     FusedLocationProviderClient mFusedLocationClient;
     DebugViewModel debugViewModel;
+    UserAddressViewModel userAddressViewModel ;
+
     private App app;
 
-
-    String TAG = "MainActivity";
+    private int numberOfRequest =0;
+    private static final String TAG = "MainActivity";
     @SuppressLint("RestrictedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +103,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
           navBarOnSelected();
           userViewModel = UserViewModel.getInstance();
           debugViewModel = ViewModelProviders.of(this).get(DebugViewModel.class);
+          userAddressViewModel = ViewModelProviders.of(this).get(UserAddressViewModel.class);
 
           app = (App) getApplication();
 
@@ -115,18 +121,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
           mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
           getLastLocation();
+          setLocationManually();
 
       }catch (Exception e){
           app.reportError(e,this);
       }
     }
 
+    private void setLocationManually(){
+        if(!app.checkLocationPermissions(this)){
+            LocationCustom locationCustom = new LocationCustom(31.23528,30.04167);
+            updateLocation(locationCustom);
+        }
+    }
 
     private void setUserObserver(){
         userViewModel.getUser().observe(this, new Observer<User>() {
             @Override
             public void onChanged(User u) {
-                Log.e(TAG, "onChanged: user observer " );
                 user = u;
             }
         });
@@ -150,24 +162,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      }
     }
 
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-      try {
-          if (requestCode == PERMISSION_ID) {
-              if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED ) {
-                  //  Log.e(TAG, "onRequestPermissionsResult: permission granted and get new location");
-                  getLastLocation();
-              }
-          }else if (grantResults[0] == PackageManager.PERMISSION_DENIED){
-              this.finishAffinity();
-          }
-      }catch (Exception e){
-          app.reportError(e,this);
-      }
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -175,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         try {
            if(user.getLocation()==null){
-               if(isLocationEnabled()){
+               if(app.isLocationEnabled()){
                    setLocationDialog();
                    getLastLocation();
                }
@@ -184,59 +178,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             app.reportError(e,this);
        }
     }
-    public void askUserToOpenGps() {
-       try {
-           AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-           alertDialog.setTitle("GPS setting!");
-           alertDialog.setMessage("GPS is not enabled, Do you want to go to settings menu? ");
-           alertDialog.setPositiveButton("Setting", new DialogInterface.OnClickListener() {
-               @Override
-               public void onClick(DialogInterface dialog, int which) {
-                   Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                   startActivity(intent);
-               }
-           });
-           alertDialog.setCancelable(false);
-           alertDialog.show();
-       }catch (Exception e){
-           app.reportError(e,this);
-       }
-    }
-    private boolean checkPermissions() {
-       try {
-           return ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-       }catch (Exception e){
-           app.reportError(e,this);
-       }
-        return false;
 
-    }
-    private void requestPermissions() {
-      try {
-          ActivityCompat.requestPermissions(this, new String[]{
-                  Manifest.permission.ACCESS_COARSE_LOCATION,
-                  Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_ID);
-      }catch (Exception e){
-          app.reportError(e,this);
-      }
-    }
-    private boolean isLocationEnabled() {
-        try {
-            LocationManager  locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
-        }catch (Exception e){
-            app.reportError(e,this);
-        }
-        return false;
-    }
+
 
     @SuppressLint("MissingPermission")
     private void getLastLocation() {
       try {
           if(user.getLocation()==null) {
-              if (checkPermissions()) {
-                  if (isLocationEnabled()) {
+              if (app.checkLocationPermissions(this)) {
+                  if (app.isLocationEnabled()) {
                       try {
                            setLocationDialog();
                           mFusedLocationClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
@@ -258,10 +209,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                       }
 
                   } else {
-                      askUserToOpenGps();
+                      app.askUserToOpenGps(this);
                   }
               } else {
-                  requestPermissions();
+                  app.requestLocationPermissions(this);
               }
           }
       }catch (Exception e){
@@ -381,7 +332,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     public void callBottomSheet(BottomSheetDialogFragment fragment){
        try {
-               Log.e(TAG, "callBottomSheet: " );
                Bundle bundle = new Bundle();
                bundle.putParcelable("user", user);
                fragment.setArguments(bundle);
@@ -421,7 +371,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                if(success){
                    user.setLocation(location);
                    userViewModel.setUser(user);
-                   if(locationDialog.isShowing()) locationDialog.dismiss();
+
+                   if(locationDialog!=null && locationDialog.isShowing()) locationDialog.dismiss();
                }else {
                    Toast.makeText(this, getText(R.string.savingError), Toast.LENGTH_SHORT).show();
                    updateLocation(location);
@@ -454,6 +405,48 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onPause() {
         super.onPause();
         app.setUserOffline(user.getUId());
+    }
+
+        @Override
+        public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+          try {
+              if (requestCode == app.LOCATION_PERMISSION_ID) {
+                  if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED ) {
+                      getLastLocation();
+                  }else if (grantResults[0] == PackageManager.PERMISSION_DENIED){
+                      if(numberOfRequest<2){
+                          if(numberOfRequest < 1 )showToast(getString(R.string.locationPermissionWarning));
+                          app.requestLocationPermissions(this);
+                      }
+                      numberOfRequest += 1 ;
+                  }
+              }
+          }catch (Exception e){
+              app.reportError(e,this);
+          }
+        }
+
+    private Toast mCurrentToast;
+    public void showToast(String message) {
+        if (mCurrentToast == null) {
+            mCurrentToast = Toast.makeText(this.getApplicationContext(), message, Toast.LENGTH_SHORT);
+            mCurrentToast.show();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                mCurrentToast.addCallback(new Toast.Callback() {
+                    @Override
+                    public void onToastShown() {
+                        super.onToastShown();
+                    }
+
+                    @Override
+                    public void onToastHidden() {
+                        super.onToastHidden();
+                        mCurrentToast = null;
+                    }
+                });
+            }
+        }
     }
 
 

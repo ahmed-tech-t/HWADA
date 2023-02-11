@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -40,12 +41,22 @@ import com.example.hwada.ui.view.ad.AdvertiserFragment;
 import com.example.hwada.viewmodel.AdsViewModel;
 import com.example.hwada.viewmodel.DebugViewModel;
 import com.example.hwada.viewmodel.FavViewModel;
+import com.example.hwada.viewmodel.UserAddressViewModel;
 import com.example.hwada.viewmodel.UserViewModel;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -56,6 +67,7 @@ import java.util.Locale;
 public class HomeFragment extends Fragment implements View.OnClickListener , AdsAdapter.OnItemListener ,MapsFragment.GettingPassedData {
     AdsViewModel adsViewModel;
     FavViewModel favViewModel ;
+    UserAddressViewModel userAddressViewModel ;
     AdsAdapter adapter;
 
     UserViewModel userViewModel;
@@ -152,23 +164,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
        }
     }
 
-    public String getUserAddress(LocationCustom location) {
-        try {
-            Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
-            String address = "loading your location....";
-            List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-            address = addresses.get(0).getAddressLine(0);
-            for (String s: address.split(",")) {
-                if(address.split(",").length<3){
-                    address +=s;
-                }
-            }
-            return address;
-        } catch (IOException e) {
-            e.printStackTrace();
-            app.reportError(e,getContext());
-        }
-        return "";
+    public void getUserAddress(LocationCustom location) {
+      userAddressViewModel.getUserAddress(location).observe(this, new Observer<String>() {
+          @Override
+          public void onChanged(String s) {
+              binding.userAddress.setText(s);
+          }
+      });
     }
 
     @Override
@@ -177,7 +179,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
         //get user from Main activity
       try {
           user = getArguments().getParcelable("user");
+
           debugViewModel = ViewModelProviders.of(this).get(DebugViewModel.class);
+          userAddressViewModel = ViewModelProviders.of(this).get(UserAddressViewModel.class);
+
           userViewModel = UserViewModel.getInstance();
           adsViewModel =  AdsViewModel.getInstance() ;
           favViewModel = FavViewModel.getInstance() ;
@@ -195,7 +200,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
         userViewModel.getUser().observe(getActivity(), new Observer<User>() {
             @Override
             public void onChanged(User u) {
-                Log.e(TAG, "onChanged: user observer " );
                 user = u;
 
                 if (advertiserFragment.isAdded()) {
@@ -203,7 +207,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
                 }
 
                 if(user.getLocation()!=null){
-                    if (isAdded()) binding.userAddress.setText(getUserAddress(user.getLocation()));
+                    if (isAdded()) getUserAddress(user.getLocation());
                 }else {
                     app.reportError("location is null in home fragment",getContext());
                 }            }
@@ -237,7 +241,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
 
         } else {
             if (user.getFavAds() == null) user.initFavAdsList();
-
             favViewModel.addFavAd(user.getUId(),adsList.get(position));
             user.getFavAds().add(adsList.get(position));
             userViewModel.setUser(user);
@@ -273,7 +276,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
     public void newLocation(Location location) {
         LocationCustom locationCustom = new LocationCustom(location.getLatitude(),location.getLongitude());
         user.setLocation(locationCustom);
-        binding.userAddress.setText(getUserAddress(user.getLocation()));
+        getUserAddress(user.getLocation());
     }
 
     private String getCurrentDate(){

@@ -180,7 +180,6 @@ public class SplashRepository {
                                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
                                             int favAdLength = task.getResult().size();
-                                            Log.e(TAG, "onComplete: "+favAdLength);
                                             for (QueryDocumentSnapshot favSnapshot : task.getResult()) {
                                                 String adId = favSnapshot.getString("adId");
                                                 String category = favSnapshot.getString("category");
@@ -190,7 +189,6 @@ public class SplashRepository {
                                                 tempRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                                     @Override
                                                     public void onSuccess(DocumentSnapshot tempSnapshot) {
-                                                        Log.e(TAG, "onComplete: 3");
                                                         String authorId = tempSnapshot.getString("authorId");
                                                         LocationCustom authorLocation = tempSnapshot.get("authorLocation", LocationCustom.class);
                                                         String authorName = tempSnapshot.getString("authorName");
@@ -226,7 +224,6 @@ public class SplashRepository {
                                                             @Override
                                                             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                                                 if (task.isSuccessful()) {
-                                                                    Log.e(TAG, "onComplete: 4");
                                                                     for (QueryDocumentSnapshot reviewSnapshot : task.getResult()) {
                                                                         String id = reviewSnapshot.getString("id");
                                                                         String authorId = reviewSnapshot.getString("authorId");

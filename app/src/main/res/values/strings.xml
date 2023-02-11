@@ -27,7 +27,7 @@
     <string name="km">km</string>
     <string name="withInRange">In range of</string>
     <string name="title_activity_map">Map</string>
-    <string name="loadingYourLocation"><font size="18">Loading Your Location ...</font></string>
+    <string name="loadingYourLocation"><font size="15">Loading Your Location ...</font></string>
     <string name="save">save</string>
     <string name="home">home</string>
     <string name="account">account</string>
@@ -142,5 +142,8 @@
     </string-array>
 
     <string name="photo">Photo</string>
-
+    <string name="locationPermissionWarning">Location permission is required for app to worked well.</string>
+    <string name="cameraPermissionWarning">Camera permission is required to use camera functionality.</string>
+    <string name="storagePermissionWarning">Storage permission is required for app to worked well.</string>
+    <string name="faildToLoadYourLocation">failed To Load Your Location</string>
 </resources>
