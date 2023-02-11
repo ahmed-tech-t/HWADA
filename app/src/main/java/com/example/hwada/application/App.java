@@ -26,6 +26,8 @@ import com.example.hwada.database.DbHandler;
 import com.example.hwada.repository.UserAddressRepo;
 import com.example.hwada.viewmodel.DebugViewModel;
 import com.example.hwada.viewmodel.UserViewModel;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.Timestamp;
 
@@ -196,5 +198,15 @@ public class App extends Application {
             reportError(e, this);
         }
     }
-
+    public boolean isGooglePlayServicesAvailable(Activity activity) {
+        GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
+        int status = googleApiAvailability.isGooglePlayServicesAvailable(this);
+        if (status != ConnectionResult.SUCCESS) {
+            if (googleApiAvailability.isUserResolvableError(status)) {
+                googleApiAvailability.getErrorDialog(activity, status, 2404).show();
+            }
+            return false;
+        }
+        return true;
+    }
 }

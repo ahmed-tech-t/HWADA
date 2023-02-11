@@ -146,4 +146,5 @@
     <string name="cameraPermissionWarning">Camera permission is required to use camera functionality.</string>
     <string name="storagePermissionWarning">Storage permission is required for app to worked well.</string>
     <string name="faildToLoadYourLocation">failed To Load Your Location</string>
+    <string name="googleServicesWarning">Google service not available on this device</string>
 </resources>

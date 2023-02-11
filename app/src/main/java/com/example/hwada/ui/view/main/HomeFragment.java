@@ -1,6 +1,8 @@
 package com.example.hwada.ui.view.main;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Context;
 import android.content.res.Resources;
 import android.location.Address;
 import android.location.Geocoder;
@@ -25,6 +27,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.DebugModel;
@@ -144,12 +147,35 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
         });
     }
 
+    private Toast mCurrentToast;
+    public void showToast(String message) {
+        if (mCurrentToast == null) {
+            mCurrentToast = Toast.makeText(getActivity().getApplicationContext(), message, Toast.LENGTH_SHORT);
+            mCurrentToast.show();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                mCurrentToast.addCallback(new Toast.Callback() {
+                    @Override
+                    public void onToastShown() {
+                        super.onToastShown();
+                    }
+
+                    @Override
+                    public void onToastHidden() {
+                        super.onToastHidden();
+                        mCurrentToast = null;
+                    }
+                });
+            }
+        }
+    }
 
     @Override
     public void onClick(View v) {
        try {
            if (v.getId() == binding.userAddress.getId()) {
-               callBottomSheet(new MapsFragment());
+               if(app.isGooglePlayServicesAvailable(getActivity())){
+                   callBottomSheet(new MapsFragment());
+               }else showToast(getString(R.string.googleServicesWarning));
            } else if (v.getId() == binding.homeFoodCategory.getId()) {
                ((MainActivity) getActivity()).callAdsActivity(DbHandler.HOME_FOOD, DbHandler.HOME_FOOD,"");
            } else if (v.getId() == binding.workerCategory.getId()) {
@@ -305,4 +331,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
           binding.userAddress.setCompoundDrawablesWithIntrinsicBounds(R.drawable.arrow_left, 0, R.drawable.distance_icon, 0);
       }
   }
+
+
 }

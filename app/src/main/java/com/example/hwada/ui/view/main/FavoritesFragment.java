@@ -169,8 +169,10 @@ public class FavoritesFragment extends Fragment implements AdsGridAdapter.OnItem
     }
 
     private void handelData(){
-        if(user.getFavAds().get(0).getTitle()== null || user.getFavAds().get(0).getTitle().length()==0){
-            getAllFavAds();
-        }else setAdsToList();
+        if(user.getFavAds() == null){
+             getAllFavAds();
+        }else if(user.getFavAds().size()==0) setAdsToList();
+         else if (user.getFavAds().get(0).getTitle() == null  ) getAllFavAds();
+        else setAdsToList();
     }
 }

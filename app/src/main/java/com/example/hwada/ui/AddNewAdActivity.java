@@ -29,6 +29,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.LocationCustom;
@@ -156,8 +157,9 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
                 ||v.getId() ==binding.linearlayoutInner1AddNewItem.getId()){
             hideKeyboard();
         }else if (v.getId()==binding.userAddressMapFragment.getId()){
-            callBottomSheet(new MapsFragment());
-        }
+           if(app.isGooglePlayServicesAvailable(this)){
+               callBottomSheet(new MapsFragment());
+           }else showToast(getString(R.string.googleServicesWarning));        }
     }
     private void hideKeyboard(){
         View view = this.getCurrentFocus();
@@ -307,5 +309,27 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
     protected void onPause() {
         super.onPause();
         app.setUserOffline(user.getUId());
+    }
+
+    private Toast mCurrentToast;
+    public void showToast(String message) {
+        if (mCurrentToast == null) {
+            mCurrentToast = Toast.makeText(this.getApplicationContext(), message, Toast.LENGTH_SHORT);
+            mCurrentToast.show();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                mCurrentToast.addCallback(new Toast.Callback() {
+                    @Override
+                    public void onToastShown() {
+                        super.onToastShown();
+                    }
+
+                    @Override
+                    public void onToastHidden() {
+                        super.onToastHidden();
+                        mCurrentToast = null;
+                    }
+                });
+            }
+        }
     }
 }

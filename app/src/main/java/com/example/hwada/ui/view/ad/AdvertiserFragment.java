@@ -37,6 +37,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.AdReview;
@@ -57,6 +58,7 @@ import com.example.hwada.ui.view.ad.menu.AdWorkingTimeFragment;
 import com.example.hwada.ui.view.chat.SendImagesMessageFragment;
 import com.example.hwada.ui.view.images.ImagesFullDialogFragment;
 import com.example.hwada.ui.view.map.MapPreviewFragment;
+import com.example.hwada.ui.view.map.MapsFragment;
 import com.example.hwada.viewmodel.AdsViewModel;
 import com.example.hwada.viewmodel.ChatViewModel;
 import com.example.hwada.viewmodel.DebugViewModel;
@@ -212,7 +214,10 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         if(v.getId() == binding.arrowAdvertiser.getId()){
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         }else if(v.getId() == binding.tvAdLocationAdvertiserFragment.getId()){
-            callBottomSheet(new MapPreviewFragment());
+
+            if(app.isGooglePlayServicesAvailable(getActivity())){
+                callBottomSheet(new MapsFragment());
+            }else showToast(getString(R.string.googleServicesWarning));
         }else if(v.getId() == binding.buttonCallAdvertiserFragment.getId()){
             callCallActivity();
         }else if (v.getId() == binding.buttonChatAdvertiserFragment.getId()){
@@ -461,5 +466,27 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
     @Override
     public void getImagePosition(int position) {
         callImagesFullDialogFragment((ArrayList<String>) ad.getImagesUrl(),position);
+    }
+
+    private Toast mCurrentToast;
+    public void showToast(String message) {
+        if (mCurrentToast == null) {
+            mCurrentToast = Toast.makeText(getActivity().getApplicationContext(), message, Toast.LENGTH_SHORT);
+            mCurrentToast.show();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                mCurrentToast.addCallback(new Toast.Callback() {
+                    @Override
+                    public void onToastShown() {
+                        super.onToastShown();
+                    }
+
+                    @Override
+                    public void onToastHidden() {
+                        super.onToastHidden();
+                        mCurrentToast = null;
+                    }
+                });
+            }
+        }
     }
 }
