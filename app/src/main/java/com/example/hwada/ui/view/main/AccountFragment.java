@@ -30,7 +30,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.Locale;
 
-public class AccountFragment extends Fragment implements View.OnClickListener , EditUserFragment.PassedData {
+public class AccountFragment extends Fragment implements View.OnClickListener {
 
     User user;
     UserViewModel userViewModel;
@@ -58,7 +58,6 @@ public class AccountFragment extends Fragment implements View.OnClickListener , 
             callBottomSheet(new EditUserFragment());
         } else if (v.getId() == binding.userImageAccountFragment.getId()) {
           callImageDialog();
-
         } else if (v.getId() == binding.tvMyAds.getId()) {
             Log.e(TAG, "onClick: ");
             callMyAdsActivity();
@@ -75,7 +74,7 @@ public class AccountFragment extends Fragment implements View.OnClickListener , 
         authViewModel = ViewModelProviders.of(getActivity()).get(AuthViewModel.class);
         userViewModel = UserViewModel.getInstance();
         setDataToFields();
-        setUserObserver();
+        setUserListener();
     }
 
 
@@ -88,16 +87,7 @@ public class AccountFragment extends Fragment implements View.OnClickListener , 
         }
     }
 
-    private void setUserObserver() {
-        userViewModel.getUser().observe(getActivity(), new Observer<User>() {
-            @Override
-            public void onChanged(User u) {
-                user = u;
-                Log.e(TAG, "onChanged: ");
-                setDataToFields();
-            }
-        });
-    }
+
 
     public void callBottomSheet(BottomSheetDialogFragment fragment) {
         Bundle bundle = new Bundle();
@@ -122,14 +112,7 @@ public class AccountFragment extends Fragment implements View.OnClickListener , 
         getActivity().finish();
     }
 
-    @Override
-    public void getPassedData(User u) {
-        user.setUsername(u.getUsername());
-        user.setGender(u.getGender());
-        user.setAboutYou(u.getAboutYou());
-        user.setPhone(u.getPhone());
-        setDataToFields();
-    }
+
 
     public void callMyAdsActivity() {
         try {
@@ -141,8 +124,17 @@ public class AccountFragment extends Fragment implements View.OnClickListener , 
         }
     }
 
-    private void setArrowDirections() {
+    private void setUserListener(){
+        userViewModel.userListener(user.getUId()).observe(getActivity(), new Observer<User>() {
+            @Override
+            public void onChanged(User updatedUser) {
+                user.updateUser(updatedUser);
+                setDataToFields();
+            }
+        });
+    }
 
+    private void setArrowDirections() {
 
         Locale locale = Resources.getSystem().getConfiguration().locale;
         if (locale.getLanguage().equals("ar")) {
@@ -153,7 +145,6 @@ public class AccountFragment extends Fragment implements View.OnClickListener , 
             binding.cancelSubscriptionAccountFragment.setCompoundDrawablesWithIntrinsicBounds(R.drawable.arrow_left, 0, R.drawable.cancel_sub_icon, 0);
 
         }else{
-
             binding.tvMyAds.setCompoundDrawablesWithIntrinsicBounds( R.drawable.my_ads_icon, 0,R.drawable.arrow_right, 0);
             binding.joinMemberShipAccountFragment.setCompoundDrawablesWithIntrinsicBounds( R.drawable.blue_membership_icon, 0,R.drawable.arrow_right, 0);
             binding.helpSupportAccountFragment.setCompoundDrawablesWithIntrinsicBounds( R.drawable.help_support_icon, 0,R.drawable.arrow_right, 0);

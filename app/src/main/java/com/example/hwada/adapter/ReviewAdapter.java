@@ -18,6 +18,7 @@ import com.example.hwada.Model.AdReview;
 import com.example.hwada.R;
 import com.example.hwada.application.App;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.google.firebase.Timestamp;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -49,7 +50,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
     public void onBindViewHolder(@NonNull ReviewViewHolder holder, int position) {
         holder.username.setText(list.get(position).getAuthorName());
         holder.body.setText(list.get(position).getBody());
-        holder.date.setText(handleTime(list.get(position).getDate()));
+        holder.date.setText(handleTime(list.get(position).getTimeStamp()));
         //TODO
 
         Glide.with(mContext).load(list.get(position).getAuthorImage()).into(holder.userImage);
@@ -123,10 +124,10 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         list.set(pos, review);
         notifyItemChanged(pos);
     }
-    public String handleTime(String dateString){
+    public String handleTime(Timestamp timestamp){
+        Date date = timestamp.toDate();
+        String dateString = app.getDateFromTimeStamp(timestamp);
         try {
-            SimpleDateFormat dateFormat = app.timeFormat();
-            Date date = dateFormat.parse(dateString);
 
             Calendar today = Calendar.getInstance();
             Calendar inputDate = Calendar.getInstance();
@@ -141,7 +142,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
                 return mContext.getString(R.string.yesterday)+" "+ dateString.split(",")[1];
             }
 
-        } catch (ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return dateString;

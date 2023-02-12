@@ -6,6 +6,7 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+
 import com.google.firebase.Timestamp;
 import com.google.firebase.database.Exclude;
 
@@ -342,5 +343,17 @@ public class User implements Parcelable {
         dest.writeByte((byte) (isAuthenticated ? 1 : 0));
         dest.writeByte((byte) (isNew ? 1 : 0));
         dest.writeByte((byte) (isCreated ? 1 : 0));
+    }
+
+    public void updateUser (User user){
+        this.username = user.username;
+        this.location = user.location;
+        this.rating = user.rating;
+        this.phone = user.phone;
+        this.aboutYou = user.aboutYou;
+        this.image = user.image;
+        this.gender = user.gender;
+        this.status = user.status;
+        this.lastSeen = user.lastSeen;
     }
 }

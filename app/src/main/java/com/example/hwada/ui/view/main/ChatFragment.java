@@ -78,6 +78,7 @@ public class ChatFragment extends Fragment implements ChatAdapter.OnItemListener
         ChatAdapter adapter = new ChatAdapter(getContext());
         adapter.setList(user.getUId(),chatList,this);
         binding.recyclerChatFragment.setAdapter(adapter);
+        if(chatList.size()==0)binding.recyclerChatFragment.setBackgroundResource(R.drawable.empty_page);
         binding.recyclerChatFragment.setLayoutManager( new LinearLayoutManager(getContext()));
     }
 

@@ -76,7 +76,6 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
     UserAddressViewModel userAddressViewModel ;
 
     Dialog saveDialog;
-    GettingPassedData mListener;
     BottomSheetBehavior bottomSheetBehavior ;
     BottomSheetDialog dialog ;
 
@@ -93,25 +92,25 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
                              @Nullable Bundle savedInstanceState) {
         binding = FragmentMapsBinding.inflate(inflater, container, false);
         binding.arrowMapFragment.setOnClickListener(this);
-        app = (App) getContext().getApplicationContext();
+        app =(App) getContext().getApplicationContext();
         return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-     try {
-         setBottomSheet(view);
+         try {
+             setBottomSheet(view);
 
-         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map_fragment);
-         if (mapFragment != null) {
-             mapView = mapFragment.getView();
-             mapFragment.getMapAsync(this);
-             Log.e(TAG, "onViewCreated: " );
+             SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map_fragment);
+             if (mapFragment != null) {
+                 mapView = mapFragment.getView();
+                 mapFragment.getMapAsync(this);
+                 Log.e(TAG, "onViewCreated: " );
+             }
+         }catch (Exception e){
+             app.reportError(e,getContext());
          }
-     }catch (Exception e){
-         app.reportError(e,getContext());
-     }
     }
 
 
@@ -263,7 +262,7 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
                   if(app.isLocationEnabled()){
                       locationButton.callOnClick();
                   }else {
-                      app.askUserToOpenGps(getActivity());
+                      app.askUserToOpenGps(getActivity(),true);
                   }
               }else{
                 showToast(getString(R.string.locationPermissionWarning));
@@ -271,7 +270,6 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
 
           } else if (v.getId() == binding.btSaveNewLocationFragment.getId()) {
               //Todo save to data base
-              setSavingDialog();
               updateLocation(getCameraLocation());
           } else if (v.getId() == binding.imArrowFragment.getId() || v.getId() == binding.userAddressFragment.getId()) {
 
@@ -311,7 +309,7 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
            binding.btSaveNewLocationFragment.setClickable(true);
 
            LocationCustom location =new LocationCustom(getCameraLocation().getLatitude(),getCameraLocation().getLongitude());
-           getUserAddress(location);
+          if(location!=null) getUserAddress(location);
        }catch (Exception e){
            app.reportError(e,getContext());
        }
@@ -361,54 +359,11 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
       }
     }
 
-    public interface GettingPassedData{
-        void newLocation(Location location);
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        try {
-            if(getParentFragment() == null) mListener = (GettingPassedData) getActivity();
-            else  mListener = (GettingPassedData) getParentFragment();
-        } catch (ClassCastException e) {
-            app.reportError(e,getContext());
-            throw new ClassCastException(context.toString()
-                    + " must implement OnDataPassListener");
-        }
-    }
-
-    public void setSavingDialog() {
-      try {
-          if (saveDialog != null && saveDialog.isShowing()) return;
-
-          saveDialog = new Dialog(getContext());
-          saveDialog.setContentView(R.layout.dialog_saving_data_layout);
-          Window window = saveDialog.getWindow();
-          window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-          window.setGravity(Gravity.BOTTOM);
-          saveDialog.setCanceledOnTouchOutside(false);
-          saveDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-          saveDialog.setCancelable(false);
-          saveDialog.show();
-      }catch (Exception e){
-          app.reportError(e,getContext());
-      }
-    }
-
     private void updateLocation(Location location) {
        try {
            LocationCustom locationCustom = new LocationCustom(location.getLatitude(),location.getLongitude());
            userViewModel.updateLocationUser(locationCustom);
-           userViewModel.updateLocationSuccessLiveData.observe(this, success -> {
-               if(success){
-                   if(saveDialog.isShowing()) saveDialog.dismiss();
-                   mListener.newLocation(getCameraLocation());
-                   bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-               }else {
-                   Toast.makeText(getContext(), getText(R.string.savingError), Toast.LENGTH_SHORT).show();
-               }
-           });
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
        }catch (Exception e){
           app.reportError(e,getContext());
        }

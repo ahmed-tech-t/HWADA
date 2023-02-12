@@ -21,6 +21,7 @@ import com.example.hwada.R;
 import com.example.hwada.application.App;
 import com.example.hwada.util.GlideImageLoader;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.google.firebase.Timestamp;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -38,8 +39,8 @@ public class AdsGridAdapter extends RecyclerView.Adapter<AdsGridAdapter.HomeView
     private static final String TAG = "AdsGridAdapter";
     App app;
     public AdsGridAdapter (Context context){
-        this.mContext =context;
-        app = (App) context.getApplicationContext();
+        this.mContext = context;
+        if(mContext!=null) app = (App) mContext.getApplicationContext();
     }
     @NonNull
     @Override
@@ -50,37 +51,39 @@ public class AdsGridAdapter extends RecyclerView.Adapter<AdsGridAdapter.HomeView
     @Override
     public void onBindViewHolder(@NonNull HomeViewHolder holder, int position) {
 
+        if (list!= null) {
+
         String url = list.get(position).getImagesUrl().get(0);
         RequestOptions options = new RequestOptions()
                 .priority(Priority.HIGH);
-        new GlideImageLoader(holder.userImage,new ProgressBar(mContext)).load(url,options);
+        new GlideImageLoader(holder.userImage, new ProgressBar(mContext)).load(url, options);
 
 
         holder.title.setText(list.get(position).getTitle());
 
         //fav image
-        if(adIsInFavList(list.get(position).getId())){
+        if (adIsInFavList(list.get(position).getId())) {
             holder.favImage.setImageResource(R.drawable.fav_checked_icon);
-        }else holder.favImage.setImageResource(R.drawable.fav_uncheck_icon);
+        } else holder.favImage.setImageResource(R.drawable.fav_uncheck_icon);
 
 
-        holder.rating.setText(list.get(position).getRating()+"");
+        holder.rating.setText(list.get(position).getRating() + "");
 
         list.get(position).setDistance(Float.valueOf(getDistance(position)));
-        holder.distance.setText(list.get(position).getDistance()+"");
-        holder.date.setText(handleTime(list.get(position).getDate()));
+        holder.distance.setText(list.get(position).getDistance() + "");
+        holder.date.setText(handleTime(list.get(position).getTimeStamp()));
         DecimalFormat decimalFormat = new DecimalFormat("#");
         String formattedValue = decimalFormat.format(list.get(position).getPrice());
 
         holder.price.setText(mContext.getString(R.string.from) + "  " + formattedValue);
-        if(user!=null){
+        if (user != null) {
             //TODO list.get(position).getId();
-            String  adId = String.valueOf(position);
-            if(adIsInFavList(adId)){
+            String adId = String.valueOf(position);
+            if (adIsInFavList(adId)) {
                 holder.favImage.setImageResource(R.drawable.fav_checked_icon);
             }
         }
-
+    }
     }
 
     @Override
@@ -136,11 +139,10 @@ public class AdsGridAdapter extends RecyclerView.Adapter<AdsGridAdapter.HomeView
         }
         return false;
     }
-    public String handleTime(String dateString){
+    public String handleTime(Timestamp timestamp){
+        Date date = timestamp.toDate();
+        String dateString = app.getDateFromTimeStamp(timestamp);
         try {
-            SimpleDateFormat dateFormat = app.timeFormat();
-            Date date = dateFormat.parse(dateString);
-
             Calendar today = Calendar.getInstance();
             Calendar inputDate = Calendar.getInstance();
             inputDate.setTime(date);
@@ -154,7 +156,7 @@ public class AdsGridAdapter extends RecyclerView.Adapter<AdsGridAdapter.HomeView
                 return mContext.getString(R.string.yesterday)+" "+ dateString.split(",")[1];
             }
 
-        } catch (ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return dateString.split(",")[0];

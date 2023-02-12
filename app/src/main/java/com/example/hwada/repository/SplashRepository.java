@@ -53,7 +53,6 @@ public class SplashRepository {
     private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
     private CollectionReference usersRef = rootRef.collection(DbHandler.userCollection);
     private static final String TAG = "SplashRepository";
-    DebugRepository debugRepository = new DebugRepository();
     Application application;
     App app;
 
@@ -104,16 +103,18 @@ public class SplashRepository {
                                     Ad ad = new Ad(adId, category, subCategory, subSubCategory);
                                     favAdsList.add(ad);
                                 }
-                                user.setFavAds(favAdsList);
+                                if(favAdsList!=null) user.setFavAds(favAdsList);
                                 userMutableLiveData.setValue(user);
                             } else {
-                                Log.e(TAG, "onComplete: error 2");
-                                User newUser = new User();
-                                newUser.setUsername("newUser");
-                                userMutableLiveData.setValue(newUser);
+                                Log.e(TAG, "onComplete: error when getting userFavAds");
                             }
                         }
                     });
+                } else {
+                    Log.e(TAG, "onComplete: error with getting user" );
+                    User newUser = new User();
+                    newUser.setUsername("newUser");
+                    userMutableLiveData.setValue(newUser);
                 }
             }
         });

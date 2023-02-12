@@ -47,7 +47,9 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCWZpNk7RjtjCV5OAKfokq-HUsDURcj1Ow" />
-
+        <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
+        <!-- Necessary for apps that target Android 9.0 or higher -->
+        <uses-library android:name="org.apache.http.legacy" android:required="false" />
 
 
         <meta-data

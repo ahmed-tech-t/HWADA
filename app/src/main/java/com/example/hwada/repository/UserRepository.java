@@ -15,6 +15,7 @@ import androidx.lifecycle.Observer;
 
 import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.AdReview;
+import com.example.hwada.Model.Chat;
 import com.example.hwada.Model.DaysSchedule;
 import com.example.hwada.Model.DebugModel;
 import com.example.hwada.Model.LocationCustom;
@@ -22,6 +23,7 @@ import com.example.hwada.Model.MyReview;
 import com.example.hwada.Model.User;
 import com.example.hwada.database.DbHandler;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,8 +33,10 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.gson.Gson;
 
 import org.checkerframework.checker.units.qual.A;
 
@@ -78,18 +82,26 @@ public class UserRepository {
         return updateSuccess ;
     }
     public MutableLiveData<Boolean> updateUserLocation(LocationCustom location) {
-        MutableLiveData<Boolean> updateLocationSuccess =new MutableLiveData<>();
+        MutableLiveData<Boolean> mutableLiveData = new MutableLiveData<>();
         Map<String, Object> data = new HashMap<>();
         data.put("location",location);
         rootRef.collection(DbHandler.userCollection).document(auth.getUid()).update(data).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()){
-                    updateLocationSuccess.setValue(true);
-                } else updateLocationSuccess.setValue(false);
+                if(task.isSuccessful()){
+                    mutableLiveData.setValue(true);
+                }else {
+                    mutableLiveData.setValue(false);
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                e.printStackTrace();
+                mutableLiveData.setValue(false);
             }
         });
-        return updateLocationSuccess ;
+        return mutableLiveData;
     }
     public MutableLiveData<Boolean> updateUserImage(User user) {
         MutableLiveData<Boolean>updateImageSuccess = new MutableLiveData<>();
@@ -186,7 +198,9 @@ public class UserRepository {
 
     public MutableLiveData<ArrayList<Ad>> getAllUserAds(String id){
         MutableLiveData<ArrayList<Ad>> mutableLiveData = new MutableLiveData<>();
-        userDocumentRef(id).collection(DbHandler.adCollection).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        userDocumentRef(id).collection(DbHandler.adCollection)
+                .orderBy("timeStamp", Query.Direction.DESCENDING)
+                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()){
@@ -206,13 +220,10 @@ public class UserRepository {
                                     ad.setAdReviews(reviews);
                                     ads.add(ad);
                                     if(adQuerySnapshot.size()==ads.size()){
-                                        Log.e(TAG, "onComplete: finished" );
-                                        Log.e(TAG, "onComplete: "+ads.size() );
                                         mutableLiveData.setValue(ads);
                                         return;
                                     }
                                 }else {
-                                    Log.e(TAG, "onComplete: faild to get user Ads" );
                                     mutableLiveData.setValue(new ArrayList<>());
                                 }
                             }
@@ -224,7 +235,27 @@ public class UserRepository {
         return mutableLiveData;
     }
 
+    public MutableLiveData<User> userListener(String id){
+        MutableLiveData<User>mutableLiveData = new MutableLiveData<>();
+        userDocumentRef(id).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot snapshot, @Nullable FirebaseFirestoreException error) {
+                if (error != null) {
+                    Log.w(TAG, "Listen failed.", error);
+                    return;
+                }
+                if (snapshot != null && snapshot.exists()) {
+                    mutableLiveData.setValue(snapshot.toObject(User.class));
+                }
+            }
+        });
+        return mutableLiveData;
+    }
+
+
     private DocumentReference userDocumentRef(String id){
         return rootRef.collection(DbHandler.userCollection).document(id);
     }
+
+
 }

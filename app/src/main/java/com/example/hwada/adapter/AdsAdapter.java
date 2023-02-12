@@ -31,6 +31,7 @@ import com.example.hwada.R;
 import com.example.hwada.application.App;
 import com.example.hwada.util.GlideImageLoader;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.google.firebase.Timestamp;
 import com.squareup.picasso.Picasso;
 
 import java.text.DecimalFormat;
@@ -81,8 +82,8 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
         holder.title.setText(list.get(position).getTitle());
 
         //description
-        if(list.get(position).getDescription().length()>237){
-            holder.description.setText(list.get(position).getDescription().substring(0, Math.min(list.get(position).getDescription().length(), 237))+"...");
+        if(list.get(position).getDescription().length()>137){
+            holder.description.setText(list.get(position).getDescription().substring(0, Math.min(list.get(position).getDescription().length(), 137))+"...");
         }else{
             holder.description.setText(list.get(position).getDescription());
         }
@@ -94,7 +95,7 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
         list.get(position).setDistance(Float.valueOf(getDistance(position)));
 
         holder.distance.setText(list.get(position).getDistance()+"");
-        holder.date.setText(handleTime(list.get(position).getDate()));
+        holder.date.setText(handleTime(list.get(position).getTimeStamp()));
 
         //price
         DecimalFormat decimalFormat = new DecimalFormat("#");
@@ -107,7 +108,17 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
         return list.size();
     }
 
-    public void setList(User user,ArrayList<Ad> list,OnItemListener onItemListener) {
+    @Override
+    public long getItemId(int position) {
+        return super.getItemId(position);
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return super.getItemViewType(position);
+    }
+
+    public void setList(User user, ArrayList<Ad> list, OnItemListener onItemListener) {
         this.user = user;
         this.list = list;
         this.mContext = mContext ;
@@ -157,11 +168,10 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
         }
         return false;
     }
-    public String handleTime(String dateString){
+    public String handleTime(Timestamp timestamp){
+        Date date = timestamp.toDate();
+        String dateString = app.getDateFromTimeStamp(timestamp);
         try {
-            SimpleDateFormat dateFormat = app.timeFormat();
-            Date date = dateFormat.parse(dateString);
-
             Calendar today = Calendar.getInstance();
             Calendar inputDate = Calendar.getInstance();
             inputDate.setTime(date);
@@ -175,7 +185,7 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
                 return mContext.getString(R.string.yesterday);
             }
 
-        } catch (ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return dateString.split(",")[0];

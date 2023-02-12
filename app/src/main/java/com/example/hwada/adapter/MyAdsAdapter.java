@@ -20,6 +20,7 @@ import com.example.hwada.Model.User;
 import com.example.hwada.R;
 import com.example.hwada.application.App;
 import com.example.hwada.util.GlideImageLoader;
+import com.google.firebase.Timestamp;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -56,8 +57,8 @@ public class MyAdsAdapter extends RecyclerView.Adapter<MyAdsAdapter.MyAdsViewHol
 
 
         holder.title.setText(list.get(position).getTitle());
-        if(list.get(position).getDescription().length()>237){
-            holder.description.setText(list.get(position).getDescription().substring(0, Math.min(list.get(position).getDescription().length(), 237))+"...");
+        if(list.get(position).getDescription().length()>137){
+            holder.description.setText(list.get(position).getDescription().substring(0, Math.min(list.get(position).getDescription().length(), 137))+"...");
         }else{
             holder.description.setText(list.get(position).getDescription());
         }
@@ -65,7 +66,7 @@ public class MyAdsAdapter extends RecyclerView.Adapter<MyAdsAdapter.MyAdsViewHol
 
         list.get(position).setDistance(Float.valueOf(getDistance(position)));
         holder.views.setText(list.get(position).getViews()+"");
-        holder.date.setText(handleTime(list.get(position).getDate()));
+        holder.date.setText(handleTime(list.get(position).getTimeStamp()));
         DecimalFormat decimalFormat = new DecimalFormat("#");
         String formattedValue = decimalFormat.format(list.get(position).getPrice());
 
@@ -109,6 +110,16 @@ public class MyAdsAdapter extends RecyclerView.Adapter<MyAdsAdapter.MyAdsViewHol
         }
     }
 
+    @Override
+    public long getItemId(int position) {
+        return super.getItemId(position);
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return super.getItemViewType(position);
+    }
+
     public interface OnItemListener{
         void getItemPosition(int position);
     }
@@ -116,10 +127,10 @@ public class MyAdsAdapter extends RecyclerView.Adapter<MyAdsAdapter.MyAdsViewHol
         return false;
     }
 
-    public String handleTime(String dateString){
+    public String handleTime(Timestamp timestamp){
+        Date date = timestamp.toDate();
+        String dateString = app.getDateFromTimeStamp(timestamp);
         try {
-            SimpleDateFormat dateFormat = app.timeFormat();
-            Date date = dateFormat.parse(dateString);
 
             Calendar today = Calendar.getInstance();
             Calendar inputDate = Calendar.getInstance();
@@ -134,7 +145,7 @@ public class MyAdsAdapter extends RecyclerView.Adapter<MyAdsAdapter.MyAdsViewHol
                 return mContext.getString(R.string.yesterday)+"  "+ dateString.split(",")[1];
             }
 
-        } catch (ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return dateString.split(",")[0];

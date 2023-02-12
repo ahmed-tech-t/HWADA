@@ -38,7 +38,7 @@ public class UserAddressRepo {
                 .build();
 
         APiInterface aPiInterface = retrofit.create(APiInterface.class);
-        makeRequest(aPiInterface,locationCustom);
+        if(locationCustom!=null) makeRequest(aPiInterface,locationCustom);
         return mutableLiveData;
     }
 
@@ -48,14 +48,15 @@ public class UserAddressRepo {
         call.enqueue(new Callback<OsmResponse>() {
             @Override
             public void onResponse(Call<OsmResponse> call, Response<OsmResponse> response) {
-                mutableLiveData.setValue(response.body().getDisplay_name());
+                if(response!=null&& response.body()!=null) mutableLiveData.setValue(response.body().getDisplay_name());
                 return;
             }
 
             @Override
             public void onFailure(Call<OsmResponse> call, Throwable t) {
+                t.printStackTrace();
+                Log.e(TAG, "onFailure: "+ t.getMessage() );
                 mutableLiveData.setValue(application.getString(R.string.faildToLoadYourLocation));
-                makeRequest(aPiInterface,locationCustom);
             }
         });
     }

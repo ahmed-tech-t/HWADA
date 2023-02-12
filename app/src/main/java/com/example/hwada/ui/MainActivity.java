@@ -68,7 +68,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener  {
 
     ActivityMainBinding binding;
     Dialog locationDialog;
@@ -108,24 +108,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
           app = (App) getApplication();
 
 
-          setUserObserver();
-
-          if (user.getLocation() != null) {
-              userViewModel.setUser(user);
-          }
+          setUserListener();
 
           //disable middle button in bottom nav bar
           binding.bottomNavView.getMenu().getItem(2).setEnabled(false);
           //set user location
-
           mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-          getLastLocation();
-          setLocationManually();
 
       }catch (Exception e){
           app.reportError(e,this);
       }
+    }
+
+    private void setUserListener() {
+        userViewModel.userListener(user.getUId()).observe(this, new Observer<User>() {
+            @Override
+            public void onChanged(User updatedUser) {
+                user.updateUser(updatedUser);
+            }
+        });
     }
 
     private void setLocationManually(){
@@ -135,14 +137,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void setUserObserver(){
-        userViewModel.getUser().observe(this, new Observer<User>() {
-            @Override
-            public void onChanged(User u) {
-                user = u;
-            }
-        });
-    }
+
     public void setLocationDialog() {
      try {
          if (locationDialog != null && locationDialog.isShowing()) return;
@@ -166,12 +161,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onResume() {
         super.onResume();
         app.setUserOnline(user.getUId());
-
         try {
            if(user.getLocation()==null){
                if(app.isLocationEnabled()){
-                   setLocationDialog();
                    getLastLocation();
+               }else{
+                   app.askUserToOpenGps(this,false);
                }
            }
        }catch (Exception e){
@@ -209,7 +204,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                       }
 
                   } else {
-                      app.askUserToOpenGps(this);
+                      Log.e(TAG, "getLastLocation: " );
+                      app.askUserToOpenGps(this,false);
                   }
               } else {
                   app.requestLocationPermissions(this);
@@ -288,8 +284,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                   fragment.setArguments(bundle);
                   fragmentManager = getSupportFragmentManager();
                   fragmentTransaction = fragmentManager.beginTransaction();
-                  //fragmentTransaction.setCustomAnimations(R.anim.to_up, R.anim.to_down);
-                  //set Animation
                   fragmentTransaction.replace(R.id.main_fragment_container, fragment, tag);
                   fragmentTransaction.commit();
               }
@@ -365,22 +359,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
        }
     }
     private void updateLocation(LocationCustom location) {
-       try {
-           userViewModel.updateLocationUser(location);
-           userViewModel.updateLocationSuccessLiveData.observe(this, success -> {
-               if(success){
-                   user.setLocation(location);
-                   userViewModel.setUser(user);
-
-                   if(locationDialog!=null && locationDialog.isShowing()) locationDialog.dismiss();
-               }else {
-                   Toast.makeText(this, getText(R.string.savingError), Toast.LENGTH_SHORT).show();
-                   updateLocation(location);
-               }
-           });
-       }catch (Exception e){
-           app.reportError(e,this);
-       }
+       userViewModel.updateLocationUser(location).observe(this, success -> {
+           if(success){
+               if(locationDialog!=null && locationDialog.isShowing()) locationDialog.dismiss();
+           }else {
+               Toast.makeText(this, getText(R.string.savingError), Toast.LENGTH_SHORT).show();
+               updateLocation(location);
+           }
+       });
     }
 
     private void showDialog(String title ,String body){
@@ -418,6 +404,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                       if(numberOfRequest<2){
                           if(numberOfRequest < 1 )showToast(getString(R.string.locationPermissionWarning));
                           app.requestLocationPermissions(this);
+                      }else {
+                          setLocationManually();
                       }
                       numberOfRequest += 1 ;
                   }

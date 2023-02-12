@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class LocationCustom implements Parcelable {
 
@@ -59,5 +60,25 @@ public class LocationCustom implements Parcelable {
     public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeDouble(latitude);
         dest.writeDouble(longitude);
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj instanceof LocationCustom) {
+            if(this.getLatitude() == ((LocationCustom) obj).getLatitude()){
+                if(this.getLongitude()==((LocationCustom) obj).getLongitude()){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return "LocationCustom{" +
+                "latitude=" + latitude +
+                ", longitude=" + longitude +
+                '}';
     }
 }

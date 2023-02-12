@@ -31,6 +31,7 @@ import android.widget.LinearLayout;
 
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
+import com.example.hwada.application.App;
 import com.example.hwada.databinding.FragmentEditUserBinding;
 import com.example.hwada.viewmodel.UserViewModel;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -47,9 +48,8 @@ public class EditUserFragment extends BottomSheetDialogFragment implements View.
     BottomSheetDialog dialog ;
     User user;
     User tempUser ;
-    Dialog saveDialog;
+    App app ;
     UserViewModel userViewModel ;
-    PassedData mListener;
     private static final String TAG = "EditUserFragment";
 
     @Override
@@ -61,6 +61,7 @@ public class EditUserFragment extends BottomSheetDialogFragment implements View.
         binding.userImageEditUserFragment.setOnClickListener(this);
         binding.saveButtonAddNewAd.setOnClickListener(this);
         tempUser = new User();
+        app = (App) getContext().getApplicationContext();
         return binding.getRoot();
     }
 
@@ -123,17 +124,21 @@ public class EditUserFragment extends BottomSheetDialogFragment implements View.
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         user = getArguments().getParcelable("user");
+        setDataToFields();
+        spinnerListener();
+        userViewModel = UserViewModel.getInstance();
+    }
+    private void setDataToFields(){
         binding.userNameEditUserFragment.setText(user.getUsername());
         binding.aboutUEditUserFragment.setText(user.getAboutYou());
-        setDataToSpinner(user.getGender());
-        spinnerListener();
         binding.phoneEditUserFragment.setText(user.getPhone());
+
+        setDataToSpinner(user.getGender());
         if(user.getImage()!=null){
             Picasso.get()
                     .load(user.getImage())
                     .into(binding.userImageEditUserFragment);
         }
-        userViewModel = UserViewModel.getInstance();
     }
 
     @Override
@@ -144,38 +149,18 @@ public class EditUserFragment extends BottomSheetDialogFragment implements View.
            // callBottomSheet(new ImageFragment());
         }else if(v.getId() == binding.saveButtonAddNewAd.getId()){
             if(fieldsNotEmpty()){
+                app.hideKeyboardFrom(getContext(), v);
                 tempUser.setPhone(binding.phoneEditUserFragment.getText().toString());
                 tempUser.setUsername(binding.userNameEditUserFragment.getText().toString());
                 tempUser.setAboutYou(binding.aboutUEditUserFragment.getText().toString());
-                setSavingDialog();
-                updateUser();
+                updateUser(v);
             }
         }
     }
 
-    private void updateUser(){
+    private void updateUser(View v){
         userViewModel.updateUser(tempUser);
-        userViewModel.updateUserLiveData.observe(this, new Observer<User>() {
-            @Override
-            public void onChanged(User u) {
-                user.setUsername(u.getUsername());
-                user.setGender(u.getGender());
-                user.setAboutYou(u.getAboutYou());
-                user.setPhone(u.getPhone());
-
-                mListener.getPassedData(user);
-                if(saveDialog.isShowing()) saveDialog.dismiss();
-                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-            }
-        });
-    }
-
-    public void callBottomSheet(BottomSheetDialogFragment fragment ){
-        Bundle bundle = new Bundle();
-        bundle.putParcelable("user",user);
-        fragment.setArguments(bundle);
-        FragmentManager fragmentManager = getChildFragmentManager();
-        fragment.show(fragmentManager,fragment.getTag());
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
     }
 
     private  void spinnerListener(){
@@ -203,7 +188,7 @@ public class EditUserFragment extends BottomSheetDialogFragment implements View.
    private boolean fieldsNotEmpty(){
        if (TextUtils.isEmpty(binding.userNameEditUserFragment.getText().toString())){
            binding.userNameEditUserFragment.setError("Invalid Username");
-       } else if(binding.aboutUEditUserFragment.getText().length()<40){
+       } else if(binding.aboutUEditUserFragment.getText().length()<10){
             binding.aboutUEditUserFragment.setError(getString(R.string.toShortWarning));
        }else  if (TextUtils.isEmpty(binding.phoneEditUserFragment.getText().toString())
                || !Patterns.PHONE.matcher(binding.phoneEditUserFragment.getText().toString()).matches()){
@@ -218,26 +203,5 @@ public class EditUserFragment extends BottomSheetDialogFragment implements View.
        return false;
    }
 
-    public void setSavingDialog() {
-        if (saveDialog != null && saveDialog.isShowing()) return;
-        saveDialog = new Dialog(getContext());
-        saveDialog.setContentView(R.layout.dialog_saving_data_layout);
-        Window window = saveDialog.getWindow();
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        window.setGravity(Gravity.BOTTOM);
-        saveDialog.setCanceledOnTouchOutside(false);
-        saveDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        saveDialog.setCancelable(false);
-        saveDialog.show();
-    }
 
-    public interface PassedData{
-        public void getPassedData(User user);
-    }
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        mListener = (PassedData) getParentFragment();
-    }
 }

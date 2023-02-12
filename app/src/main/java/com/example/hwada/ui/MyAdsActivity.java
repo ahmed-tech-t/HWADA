@@ -81,9 +81,7 @@ public class MyAdsActivity extends AppCompatActivity implements MyAdsAdapter.OnI
         AdvertiserFragment fragment = new AdvertiserFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelable("user", user);
-        bundle.putInt("pos",pos);
         bundle.putParcelable("ad",user.getAds().get(pos));
-        bundle.putParcelableArrayList("adsList",user.getAds());
         fragment.setArguments(bundle);
         fragment.show(getSupportFragmentManager(),fragment.getTag());
     }

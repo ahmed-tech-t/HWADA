@@ -32,4 +32,7 @@ public class FavViewModel extends ViewModel {
     public LiveData<ArrayList<Ad>> getAllFavAds(ArrayList<Ad> list){
        return repo.getAllFavAds(list);
     }
+    public MutableLiveData <ArrayList<Ad>> userFavAdsListener (String id){
+       return repo.userFavAdsListener(id);
+    }
 }

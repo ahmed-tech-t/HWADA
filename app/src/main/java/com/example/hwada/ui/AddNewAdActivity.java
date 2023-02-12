@@ -41,6 +41,7 @@ import com.example.hwada.databinding.ActivityAddNewAdBinding;
 import com.example.hwada.ui.view.map.MapsFragment;
 import com.example.hwada.ui.view.WorkTimePreviewFragment;
 import com.example.hwada.viewmodel.UserAddressViewModel;
+import com.example.hwada.viewmodel.UserViewModel;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
@@ -49,12 +50,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter.OnItemListener , View.OnClickListener ,MapsFragment.GettingPassedData {
+public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter.OnItemListener , View.OnClickListener  {
     User user ;
     ActivityAddNewAdBinding binding ;
     ImagesAdapter imagesAdapter;
     UserAddressViewModel userAddressViewModel ;
-
+    UserViewModel userViewModel ;
     private App app;
 
     Ad newAd;
@@ -73,7 +74,7 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
         app = (App) getApplication();
 
         userAddressViewModel = ViewModelProviders.of(this).get(UserAddressViewModel.class);
-
+        userViewModel = UserViewModel.getInstance();
         //******************
         getUserAddress(user.getLocation());
 
@@ -84,6 +85,8 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
         binding.linearlayoutInner1AddNewItem.setOnClickListener(this);
         binding.userAddressMapFragment.setOnClickListener(this);
         binding.arrowAddNewAd.setOnClickListener(this);
+
+        setUserListener();
     }
     private void initAd(Intent intent){
         newAd = new Ad();
@@ -284,20 +287,15 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
         });
     }
 
-    @Override
-    public void newLocation(Location location) {
-        LocationCustom locationCustom = new LocationCustom(location.getLatitude(),location.getLongitude());
-
-        newAd.setAuthorLocation(locationCustom);
-        getUserAddress(locationCustom);
-    }
-
-    public void callMainActivity(){
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("user",user);
-        startActivity(intent);
-        finish();
-    }
+        private void setUserListener(){
+            userViewModel.userListener(user.getUId()).observe(this, new Observer<User>() {
+                @Override
+                public void onChanged(User updatedUser) {
+                    user.updateUser(updatedUser);
+                    if(user.getLocation()!=null) getUserAddress(user.getLocation());
+                }
+            });
+        }
 
     @Override
     protected void onResume() {

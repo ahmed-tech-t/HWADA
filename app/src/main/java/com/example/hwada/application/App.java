@@ -15,6 +15,7 @@ import android.os.Build;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -174,26 +175,29 @@ public class App extends Application {
             reportError(e,context);
         }
     }
-    public void askUserToOpenGps(final Activity activity) {
+    public void askUserToOpenGps(final Activity activity,boolean withCancelButton) {
         try {
-            AlertDialog.Builder alertDialog = new AlertDialog.Builder(activity);
-            alertDialog.setTitle("GPS setting!");
-            alertDialog.setMessage("GPS is not enabled, Do you want to go to settings menu? ");
-            alertDialog.setPositiveButton("Setting", new DialogInterface.OnClickListener() {
+            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            builder.setTitle("GPS setting!");
+            builder.setMessage("GPS is not enabled, Do you want to go to settings menu? ");
+            builder.setPositiveButton("Setting", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                     activity.startActivity(intent);
-                }
-            });
-            alertDialog.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
                 }
             });
-            alertDialog.setCancelable(false);
-            alertDialog.show();
+            if(withCancelButton){
+                builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+            }
+            builder.setCancelable(false);
+            builder.show();
         } catch (Exception e) {
             reportError(e, this);
         }
@@ -208,5 +212,9 @@ public class App extends Application {
             return false;
         }
         return true;
+    }
+    public void hideKeyboardFrom(Context context, View view) {
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }

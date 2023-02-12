@@ -7,6 +7,8 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import com.google.firebase.Timestamp;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +21,8 @@ public class Ad implements Parcelable {
     private LocationCustom authorLocation;
     private String title;
     private String description;
-    private String date ;
+    
+    private Timestamp timeStamp;
     private float distance ;
     private float rating;
     private String category;
@@ -57,14 +60,14 @@ public class Ad implements Parcelable {
         this.imagesUrl = imagesUrl;
     }
 
-    public Ad(String id, String authorId, String authorName, LocationCustom authorLocation, String title, String description, String date, float distance, float rating, String category, String subCategory, String subSubCategory, ArrayList<AdReview> adReviews, double price, DaysSchedule daysSchedule, List<String> imagesUrl, int views) {
+    public Ad(String id, String authorId, String authorName, LocationCustom authorLocation, String title, String description, Timestamp timeStamp, float distance, float rating, String category, String subCategory, String subSubCategory, ArrayList<AdReview> adReviews, double price, DaysSchedule daysSchedule, List<String> imagesUrl, int views) {
         this.id = id;
         this.authorId = authorId;
         this.authorName = authorName;
         this.authorLocation = authorLocation;
         this.title = title;
         this.description = description;
-        this.date = date;
+        this.timeStamp = timeStamp;
         this.distance = distance;
         this.rating = rating;
         this.category = category;
@@ -77,13 +80,13 @@ public class Ad implements Parcelable {
         this.views = views;
     }
 
-    public Ad(String authorId, String authorName, LocationCustom authorLocation, String title, String description, double price, String date, String category, String subCategory , String subSubCategory) {
+    public Ad(String authorId, String authorName, LocationCustom authorLocation, String title, String description, double price, Timestamp timeStamp, String category, String subCategory , String subSubCategory) {
         this.authorId = authorId;
         this.authorName = authorName;
         this.authorLocation = authorLocation;
         this.title = title;
         this.description = description;
-        this.date = date;
+        this.timeStamp = timeStamp;
         this.category = category;
         this.subCategory = subCategory;
         this.subSubCategory = subSubCategory;
@@ -102,7 +105,7 @@ public class Ad implements Parcelable {
         authorLocation = in.readParcelable(LocationCustom.class.getClassLoader());
         title = in.readString();
         description = in.readString();
-        date = in.readString();
+        timeStamp = in.readParcelable(Timestamp.class.getClassLoader());
         distance = in.readFloat();
         rating = in.readFloat();
         category = in.readString();
@@ -208,12 +211,12 @@ public class Ad implements Parcelable {
         this.description = description;
     }
 
-    public String getDate() {
-        return date;
+    public Timestamp getTimeStamp() {
+        return timeStamp;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setTimeStamp(Timestamp timeStamp) {
+        this.timeStamp = timeStamp;
     }
 
     public float getDistance() {
@@ -287,6 +290,32 @@ public class Ad implements Parcelable {
         this.daysSchedule = daysSchedule;
     }
 
+
+
+    @Override
+    public String toString() {
+        return "Ad{" +
+                "id='" + id + '\'' +
+                ", authorId='" + authorId + '\'' +
+                ", authorName='" + authorName + '\'' +
+                ", authorLocation=" + authorLocation +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", timeStamp='" + timeStamp + '\'' +
+                ", distance=" + distance +
+                ", rating=" + rating +
+                ", category='" + category + '\'' +
+                ", subCategory='" + subCategory + '\'' +
+                ", subSubCategory='" + subSubCategory + '\'' +
+                ", adReviews=" + adReviews +
+                ", price=" + price +
+                ", daysSchedule=" + daysSchedule +
+                ", imagesUri=" + imagesUri +
+                ", imagesUrl=" + imagesUrl +
+                ", views=" + views +
+                '}';
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -300,7 +329,7 @@ public class Ad implements Parcelable {
         dest.writeParcelable(authorLocation, flags);
         dest.writeString(title);
         dest.writeString(description);
-        dest.writeString(date);
+        dest.writeParcelable(timeStamp, flags);
         dest.writeFloat(distance);
         dest.writeFloat(rating);
         dest.writeString(category);
@@ -312,29 +341,5 @@ public class Ad implements Parcelable {
         dest.writeTypedList(imagesUri);
         dest.writeStringList(imagesUrl);
         dest.writeInt(views);
-    }
-
-    @Override
-    public String toString() {
-        return "Ad{" +
-                "id='" + id + '\'' +
-                ", authorId='" + authorId + '\'' +
-                ", authorName='" + authorName + '\'' +
-                ", authorLocation=" + authorLocation +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", date='" + date + '\'' +
-                ", distance=" + distance +
-                ", rating=" + rating +
-                ", category='" + category + '\'' +
-                ", subCategory='" + subCategory + '\'' +
-                ", subSubCategory='" + subSubCategory + '\'' +
-                ", adReviews=" + adReviews +
-                ", price=" + price +
-                ", daysSchedule=" + daysSchedule +
-                ", imagesUri=" + imagesUri +
-                ", imagesUrl=" + imagesUrl +
-                ", views=" + views +
-                '}';
     }
 }

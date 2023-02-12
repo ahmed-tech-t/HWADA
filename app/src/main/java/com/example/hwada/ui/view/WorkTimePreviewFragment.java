@@ -33,6 +33,7 @@ import com.example.hwada.Model.User;
 import com.example.hwada.Model.WorkingTime;
 import com.example.hwada.R;
 import com.example.hwada.adapter.WorkingTimeEditDaysAdapter;
+import com.example.hwada.application.App;
 import com.example.hwada.databinding.FragmentWorkTimePreviewBinding;
 import com.example.hwada.ui.MainActivity;
 import com.example.hwada.viewmodel.AdsViewModel;
@@ -51,8 +52,8 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
 
     BottomSheetBehavior bottomSheetBehavior ;
     BottomSheetDialog dialog ;
-    Dialog saveDialog;
     User user;
+    App app ;
     String SATURDAY = "saturday" ,SUNDAY ="sunday" ,MONDAY ="monday",TUESDAY ="tuesday"
             ,WEDNESDAY="wednesday",THURSDAY="thursday",FRIDAY="friday";
     
@@ -74,6 +75,8 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
         binding.arrowWorkTime.setOnClickListener(this);
         binding.saveButtonAddNewAd.setOnClickListener(this);
         setWorkingTimeMainAdapter();
+
+        app = (App) getContext().getApplicationContext();
         return binding.getRoot();
     }
 
@@ -154,7 +157,7 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         } else if (v.getId() ==binding.saveButtonAddNewAd.getId()){
             if(dataValidated()){
-                newAd.setDate(getCurrentDate());
+                newAd.setTimeStamp(app.getCurrentDate());
                 adsViewModel.addNewAd(newAd);
                 goToMainActivity();
             }
@@ -263,23 +266,6 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
         startActivity(intent);
         getActivity().finish();
     }
-    public void setSavingDialog() {
-        if (saveDialog != null && saveDialog.isShowing()) return;
-        saveDialog = new Dialog(getContext());
-        saveDialog.setContentView(R.layout.dialog_adding_new_add);
-        Window window = saveDialog.getWindow();
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        window.setGravity(Gravity.BOTTOM);
-        saveDialog.setCanceledOnTouchOutside(false);
-        saveDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        saveDialog.setCancelable(false);
-        saveDialog.show();
-    }
-    private String getCurrentDate(){
-        Calendar calendar = Calendar.getInstance();
-        Date date = calendar.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("d MMM yyyy , h:mm a");
-        return  sdf.format(date);
-    }
+
 
 }

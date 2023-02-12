@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.hwada.Model.DebugModel;
+import com.example.hwada.application.App;
 import com.example.hwada.database.DbHandler;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -25,18 +26,14 @@ public class DebugRepository {
     private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
     private CollectionReference debugRef = rootRef.collection(DbHandler.debugCollection);
    private Application application ;
+    App app ;
 
-   public DebugRepository(){}
+
     public DebugRepository(Application application){
         this.application = application;
+        app = (App) application.getApplicationContext();
     }
     public void reportError(DebugModel debugModel){
-        debugRef.document(getCurrentDate()).set(debugModel);
-    }
-    private String getCurrentDate(){
-        Calendar calendar = Calendar.getInstance();
-        Date date = calendar.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        return  sdf.format(date);
+        debugRef.document(app.getDateFromTimeStamp(app.getCurrentDate())).set(debugModel);
     }
 }

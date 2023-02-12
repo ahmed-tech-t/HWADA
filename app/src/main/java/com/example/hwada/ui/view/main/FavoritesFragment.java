@@ -44,6 +44,9 @@ public class FavoritesFragment extends Fragment implements AdsGridAdapter.OnItem
     UserViewModel userViewModel ;
     AdsGridAdapter adapter;
 
+    ArrayList<Ad> adsList;
+
+
     FragmentFavoritesBinding binding ;
     private static final String TAG = "FavoritesFragment";
 
@@ -72,35 +75,42 @@ public class FavoritesFragment extends Fragment implements AdsGridAdapter.OnItem
         super.onActivityCreated(savedInstanceState);
 
         user = getArguments().getParcelable("user");
+
         favViewModel = FavViewModel.getInstance() ;
         userViewModel = UserViewModel.getInstance();
 
         binding.shimmerFavFragment.startShimmer();
 
-        handelData();
-        setUserObserver();
+        getAllFavAds();
+        setUserFavListener();
 
     }
-    private void setUserObserver(){
-        userViewModel.getUser().observe(getActivity(), new Observer<User>() {
+
+    private void setUserFavListener() {
+        favViewModel.userFavAdsListener(user.getUId()).observe(getActivity(), new Observer<ArrayList<Ad>>() {
             @Override
-            public void onChanged(User u) {
-                user = u;
-                if(advertiserFragment.isAdded()) setAdsToList();
+            public void onChanged(ArrayList<Ad> ads) {
+                user.setFavAds(ads);
+                if(advertiserFragment.isAdded()){
+                    adsList = ads;
+                    getAllFavAds();
+                }
             }
         });
     }
-    public void setAdsToList() {
+
+
+    public void setRecycler() {
         closeShimmer();
 
         binding.mainRecycler.setVisibility(View.VISIBLE);
         if(user.getFavAds().size()>0){
             binding.mainRecycler.setBackgroundResource(R.drawable.recycle_view_background);
         }
-        adapter = new AdsGridAdapter(getContext());
+        adapter = new AdsGridAdapter(getActivity());
         try {
             binding.mainRecycler.setAdapter(adapter);
-            adapter.setList(user,user.getFavAds(),this);
+            adapter.setList(user,adsList,this);
             binding.mainRecycler.setLayoutManager(new GridLayoutManager(getActivity(),2));
             binding.mainRecycler.setNestedScrollingEnabled(false);
         }catch (Exception e){
@@ -130,10 +140,8 @@ public class FavoritesFragment extends Fragment implements AdsGridAdapter.OnItem
     public void getFavItemPosition(int position, ImageView favImage) {
         favViewModel.deleteFavAd(user.getUId(),user.getFavAds().get(position));
         adapter.removeOneItem(position);
-        userViewModel.setUser(user);
-        Log.e(TAG, "getFavItemPosition: "+user.getFavAds().size() );
-        if(user.getFavAds().size() == 0) binding.mainRecycler.setBackgroundResource(R.drawable.empty_page);
-
+        Log.e(TAG, "getFavItemPosition: "+adsList.size());
+        if(adapter.getItemCount() == 0) binding.mainRecycler.setBackgroundResource(R.drawable.empty_page);
     }
     
 
@@ -151,9 +159,7 @@ public class FavoritesFragment extends Fragment implements AdsGridAdapter.OnItem
     private void callAdvertiserFragment(int pos){
         Bundle bundle = new Bundle();
         bundle.putParcelable("user", user);
-        bundle.putParcelable("ad",user.getFavAds().get(pos));
-        bundle.putParcelableArrayList("adsList",user.getFavAds());
-        bundle.putInt("pos",pos);
+        bundle.putParcelable("ad",adsList.get(pos));
         advertiserFragment.setArguments(bundle);
         advertiserFragment.show(getChildFragmentManager(),advertiserFragment.getTag());
     }
@@ -162,17 +168,11 @@ public class FavoritesFragment extends Fragment implements AdsGridAdapter.OnItem
             @Override
             public void onChanged(ArrayList<Ad> ads) {
                 user.setFavAds(ads);
-                setAdsToList();
+                adsList = ads ;
+                setRecycler();
             }
         });
 
     }
 
-    private void handelData(){
-        if(user.getFavAds() == null){
-             getAllFavAds();
-        }else if(user.getFavAds().size()==0) setAdsToList();
-         else if (user.getFavAds().get(0).getTitle() == null  ) getAllFavAds();
-        else setAdsToList();
-    }
 }

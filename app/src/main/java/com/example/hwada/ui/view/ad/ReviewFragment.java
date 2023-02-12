@@ -37,6 +37,7 @@ import com.example.hwada.Model.AdReview;
 import com.example.hwada.Model.MyReview;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
+import com.example.hwada.application.App;
 import com.example.hwada.databinding.FragmentReviewBinding;
 import com.example.hwada.repository.ReviewRepo;
 import com.example.hwada.ui.view.map.MapsFragment;
@@ -63,7 +64,7 @@ public class ReviewFragment extends BottomSheetDialogFragment implements View.On
     Dialog saveDialog ;
     private GettingPassedData mListener;
     int PASSED_POS ;
-
+    App app;
     ReviewViewModel reviewViewModel ;
 
     FragmentReviewBinding binding;
@@ -76,6 +77,8 @@ public class ReviewFragment extends BottomSheetDialogFragment implements View.On
         binding = FragmentReviewBinding.inflate(inflater, container, false);
         binding.arrowReview.setOnClickListener(this);
         binding.reviewSubmitIm.setOnClickListener(this);
+
+        app =  (App) getContext().getApplicationContext();
         return binding.getRoot();
 
     }
@@ -142,10 +145,6 @@ public class ReviewFragment extends BottomSheetDialogFragment implements View.On
     }
 
 
-    private void showKeyboard(){
-        InputMethodManager imgr = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imgr.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
-    }
     private void hideKeyboard(){
         try {
             final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -169,7 +168,7 @@ public class ReviewFragment extends BottomSheetDialogFragment implements View.On
                     adReview.setAuthorId(user.getUId());
                     adReview.setAuthorName(user.getUsername());
                     adReview.setAuthorImage(user.getImage());
-                    adReview.setDate(getCurrentDate());
+                    adReview.setTimeStamp(app.getCurrentDate());
                 }
 
                 binding.reviewSubmitIm.setVisibility(View.GONE);
@@ -237,12 +236,6 @@ public class ReviewFragment extends BottomSheetDialogFragment implements View.On
         reviewViewModel =ViewModelProviders.of(this).get(ReviewViewModel.class);
     }
 
-    private String getCurrentDate(){
-        Calendar calendar = Calendar.getInstance();
-        Date date = calendar.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("d MMM yyyy , h:mm a");
-        return  sdf.format(date);
-    }
     private void saveReview(){
         reviewViewModel.addReview(user,ad ,adReview);
         reviewViewModel.adReviewLiveData.observe(this, new Observer<AdReview>() {

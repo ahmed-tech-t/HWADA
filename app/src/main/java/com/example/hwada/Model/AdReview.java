@@ -5,11 +5,13 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import com.google.firebase.Timestamp;
+
 public class AdReview implements Parcelable {
 
 
     private String id;
-    private String date;
+    private Timestamp timeStamp;
     private String authorId;
     private String authorName;
     private String authorImage;
@@ -18,8 +20,8 @@ public class AdReview implements Parcelable {
 
     public AdReview(){}
 
-    public AdReview(String date, String authorId, String authorName, String authorImage, float rating, String body) {
-        this.date = date;
+    public AdReview(Timestamp timeStamp, String authorId, String authorName, String authorImage, float rating, String body) {
+        this.timeStamp = timeStamp;
         this.authorId = authorId;
         this.authorName = authorName;
         this.authorImage = authorImage;
@@ -28,19 +30,20 @@ public class AdReview implements Parcelable {
     }
 
 
-    public AdReview(String id, String date, String authorId, String authorName, String authorImage, float rating, String body) {
+    public AdReview(String id, Timestamp timeStamp, String authorId, String authorName, String authorImage, float rating, String body) {
         this.id = id;
-        this.date = date;
+        this.timeStamp = timeStamp;
         this.authorId = authorId;
         this.authorName = authorName;
         this.authorImage = authorImage;
         this.rating = rating;
         this.body = body;
     }
+
 
     protected AdReview(Parcel in) {
         id = in.readString();
-        date = in.readString();
+        timeStamp = in.readParcelable(Timestamp.class.getClassLoader());
         authorId = in.readString();
         authorName = in.readString();
         authorImage = in.readString();
@@ -68,13 +71,7 @@ public class AdReview implements Parcelable {
         this.id = id;
     }
 
-    public String getDate() {
-        return date;
-    }
 
-    public void setDate(String date) {
-        this.date = date;
-    }
 
     public String getAuthorId() {
         return authorId;
@@ -104,6 +101,14 @@ public class AdReview implements Parcelable {
         return rating;
     }
 
+    public Timestamp getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(Timestamp timeStamp) {
+        this.timeStamp = timeStamp;
+    }
+
     public void setRating(float rating) {
         this.rating = rating;
     }
@@ -125,7 +130,7 @@ public class AdReview implements Parcelable {
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeString(id);
-        dest.writeString(date);
+        dest.writeParcelable(timeStamp, flags);
         dest.writeString(authorId);
         dest.writeString(authorName);
         dest.writeString(authorImage);

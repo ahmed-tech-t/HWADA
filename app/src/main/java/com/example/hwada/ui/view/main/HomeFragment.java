@@ -67,7 +67,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class HomeFragment extends Fragment implements View.OnClickListener , AdsAdapter.OnItemListener ,MapsFragment.GettingPassedData {
+public class HomeFragment extends Fragment implements View.OnClickListener , AdsAdapter.OnItemListener  {
     AdsViewModel adsViewModel;
     FavViewModel favViewModel ;
     UserAddressViewModel userAddressViewModel ;
@@ -99,7 +99,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
        binding = FragmentHomeBinding.inflate(inflater, container, false);
-       app =(App) getContext().getApplicationContext();
+
         initCategoryLayout();
         binding.shimmerHomeFragment.startShimmer();
 
@@ -114,28 +114,33 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
         return binding.getRoot();
     }
 
-    public void setAdsToList() {
+    public void setRecycler() {
+        closeShimmer();
         try {
             adapter = new AdsAdapter(getContext());
+            binding.recyclerHomeFragment.setVisibility(View.VISIBLE);
+            if(adsList.size()>0)binding.recyclerHomeFragment.setBackgroundResource(R.drawable.recycle_view_background);
+
+            adapter.setList(user, adsList,this);
             binding.recyclerHomeFragment.setAdapter(adapter);
-            adsViewModel.getAllAds().observe(getActivity(), ads -> {
-                adsList = ads;
-                if(adsList.size()>0)binding.recyclerHomeFragment.setBackgroundResource(R.drawable.recycle_view_background);
-                if (user != null) {
-                    binding.shimmerHomeFragment.setVisibility(View.GONE);
-                    binding.shimmerHomeFragment.stopShimmer();
-                    binding.recyclerHomeFragment.setVisibility(View.VISIBLE);
-                    adapter.setList(user, ads,this);
-                }
-            });
             binding.recyclerHomeFragment.setLayoutManager(new LinearLayoutManager(getActivity()));
         } catch (Exception e) {
             e.printStackTrace();
-            app.reportError(e,getContext());
+          //  app.reportError(e,getContext());
         }
     }
 
+    private void adsObserver(){
+        adsViewModel.getAllAds().observe(getActivity(), ads -> {
+            adsList = ads;
+            setRecycler();
+        });
+    }
 
+    private void closeShimmer(){
+        binding.shimmerHomeFragment.setVisibility(View.GONE);
+        binding.shimmerHomeFragment.stopShimmer();
+    }
     public void newAdObserver(){
         adsViewModel.newAdLiveData.observe(getActivity(), new Observer<Ad>() {
             @Override
@@ -145,6 +150,25 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
                 adapter.notifyDataSetChanged();
             }
         });
+    }
+
+    private void userFavAdsListener(){
+        favViewModel.userFavAdsListener(user.getUId()).observe(getActivity(), new Observer<ArrayList<Ad>>() {
+            @Override
+            public void onChanged(ArrayList<Ad> ads) {
+                user.setFavAds(ads);
+                if(advertiserFragment.isAdded()) setRecycler();
+            }
+        });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(adapter!= null){
+            adapter.setList(user,adsList,this);
+            adapter.notifyDataSetChanged();
+        }
     }
 
     private Toast mCurrentToast;
@@ -213,32 +237,18 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
           adsViewModel =  AdsViewModel.getInstance() ;
           favViewModel = FavViewModel.getInstance() ;
 
-         setUserObserver();
-          setAdsToList();
-          newAdObserver();
+          app =(App) getContext().getApplicationContext();
 
+          adsObserver();
+          newAdObserver();
+          setUserListener();
+          userFavAdsListener();
       }catch (Exception e){
           app.reportError(e,getContext());
       }
     }
 
-    private void setUserObserver(){
-        userViewModel.getUser().observe(getActivity(), new Observer<User>() {
-            @Override
-            public void onChanged(User u) {
-                user = u;
 
-                if (advertiserFragment.isAdded()) {
-                    setAdsToList();
-                }
-
-                if(user.getLocation()!=null){
-                    if (isAdded()) getUserAddress(user.getLocation());
-                }else {
-                    app.reportError("location is null in home fragment",getContext());
-                }            }
-        });
-    }
 
     @Override
     public void getItemPosition(int position) {
@@ -261,7 +271,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
         int favPos = adIsInFavList(adId);
         if (favPos != -1) {
             user.getFavAds().remove(favPos);
-            userViewModel.setUser(user);
             favViewModel.deleteFavAd(user.getUId(),adsList.get(position));
             favImage.setImageResource(R.drawable.fav_uncheck_icon);
 
@@ -269,7 +278,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
             if (user.getFavAds() == null) user.initFavAdsList();
             favViewModel.addFavAd(user.getUId(),adsList.get(position));
             user.getFavAds().add(adsList.get(position));
-            userViewModel.setUser(user);
             favImage.setImageResource(R.drawable.fav_checked_icon);
         }
     }
@@ -298,26 +306,23 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
         fragment.show(fragmentManager, fragment.getTag());
     }
 
-    @Override
-    public void newLocation(Location location) {
-        LocationCustom locationCustom = new LocationCustom(location.getLatitude(),location.getLongitude());
-        user.setLocation(locationCustom);
-        getUserAddress(user.getLocation());
+
+
+    private void setUserListener(){
+        userViewModel.userListener(user.getUId()).observe(getActivity(), new Observer<User>() {
+            @Override
+            public void onChanged(User updatedUser) {
+                user.updateUser(updatedUser);
+                if(user.getLocation()!=null) getUserAddress(user.getLocation());
+            }
+        });
     }
 
-    private String getCurrentDate(){
-        Calendar calendar = Calendar.getInstance();
-        Date date = calendar.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("d MMM yyyy , h:mm a");
-        return  sdf.format(date);
-    }
     private void callAdvertiserFragment(int pos){
         if(!advertiserFragment.isAdded()){
             Bundle bundle = new Bundle();
             bundle.putParcelable("user", user);
             bundle.putParcelable("ad",adsList.get(pos));
-            bundle.putParcelableArrayList("adsList",adsList);
-            bundle.putInt("pos",pos);
             advertiserFragment.setArguments(bundle);
             advertiserFragment.show(getChildFragmentManager(),advertiserFragment.getTag());
         }
@@ -331,6 +336,4 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
           binding.userAddress.setCompoundDrawablesWithIntrinsicBounds(R.drawable.arrow_left, 0, R.drawable.distance_icon, 0);
       }
   }
-
-
 }

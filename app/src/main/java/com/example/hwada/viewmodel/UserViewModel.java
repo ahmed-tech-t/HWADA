@@ -40,21 +40,14 @@ public class UserViewModel extends ViewModel {
     UserRepository userRepository ;
 
 
-    public LiveData<Boolean> updateLocationSuccessLiveData;
 
-    public void setUser(User user){
-        userMutableLiveData.setValue(user);
-    }
-    public LiveData<User> getUser(){
-       return userMutableLiveData;
-    }
 
     public void updateUser (User user){
        updateUserLiveData = userRepository.updateUser(user);
     }
 
-    public void updateLocationUser(LocationCustom location){
-        updateLocationSuccessLiveData = userRepository.updateUserLocation(location);
+    public LiveData<Boolean> updateLocationUser(LocationCustom location){
+      return userRepository.updateUserLocation(location);
     }
 
     public void setUserStatus(String status,String userId){
@@ -74,16 +67,7 @@ public class UserViewModel extends ViewModel {
 
         return userRepository.getAllUserAds(id);
     }
-    /*
-    public void updateImageSuccess(User user){
-        updateImageSuccessLiveData = userRepository.updateUserImage(user);
+    public LiveData<User> userListener(String id){
+        return userRepository.userListener(id);
     }
-    public void updateFavAdsSuccess(User user){
-        updateFavAdsSuccessLiveData = userRepository.updateUserFavAds(user);
-    }
-    public void setUpdateMyReviewsSuccess(User user){
-        updateMyReviewsSuccessLiveData = userRepository.updateUserReviews(user);
-    }
-
- */
 }

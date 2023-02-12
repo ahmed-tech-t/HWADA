@@ -50,6 +50,7 @@ import com.example.hwada.adapter.AdsGridAdapter;
 import com.example.hwada.adapter.ImageSliderAdapter;
 
 import com.example.hwada.application.App;
+import com.example.hwada.database.DbHandler;
 import com.example.hwada.databinding.FragmentAdvertiserBinding;
 import com.example.hwada.ui.ChatActivity;
 import com.example.hwada.ui.view.ad.menu.AdDescriptionFragment;
@@ -58,11 +59,11 @@ import com.example.hwada.ui.view.ad.menu.AdWorkingTimeFragment;
 import com.example.hwada.ui.view.chat.SendImagesMessageFragment;
 import com.example.hwada.ui.view.images.ImagesFullDialogFragment;
 import com.example.hwada.ui.view.map.MapPreviewFragment;
-import com.example.hwada.ui.view.map.MapsFragment;
 import com.example.hwada.viewmodel.AdsViewModel;
 import com.example.hwada.viewmodel.ChatViewModel;
 import com.example.hwada.viewmodel.DebugViewModel;
 import com.example.hwada.viewmodel.FavViewModel;
+import com.example.hwada.viewmodel.UserAddressViewModel;
 import com.example.hwada.viewmodel.UserViewModel;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -89,16 +90,16 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
     BottomSheetBehavior bottomSheetBehavior;
     BottomSheetDialog dialog ;
     FavViewModel favViewModel ;
+    UserAddressViewModel userAddressViewModel ;
     ArrayList<Ad> adsList;
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
-    int PASSED_POSITION =0;
     DebugViewModel debugViewModel ;
+    AdvertiserFragment advertiserFragment;
 
     ChatViewModel chatViewModel ;
     UserViewModel userViewModel;
     AdsViewModel adsViewModel;
-    int PERMISSION_ID = 3 ;
     AdsGridAdapter adsGridAdapter;
     User user;
     Ad ad;
@@ -123,6 +124,7 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         binding.arrowAdvertiser.setOnClickListener(this);
         binding.tvAdLocationAdvertiserFragment.setOnClickListener(this);
         binding.buttonChatAdvertiserFragment.setOnClickListener(this);
+        advertiserFragment = new AdvertiserFragment();
         setLocationArrowWhenLanguageIsArabic();
         debounceHandler = new Handler();
         app = (App) getContext().getApplicationContext();
@@ -166,17 +168,16 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         super.onActivityCreated(savedInstanceState);
         user = getArguments().getParcelable("user");
         ad = getArguments().getParcelable("ad");
-        adsList = getArguments().getParcelableArrayList("adsList");
-        PASSED_POSITION = getArguments().getInt("pos");
 
         adsViewModel = AdsViewModel.getInstance();
         userViewModel =  UserViewModel.getInstance();
         favViewModel = FavViewModel.getInstance();
         chatViewModel = ViewModelProviders.of(this).get(ChatViewModel.class);
+        userAddressViewModel = ViewModelProviders.of(this).get(UserAddressViewModel.class);
 
         binding.buttonCallAdvertiserFragment.setOnClickListener(this);
 
-        binding.tvDateAdvertiserFragment.setText(handleTime(ad.getDate()));
+        binding.tvDateAdvertiserFragment.setText(handleTime(ad.getTimeStamp()));
         binding.tvAdDistanceAdvertiserFragment.setText(ad.getDistance()+"");
         debugViewModel = ViewModelProviders.of(getActivity()).get(DebugViewModel.class);
 
@@ -184,27 +185,25 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
             binding.llContactAdvertiserFragment.setVisibility(View.GONE);
         }
 
-        try {
-            binding.tvAdLocationAdvertiserFragment.setText(getUserAddress(ad.getAuthorLocation()));
-        }catch (Exception e){
-            reportError(e);
-        }
-        setUserObserver();
+        getUserAddress(ad.getAuthorLocation());
+
         updateViews();
         setToSlider();
-        setMenuTapLayoutListener();
-        setAdGridAdapter();
+        getSimilarAds();
     }
 
     private void updateViews(){
         adsViewModel.updateViews(ad);
     }
-    private void setUserObserver(){
-        userViewModel.getUser().observe(getActivity(), new Observer<User>() {
+
+    private void setUserFavAdListener(){
+        favViewModel.userFavAdsListener(user.getUId()).observe(getActivity(), new Observer<ArrayList<Ad>>() {
             @Override
-            public void onChanged(User u) {
-                Log.e(TAG, "onChanged: user observer " );
-                user = u;
+            public void onChanged(ArrayList<Ad> ads) {
+                user.setFavAds(ads);
+                if(advertiserFragment.isAdded()){
+                    setRecycler();
+                }
             }
         });
     }
@@ -216,23 +215,17 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         }else if(v.getId() == binding.tvAdLocationAdvertiserFragment.getId()){
 
             if(app.isGooglePlayServicesAvailable(getActivity())){
-                callBottomSheet(new MapsFragment());
+                callBottomSheet(new MapPreviewFragment());
             }else showToast(getString(R.string.googleServicesWarning));
         }else if(v.getId() == binding.buttonCallAdvertiserFragment.getId()){
             callCallActivity();
         }else if (v.getId() == binding.buttonChatAdvertiserFragment.getId()){
             Ad tempAd = new Ad(ad.getId(),ad.getAuthorId(),ad.getTitle(),ad.getCategory(),ad.getSubCategory(),ad.getSubSubCategory(),ad.getImagesUrl());
             tempAd.setAuthorName(ad.getAuthorName());
-
-            Log.e(TAG, "sender: "+ user.getUId() );
-            Log.e(TAG, "rec: "+ad.getAuthorId() );
             Chat chat = new Chat(tempAd,app.getCurrentDate(),ad.getAuthorId());
             chatViewModel.addNewChat(user.getUId(),chat).observe(this, new Observer<Chat>() {
                 @Override
                 public void onChanged(Chat chat) {
-                    Log.e(TAG, "sender: "+ user.getUId() );
-                    Log.e(TAG, "rec: "+chat.getReceiverId() );
-
                     callChatActivity(chat);
                 }
             });
@@ -244,6 +237,29 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         intent.putExtra("user",user);
         intent.putExtra("chat",chat);
         startActivity(intent);
+    }
+
+    private void getSimilarAds(){
+        if(ad.getCategory().equals(DbHandler.FREELANCE)){
+            getSimilarAds(ad.getCategory(),ad.getSubCategory(),ad.getSubSubCategory());
+        }else getSimilarAds(ad.getCategory(),ad.getSubCategory());
+    }
+    private void getSimilarAds(String category ,String subCategory){
+        adsViewModel.getAllAds(category,subCategory).observe(this, ads -> {
+            adsList = ads;
+            adsList.removeIf(o -> o.getId().equals(ad.getId()) );
+            setRecycler();
+            setUserFavAdListener();
+        });
+    }
+
+    private void getSimilarAds(String category ,String subCategory, String subSubCategory){
+        adsViewModel.getAllAds(category,subCategory,subSubCategory).observe(this, ads -> {
+            adsList = ads;
+            adsList.removeIf(o -> o.getId().equals(ad.getId()) );
+            setRecycler();
+            setUserFavAdListener();
+        });
     }
 
 
@@ -260,8 +276,6 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
             }
         });
     }
-
-
 
 
     private void setToSlider(){
@@ -327,33 +341,20 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         FragmentManager fragmentManager = getChildFragmentManager();
         fragment.show(fragmentManager, fragment.getTag());
     }
-    private String getUserAddress(LocationCustom location) {
-        try {
-            LocationCustom locationCustom = new LocationCustom(location.getLatitude(),location.getLongitude());
-            Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
-            String address = "loading your location...";
-            List<Address> addresses = geocoder.getFromLocation(locationCustom.getLatitude(), locationCustom.getLongitude(), 1);
-            if(addresses.size()>0) {
-                address = addresses.get(0).getAddressLine(0);
-                for (String s: address.split(",")) {
-                    if(address.split(",").length<2){
-                        address +=s;
-                    }
-                }
 
+    public void getUserAddress(LocationCustom location) {
+        userAddressViewModel.getUserAddress(location).observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                binding.tvAdLocationAdvertiserFragment.setText(s);
             }
-            return address ;
-        } catch (IOException e) {
-            e.printStackTrace();
-            reportError(e);
-        }
-        return "";
+        });
     }
 
-    public String handleTime(String dateString){
+    public String handleTime(Timestamp timestamp){
+        Date date = timestamp.toDate();
+        String dateString = app.getDateFromTimeStamp(timestamp);
         try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy , h:mm a");
-            Date date = dateFormat.parse(dateString);
 
             Calendar today = Calendar.getInstance();
             Calendar inputDate = Calendar.getInstance();
@@ -368,18 +369,13 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
                 return getString(R.string.yesterday)+" "+ dateString.split(",")[1];
             }
 
-        } catch (ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return dateString;
     }
 
 
-    private void reportError(Exception e){
-        StringWriter sw = new StringWriter();
-        e.printStackTrace(new PrintWriter(sw));
-        debugViewModel.reportError(new DebugModel(app.getCurrentDate(),e.getMessage(),sw.toString(),TAG, Build.VERSION.SDK_INT,false));
-    }
 
 
     @Override
@@ -403,7 +399,6 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         int favPos = adIsInFavList(adId);
         if (favPos != -1) {
             user.getFavAds().remove(favPos);
-            userViewModel.setUser(user);
             favViewModel.deleteFavAd(user.getUId(),adsList.get(position));
             favImage.setImageResource(R.drawable.fav_uncheck_icon);
 
@@ -411,7 +406,6 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
             if (user.getFavAds() == null) user.initFavAdsList();
             favViewModel.addFavAd(user.getUId(),adsList.get(position));
             user.getFavAds().add(adsList.get(position));
-            userViewModel.setUser(user);
             favImage.setImageResource(R.drawable.fav_checked_icon);
         }
     }
@@ -424,21 +418,20 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         }
         return -1;
     }
-    private void setAdGridAdapter(){
+    private void setRecycler(){
         adsGridAdapter = new AdsGridAdapter(getContext());
         adsGridAdapter.setList(user,adsList,this);
         binding.recyclerGridFragmentAdvertiser.setAdapter(adsGridAdapter);
         binding.recyclerGridFragmentAdvertiser.setLayoutManager(new GridLayoutManager(getContext(),2));
     }
     private void callAdvertiserFragment(int pos){
-        AdvertiserFragment fragment = new AdvertiserFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelable("user", user);
         bundle.putParcelable("ad",adsList.get(pos));
         bundle.putParcelableArrayList("adsList",adsList);
         bundle.putInt("pos",pos);
-        fragment.setArguments(bundle);
-        fragment.show(getChildFragmentManager(),fragment.getTag());
+        advertiserFragment.setArguments(bundle);
+        advertiserFragment.show(getChildFragmentManager(),advertiserFragment.getTag());
     }
     
    private void callCallActivity(){

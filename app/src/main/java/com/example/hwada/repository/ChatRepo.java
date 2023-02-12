@@ -181,7 +181,6 @@ public class ChatRepo {
 
     public MutableLiveData<ArrayList<Chat>> chatListener(String userId){
         MutableLiveData<ArrayList<Chat>> mutableLiveData = new MutableLiveData<>();
-        FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
         getChatRef(userId)
                 .orderBy("lastMessage.timeStamp", Query.Direction.DESCENDING)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {

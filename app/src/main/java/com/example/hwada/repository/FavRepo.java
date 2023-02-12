@@ -1,8 +1,11 @@
 package com.example.hwada.repository;
 
+import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
+
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.hwada.Model.Ad;
@@ -16,7 +19,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -39,10 +44,7 @@ public class FavRepo {
 
     public MutableLiveData<Ad> addFavAd(String userId , Ad ad){
     MutableLiveData<Ad> mutableLiveData = new MutableLiveData<>();
-        Log.e(TAG, "addFavAd: "+userId );
-        Log.e(TAG, "addFavAd: "+ad.getId() );
         DocumentReference docRef = getUserFavAdColRef(userId).document(ad.getId());
-        Log.e(TAG, "addFavAd: " );
         Map<String , Object> data = new HashMap<>();
         data.put("adId",ad.getId());
         data.put("category",ad.getCategory());
@@ -53,7 +55,6 @@ public class FavRepo {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if(task.isSuccessful()){
-                    Log.e(TAG, "onComplete: added to fav ad" );
                     mutableLiveData.setValue(ad);
                 }
             }
@@ -71,7 +72,7 @@ public class FavRepo {
         MutableLiveData<ArrayList<Ad>> mutableLiveData = new MutableLiveData<>();
         ArrayList<Ad> favAds = new ArrayList<>();
         for (Ad ad:list) {
-            getFavAdColRef(ad).document(ad.getId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            getAdColRef(ad).document(ad.getId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     if (task.isSuccessful()){
@@ -85,9 +86,14 @@ public class FavRepo {
                                     for (QueryDocumentSnapshot reviewSnapshot : task.getResult()) {
                                         reviews.add(reviewSnapshot.toObject(AdReview.class));
                                     }
-                                    ad.setAdReviews(reviews);
-                                    favAds.add(ad);
-                                    if(favAds.size()==list.size()){
+                                    if(ad!= null){
+                                        ad.setAdReviews(reviews);
+                                        favAds.add(ad);
+                                    }else {
+                                        Log.e(TAG, "onComplete: ads is missing" );
+                                        mutableLiveData.setValue(favAds);
+                                    }
+                                    if(favAds.size() == list.size()){
                                         mutableLiveData.setValue(favAds);
                                         return;
                                     }
@@ -106,23 +112,62 @@ public class FavRepo {
         }
         return mutableLiveData;
     }
+
+
+    public MutableLiveData<ArrayList<Ad>> userFavAdsListener(String id){
+        MutableLiveData<ArrayList<Ad>> mutableLiveData = new MutableLiveData<>();
+        userDocumentRef(id).collection(DbHandler.favAdsCollection).addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                if (error != null) {
+                    Log.w(TAG, "Listen failed.", error);
+                    return;
+                }
+                ArrayList<Ad> favAds = new ArrayList<>();
+                for (QueryDocumentSnapshot document : value) {
+                    String adId = document.getString("adId");
+                    String category = document.getString("category");
+                    String subCategory = document.getString("subCategory");
+                    String subSubCategory = document.getString("subSubCategory");
+                    Ad ad = new Ad(adId, category, subCategory, subSubCategory);
+                    favAds.add(ad);
+                }
+                mutableLiveData.setValue(favAds);
+            }
+        });
+        return mutableLiveData;
+    }
     public void deleteFavAd(String userId , Ad ad){
         getUserFavAdColRef(userId).document(ad.getId()).delete();
     }
 
-    private CollectionReference getFavAdColRef(Ad ad){
-        CollectionReference adColRef;
+    private CollectionReference getAdColRef(Ad ad){
         if (ad.getCategory().equals(DbHandler.FREELANCE)){
-            adColRef = rootRef.collection(DbHandler.adCollection)
-                    .document(ad.getCategory())
-                    .collection(ad.getCategory())
-                    .document(ad.getSubCategory())
-                    .collection(ad.getSubSubCategory());
+            return getAdColRef(ad.getCategory(),ad.getSubCategory(),ad.getSubSubCategory());
         }else {
-            adColRef = rootRef.collection(DbHandler.adCollection)
-                    .document(ad.getCategory())
-                    .collection(ad.getCategory());
+            return getAdColRef(ad.getCategory(),ad.getSubCategory());
         }
+    }
+    private CollectionReference getAdColRef(String category , String subCategory){
+        CollectionReference adColRef;
+        adColRef = rootRef.collection(DbHandler.adCollection)
+                .document(category)
+                .collection(subCategory);
         return adColRef;
     }
+    private CollectionReference getAdColRef(String category , String subCategory , String subSubCategory){
+        CollectionReference adColRef;
+        adColRef = rootRef.collection(DbHandler.adCollection)
+                .document(category)
+                .collection(category)
+                .document(subCategory)
+                .collection(subSubCategory);
+        return adColRef;
+    }
+
+    private DocumentReference userDocumentRef(String id){
+        return rootRef.collection(DbHandler.userCollection).document(id);
+    }
+
+
 }
