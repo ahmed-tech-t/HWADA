@@ -48,7 +48,7 @@ public class UserAddressRepo {
         call.enqueue(new Callback<OsmResponse>() {
             @Override
             public void onResponse(Call<OsmResponse> call, Response<OsmResponse> response) {
-                if(response!=null&& response.body()!=null) mutableLiveData.setValue(response.body().getDisplay_name());
+                if(response!=null && response.body()!=null) mutableLiveData.setValue(response.body().getDisplay_name());
                 return;
             }
 

@@ -189,6 +189,7 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
 
         updateViews();
         setToSlider();
+        setMenuTapLayoutListener();
         getSimilarAds();
     }
 

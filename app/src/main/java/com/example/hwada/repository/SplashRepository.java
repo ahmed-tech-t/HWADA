@@ -103,7 +103,7 @@ public class SplashRepository {
                                     Ad ad = new Ad(adId, category, subCategory, subSubCategory);
                                     favAdsList.add(ad);
                                 }
-                                if(favAdsList!=null) user.setFavAds(favAdsList);
+                                if(user!=null && favAdsList!=null && favAdsList != null)  user.setFavAds(favAdsList);
                                 userMutableLiveData.setValue(user);
                             } else {
                                 Log.e(TAG, "onComplete: error when getting userFavAds");

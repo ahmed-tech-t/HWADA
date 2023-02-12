@@ -9,6 +9,6 @@ import retrofit2.http.Query;
 
 public interface APiInterface {
 
-    @GET("reverse")
+    @GET("reverse-geocode-client")
     Call<OsmResponse>getAddress(@Query("lat") double lat , @Query("lon") double lon, @Query("format") String format);
 }
