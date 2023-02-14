@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void setLocationManually(){
         if(!app.checkLocationPermissions(this)){
             LocationCustom locationCustom = new LocationCustom(31.23528,30.04167);
-            updateLocation(locationCustom);
+            getUserAddress(locationCustom);
         }
     }
 
@@ -195,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                   } else {
                                       LocationCustom locationCustom = new LocationCustom(location.getLatitude(),location.getLongitude());
                                       //save to database
-                                      updateLocation(locationCustom);
+                                      getUserAddress(locationCustom);
                                   }
                               }
                           });
@@ -243,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                Location location = locationResult.getLastLocation();
                LocationCustom locationCustom = new LocationCustom(location.getLatitude(),location.getLongitude());
                //save to database
-               updateLocation(locationCustom);
+               getUserAddress(locationCustom);
            }catch (Exception e){
                app.reportError(e,getApplication());
            }
@@ -358,13 +358,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
            app.reportError(e,this);
        }
     }
-    private void updateLocation(LocationCustom location) {
-       userViewModel.updateLocationUser(location).observe(this, success -> {
+    public void getUserAddress(LocationCustom location) {
+        userAddressViewModel.getUserAddress(location).observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                updateLocation(location , s);
+            }
+        });
+    }
+
+    private void updateLocation(LocationCustom location,String address) {
+       userViewModel.updateLocationUser(location,address).observe(this, success -> {
            if(success){
                if(locationDialog!=null && locationDialog.isShowing()) locationDialog.dismiss();
            }else {
                Toast.makeText(this, getText(R.string.savingError), Toast.LENGTH_SHORT).show();
-               updateLocation(location);
+               updateLocation(location,address);
            }
        });
     }

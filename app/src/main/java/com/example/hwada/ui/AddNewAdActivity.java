@@ -5,22 +5,17 @@ import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
-import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -39,16 +34,14 @@ import com.example.hwada.adapter.ImagesAdapter;
 import com.example.hwada.application.App;
 import com.example.hwada.databinding.ActivityAddNewAdBinding;
 import com.example.hwada.ui.view.map.MapsFragment;
-import com.example.hwada.ui.view.WorkTimePreviewFragment;
+import com.example.hwada.ui.view.ad.addNewAdd.WorkTimePreviewFragment;
 import com.example.hwada.viewmodel.UserAddressViewModel;
 import com.example.hwada.viewmodel.UserViewModel;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter.OnItemListener , View.OnClickListener  {
     User user ;
@@ -76,23 +69,29 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
         userAddressViewModel = ViewModelProviders.of(this).get(UserAddressViewModel.class);
         userViewModel = UserViewModel.getInstance();
         //******************
-        getUserAddress(user.getLocation());
-
+        setUserAddress();        
+        setClickListener();
+        
+        setUserListener();
+    }
+    
+    private void setClickListener(){
         binding.addNewImage.setOnClickListener(this);
         binding.nextButtonAddNewAd.setOnClickListener(this);
         binding.linearLayout.setOnClickListener(this);
         binding.scrollViewAddNewAdd.setOnClickListener(this);
         binding.linearlayoutInner1AddNewItem.setOnClickListener(this);
-        binding.userAddressMapFragment.setOnClickListener(this);
+        binding.tvUserAddressAddNewAdActivity.setOnClickListener(this);
         binding.arrowAddNewAd.setOnClickListener(this);
 
-        setUserListener();
     }
+    
     private void initAd(Intent intent){
         newAd = new Ad();
         newAd.setAuthorId(user.getUId());
         newAd.setAuthorName(user.getUsername());
         newAd.setAuthorLocation(user.getLocation());
+        newAd.setAuthorAddress(user.getAddress());
         newAd.setCategory(intent.getStringExtra("category"));
         newAd.setSubCategory(intent.getStringExtra("subCategory"));
         newAd.setSubSubCategory(intent.getStringExtra("subSubCategory"));
@@ -151,15 +150,19 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
             setFieldsWarning();
 
             if(checkIfFieldsAreValid()){
-                newAd.setPrice(Double.parseDouble(binding.adPrice.getText().toString()));
-                newAd.setTitle(binding.adTitle.getText().toString());
-                newAd.setDescription(binding.adDescription.getText().toString());
+                String price = binding.adPrice.getText().toString().trim();
+                String title = binding.adTitle.getText().toString().trim();
+                String description =binding.adDescription.getText().toString().trim();
+
+                newAd.setPrice(Double.parseDouble(price));
+                newAd.setTitle(title);
+                newAd.setDescription(description);
                 callBottomSheet(new WorkTimePreviewFragment());
             }
         }else if (v.getId() == binding.linearLayout.getId() || v.getId() == binding.scrollViewAddNewAdd.getId()
-                ||v.getId() ==binding.linearlayoutInner1AddNewItem.getId()){
+                ||v.getId() == binding.linearlayoutInner1AddNewItem.getId()){
             hideKeyboard();
-        }else if (v.getId()==binding.userAddressMapFragment.getId()){
+        }else if (v.getId()==binding.tvUserAddressAddNewAdActivity.getId()){
            if(app.isGooglePlayServicesAvailable(this)){
                callBottomSheet(new MapsFragment());
            }else showToast(getString(R.string.googleServicesWarning));        }
@@ -175,17 +178,21 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
         return binding.adPrice.getError()==null && binding.adTitle.getError()==null &&  binding.adDescription.getError()==null && newAd.getImagesUri().size()>0;
     }
     private void setFieldsWarning(){
-        if(binding.adPrice.getText().length()>4){
+        String price = binding.adPrice.getText().toString().trim();
+        String title = binding.adTitle.getText().toString().trim();
+        String description =binding.adDescription.getText().toString().trim();
+
+        if(price.length()>4){
             binding.adPrice.setError(getString(R.string.toLong));
-        }else if(binding.adTitle.getText().length() ==0){
+        }else if(title.length() ==0){
             binding.adTitle.setError(getString(R.string.emptyFieldWarning));
-        } else if (binding.adDescription.getText().length() < 50){
-            if (binding.adDescription.getText().length() ==0){
+        } else if (description.length() < 50){
+            if (description.length() ==0){
                 binding.adDescription.setError(getString(R.string.emptyFieldWarning));
             }else  binding.adDescription.setError(getString(R.string.toShortWarning));
         }else if(newAd.getImagesUri().size()==0){
             showDialog(getString(R.string.invalidData),getString(R.string.imagesListEmptyWarning));
-        }else if (binding.adPrice.getText().length()==0){
+        }else if (price.length() == 0){
             binding.adPrice.setText("0");
         }
     }
@@ -277,26 +284,24 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
         fragment.setArguments(bundle);
         fragment.show(getSupportFragmentManager(),fragment.getTag());
     }
-
-    public void getUserAddress(LocationCustom location) {
-        userAddressViewModel.getUserAddress(location).observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(String s) {
-                binding.userAddressMapFragment.setText(s);
-            }
-        });
-    }
+    
 
         private void setUserListener(){
             userViewModel.userListener(user.getUId()).observe(this, new Observer<User>() {
                 @Override
                 public void onChanged(User updatedUser) {
                     user.updateUser(updatedUser);
-                    if(user.getLocation()!=null) getUserAddress(user.getLocation());
+                    if(user.getLocation()!=null) setUserAddress();
                 }
             });
         }
-
+        
+        private void setUserAddress(){
+            binding.tvUserAddressAddNewAdActivity.setText(user.getAddress());
+            newAd.setAuthorLocation(user.getLocation());
+            newAd.setAuthorAddress(user.getAddress());
+            
+        }
     @Override
     protected void onResume() {
         super.onResume();

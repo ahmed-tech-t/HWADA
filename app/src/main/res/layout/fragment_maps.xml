@@ -75,7 +75,7 @@
                     android:src="@drawable/arrow_up" />
 
                 <EditText
-                    android:id="@+id/user_address_fragment"
+                    android:id="@+id/tv_user_address_maps_fragment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="25dp"

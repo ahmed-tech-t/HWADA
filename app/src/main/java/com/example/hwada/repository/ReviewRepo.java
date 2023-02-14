@@ -18,8 +18,11 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Transaction;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,19 +32,27 @@ public class ReviewRepo {
 
     private static final String TAG = "ReviewRepo";
 
-    private CollectionReference getAdColRef(Ad newAd){
-        CollectionReference adColRef;
-        if (newAd.getCategory().equals(DbHandler.FREELANCE)){
-            adColRef = rootRef.collection(DbHandler.adCollection)
-                    .document(newAd.getCategory())
-                    .collection(newAd.getCategory())
-                    .document(newAd.getSubCategory())
-                    .collection(newAd.getSubSubCategory());
+    private CollectionReference getAdColRef(Ad ad){
+        if (ad.getCategory().equals(DbHandler.FREELANCE)){
+            return getAdColRef(ad.getCategory(),ad.getSubCategory(),ad.getSubSubCategory());
         }else {
-            adColRef = rootRef.collection(DbHandler.adCollection)
-                    .document(newAd.getCategory())
-                    .collection(newAd.getSubCategory());
+            return getAdColRef(ad.getCategory(),ad.getSubCategory());
         }
+    }
+    private CollectionReference getAdColRef(String category , String subCategory){
+        CollectionReference adColRef;
+        adColRef = rootRef.collection(DbHandler.adCollection)
+                .document(category)
+                .collection(subCategory);
+        return adColRef;
+    }
+    private CollectionReference getAdColRef(String category , String subCategory , String subSubCategory){
+        CollectionReference adColRef;
+        adColRef = rootRef.collection(DbHandler.adCollection)
+                .document(category)
+                .collection(category)
+                .document(subCategory)
+                .collection(subSubCategory);
         return adColRef;
     }
     private CollectionReference getUserAdColRef(Ad ad){
@@ -50,11 +61,28 @@ public class ReviewRepo {
         return ref;
     }
     private CollectionReference getAdColHomePageRef(){
-        CollectionReference adColRef;
-        adColRef = rootRef.collection(DbHandler.adCollection)
-                .document(DbHandler.homePage)
-                .collection(DbHandler.homePage);
-        return adColRef;
+        return getAdColRef(DbHandler.homePage,DbHandler.homePage);
+    }
+
+    public MutableLiveData<ArrayList<AdReview>> getAdReviews(Ad ad){
+        MutableLiveData<ArrayList<AdReview>> mutableLiveData = new MutableLiveData<>();
+        ArrayList<AdReview> adReviews = new ArrayList<>();
+        getAdColRef(ad).document(ad.getId()).collection(DbHandler.Reviews).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot reviewSnapshot : task.getResult()) {
+                        adReviews.add(reviewSnapshot.toObject(AdReview.class));
+                    }
+                    mutableLiveData.setValue(adReviews);
+                } else {
+                    Log.d(TAG, "onComplete: can't load ad review");
+                    mutableLiveData.setValue(new ArrayList<>());
+                }
+            }
+        });
+
+        return mutableLiveData;
     }
 
     public MutableLiveData<AdReview> addReview(User user, Ad ad , AdReview review){

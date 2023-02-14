@@ -147,6 +147,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
             public void onChanged(Ad ad) {
                 user.getAds().add(ad);
                 adapter.addItem(ad);
+                if(adsList.size()>0)binding.recyclerHomeFragment.setBackgroundResource(R.drawable.recycle_view_background);
                 adapter.notifyDataSetChanged();
             }
         });
@@ -212,15 +213,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
        }catch (Exception e){
            app.reportError(e,getContext());
        }
-    }
-
-    public void getUserAddress(LocationCustom location) {
-      userAddressViewModel.getUserAddress(location).observe(this, new Observer<String>() {
-          @Override
-          public void onChanged(String s) {
-              binding.userAddress.setText(s);
-          }
-      });
     }
 
     @Override
@@ -307,13 +299,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
     }
 
 
-
     private void setUserListener(){
         userViewModel.userListener(user.getUId()).observe(getActivity(), new Observer<User>() {
             @Override
             public void onChanged(User updatedUser) {
                 user.updateUser(updatedUser);
-                if(user.getLocation()!=null) getUserAddress(user.getLocation());
+                if(user.getLocation()!=null) binding.userAddress.setText(user.getAddress());
             }
         });
     }
@@ -328,7 +319,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
         }
 
     }
-
 
   private void setLocationArrowWhenLanguageIsArabic(){
       Locale locale = Resources.getSystem().getConfiguration().locale;

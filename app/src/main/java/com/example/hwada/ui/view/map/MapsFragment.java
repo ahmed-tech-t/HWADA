@@ -124,7 +124,7 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
             mMap.setOnCameraMoveStartedListener(this);
             binding.icLocationFragment.setOnClickListener(this);
             binding.imArrowFragment.setOnClickListener(this);
-            binding.userAddressFragment.setOnClickListener(this);
+            binding.tvUserAddressMapsFragment.setOnClickListener(this);
             binding.btSaveNewLocationFragment.setOnClickListener(this);
 
             if(user.getLocation()!=null){
@@ -246,7 +246,7 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
         userAddressViewModel.getUserAddress(location).observe(this, new Observer<String>() {
             @Override
             public void onChanged(String s) {
-                binding.userAddressFragment.setText(s);
+                binding.tvUserAddressMapsFragment.setText(s);
             }
         });
     }
@@ -271,7 +271,7 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
           } else if (v.getId() == binding.btSaveNewLocationFragment.getId()) {
               //Todo save to data base
               updateLocation(getCameraLocation());
-          } else if (v.getId() == binding.imArrowFragment.getId() || v.getId() == binding.userAddressFragment.getId()) {
+          } else if (v.getId() == binding.imArrowFragment.getId() || v.getId() == binding.tvUserAddressMapsFragment.getId()) {
 
               //TODO
 
@@ -308,7 +308,7 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
            binding.btSaveNewLocationFragment.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.background));
            binding.btSaveNewLocationFragment.setClickable(true);
 
-           LocationCustom location =new LocationCustom(getCameraLocation().getLatitude(),getCameraLocation().getLongitude());
+           LocationCustom location = new LocationCustom(getCameraLocation().getLatitude(),getCameraLocation().getLongitude());
           if(location!=null) getUserAddress(location);
        }catch (Exception e){
            app.reportError(e,getContext());
@@ -362,8 +362,8 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
     private void updateLocation(Location location) {
        try {
            LocationCustom locationCustom = new LocationCustom(location.getLatitude(),location.getLongitude());
-           userViewModel.updateLocationUser(locationCustom);
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+           userViewModel.updateLocationUser(locationCustom,binding.tvUserAddressMapsFragment.getText().toString());
+           bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
        }catch (Exception e){
           app.reportError(e,getContext());
        }

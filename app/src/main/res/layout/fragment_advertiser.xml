@@ -211,11 +211,31 @@
                    android:paddingStart="10dp"
                     android:paddingEnd="10dp"
                     android:paddingTop="10dp"/>
+
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                    android:id="@+id/shimmer_advertiser">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:orientation="vertical"
+                        android:layout_height="wrap_content">
+                        <include layout="@layout/shimmer_grid_layout"/>
+                        <include layout="@layout/shimmer_grid_layout"/>
+                        <include layout="@layout/shimmer_grid_layout"/>
+                        <include layout="@layout/shimmer_grid_layout"/>
+
+                    </LinearLayout>
+
+                </com.facebook.shimmer.ShimmerFrameLayout>
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycler_grid_fragment_advertiser"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
 
+                    android:visibility="gone"
                     android:layout_marginTop="5dp"
                     android:layout_margin="10dp"
                     android:background="@drawable/recycle_view_background"

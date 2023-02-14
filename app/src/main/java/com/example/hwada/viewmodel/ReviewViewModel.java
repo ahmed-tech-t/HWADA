@@ -13,6 +13,8 @@ import com.example.hwada.Model.AdReview;
 import com.example.hwada.Model.User;
 import com.example.hwada.repository.ReviewRepo;
 
+import java.util.ArrayList;
+
 public class ReviewViewModel extends AndroidViewModel {
     public LiveData<AdReview> adReviewLiveData = new MutableLiveData<>();
 
@@ -34,5 +36,8 @@ public class ReviewViewModel extends AndroidViewModel {
 
     public void addReview(User user,Ad ad,AdReview review){
         adReviewLiveData = repo.addReview(user , ad ,review);
+    }
+    public LiveData<ArrayList<AdReview>> getAdReviews(Ad ad){
+        return repo.getAdReviews(ad);
     }
 }

@@ -188,38 +188,9 @@ public class AdsRepository {
                     ArrayList<Ad> ads = new ArrayList<>();
                     QuerySnapshot adQuerySnapshot = task.getResult();
                     for (QueryDocumentSnapshot adSnapshot : adQuerySnapshot) {
-                        Ad ad =  adSnapshot.toObject(Ad.class);
-                        ArrayList<AdReview> adReviews = new ArrayList<>();
-                        CollectionReference reviewsRef =  adSnapshot.getReference().collection(DbHandler.Reviews);
-                        reviewsRef
-                                .orderBy("timeStamp", Query.Direction.DESCENDING)
-                                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                if (task.isSuccessful()) {
-                                    for (QueryDocumentSnapshot reviewSnapshot : task.getResult()) {
-                                        adReviews.add(reviewSnapshot.toObject(AdReview.class));
-                                    }
-                                    ad.setAdReviews(adReviews);
-                                    ads.add(ad);
-
-                                    if(adQuerySnapshot.size() == ads.size()){
-                                        mutableLiveData.setValue(ads);
-                                        return;
-                                    }
-                                }else {
-                                    Log.e(TAG, "onComplete: error loading ads " );
-                                    mutableLiveData.setValue(new ArrayList<>());
-                                    return;
-                                }
-                            }
-                        });
-                    }if(adQuerySnapshot.size()==0) {
-                        Log.e(TAG, "onComplete: col is empty " );
-                        mutableLiveData.setValue(new ArrayList<>());
-                        return;
+                        ads.add(adSnapshot.toObject(Ad.class));
                     }
-
+                    mutableLiveData.setValue(ads);
                 }else {
                     Log.e(TAG, "onComplete: error loading ads " );
                     mutableLiveData.setValue(new ArrayList<>());
@@ -235,6 +206,8 @@ public class AdsRepository {
         return  mutableLiveData;
     }
     //**************************************
+
+
     public void updateViews(Ad ad){
 
         rootRef.runTransaction(new Transaction.Function<Object>() {

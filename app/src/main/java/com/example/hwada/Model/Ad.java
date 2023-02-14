@@ -19,6 +19,8 @@ public class Ad implements Parcelable {
     private String authorId;
     private String authorName;
     private LocationCustom authorLocation;
+
+    private String authorAddress;
     private String title;
     private String description;
     
@@ -103,6 +105,7 @@ public class Ad implements Parcelable {
         authorId = in.readString();
         authorName = in.readString();
         authorLocation = in.readParcelable(LocationCustom.class.getClassLoader());
+        authorAddress = in.readString();
         title = in.readString();
         description = in.readString();
         timeStamp = in.readParcelable(Timestamp.class.getClassLoader());
@@ -141,6 +144,14 @@ public class Ad implements Parcelable {
 
     public int getViews() {
         return views;
+    }
+
+    public String getAuthorAddress() {
+        return authorAddress;
+    }
+
+    public void setAuthorAddress(String authorAddress) {
+        this.authorAddress = authorAddress;
     }
 
     public void setViews(int views) {
@@ -323,10 +334,12 @@ public class Ad implements Parcelable {
 
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
+
         dest.writeString(id);
         dest.writeString(authorId);
         dest.writeString(authorName);
         dest.writeParcelable(authorLocation, flags);
+        dest.writeString(authorAddress);
         dest.writeString(title);
         dest.writeString(description);
         dest.writeParcelable(timeStamp, flags);
@@ -342,4 +355,6 @@ public class Ad implements Parcelable {
         dest.writeStringList(imagesUrl);
         dest.writeInt(views);
     }
+
+
 }

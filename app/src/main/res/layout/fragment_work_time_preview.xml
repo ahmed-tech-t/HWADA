@@ -9,7 +9,7 @@ android:background="@drawable/white_background"
 android:orientation="vertical"
     android:id="@+id/bottom_sheet_work_time_preview"
 android:layout_marginTop="60dp"
-tools:context=".ui.view.WorkTimePreviewFragment">
+tools:context=".ui.view.ad.addNewAdd.WorkTimePreviewFragment">
 
 <ImageView
     android:id="@+id/arrow_work_time"

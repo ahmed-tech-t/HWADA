@@ -46,8 +46,8 @@ public class UserViewModel extends ViewModel {
        updateUserLiveData = userRepository.updateUser(user);
     }
 
-    public LiveData<Boolean> updateLocationUser(LocationCustom location){
-      return userRepository.updateUserLocation(location);
+    public LiveData<Boolean> updateLocationUser(LocationCustom location,String address){
+      return userRepository.updateUserLocation(location,address);
     }
 
     public void setUserStatus(String status,String userId){

@@ -1,4 +1,4 @@
-package com.example.hwada.ui.view;
+package com.example.hwada.ui.view.ad.addNewAdd;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

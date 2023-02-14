@@ -8,7 +8,7 @@
     android:id="@+id/bottom_sheet_work_time_edit"
     android:elevation="10dp"
     android:background="@drawable/white_background"
-    tools:context=".ui.view.WorkTimeEditFragment">
+    tools:context=".ui.view.ad.addNewAdd.WorkTimeEditFragment">
     <ImageView
         android:id="@+id/arrow_edit_work_time"
         android:layout_marginTop="20dp"

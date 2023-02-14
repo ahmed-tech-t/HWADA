@@ -81,10 +81,12 @@ public class UserRepository {
         });
         return updateSuccess ;
     }
-    public MutableLiveData<Boolean> updateUserLocation(LocationCustom location) {
+    public MutableLiveData<Boolean> updateUserLocation(LocationCustom location,String address) {
         MutableLiveData<Boolean> mutableLiveData = new MutableLiveData<>();
         Map<String, Object> data = new HashMap<>();
         data.put("location",location);
+        data.put("address",address);
+
         rootRef.collection(DbHandler.userCollection).document(auth.getUid()).update(data).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {

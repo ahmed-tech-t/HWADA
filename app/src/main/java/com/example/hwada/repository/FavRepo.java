@@ -71,35 +71,24 @@ public class FavRepo {
     public MutableLiveData<ArrayList<Ad>> getAllFavAds(ArrayList<Ad> list){
         MutableLiveData<ArrayList<Ad>> mutableLiveData = new MutableLiveData<>();
         ArrayList<Ad> favAds = new ArrayList<>();
+        if(list==null || list.size()==0) {
+            mutableLiveData.setValue(new ArrayList<>());
+            return mutableLiveData;
+        }
         for (Ad ad:list) {
             getAdColRef(ad).document(ad.getId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     if (task.isSuccessful()){
                         DocumentSnapshot snapshot = task.getResult();
-                        Ad ad = snapshot.toObject(Ad.class);
-                        ArrayList<AdReview> reviews = new ArrayList<>();
-                        snapshot.getReference().collection(DbHandler.Reviews).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                if (task.isSuccessful()) {
-                                    for (QueryDocumentSnapshot reviewSnapshot : task.getResult()) {
-                                        reviews.add(reviewSnapshot.toObject(AdReview.class));
-                                    }
-                                    if(ad!= null){
-                                        ad.setAdReviews(reviews);
-                                        favAds.add(ad);
-                                    }else {
-                                        Log.e(TAG, "onComplete: ads is missing" );
-                                        mutableLiveData.setValue(favAds);
-                                    }
-                                    if(favAds.size() == list.size()){
-                                        mutableLiveData.setValue(favAds);
-                                        return;
-                                    }
-                                }
-                            }
-                        });
+                        favAds.add(snapshot.toObject(Ad.class)) ;
+                    }else {
+                        Log.e(TAG, "onComplete: error loading fav ad " );
+                        mutableLiveData.setValue(new ArrayList<>());
+                        return;
+                    }
+                    if(list.size()==favAds.size()){
+                        mutableLiveData.setValue(favAds);
                     }
                 }
             }).addOnFailureListener(new OnFailureListener() {

@@ -24,6 +24,7 @@ public class User implements Parcelable {
 
     private Chat chat ;
 
+    private String address;
     private String status;
     private Timestamp lastSeen;
 
@@ -107,6 +108,7 @@ public class User implements Parcelable {
         rating = in.readFloat();
         myReviews = in.createTypedArrayList(MyReview.CREATOR);
         chat = in.readParcelable(Chat.class.getClassLoader());
+        address = in.readString();
         status = in.readString();
         lastSeen = in.readParcelable(Timestamp.class.getClassLoader());
         email = in.readString();
@@ -117,6 +119,34 @@ public class User implements Parcelable {
         isAuthenticated = in.readByte() != 0;
         isNew = in.readByte() != 0;
         isCreated = in.readByte() != 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(uId);
+        dest.writeString(username);
+        dest.writeParcelable(location, flags);
+        dest.writeTypedList(favAds);
+        dest.writeTypedList(ads);
+        dest.writeFloat(rating);
+        dest.writeTypedList(myReviews);
+        dest.writeParcelable(chat, flags);
+        dest.writeString(address);
+        dest.writeString(status);
+        dest.writeParcelable(lastSeen, flags);
+        dest.writeString(email);
+        dest.writeString(phone);
+        dest.writeString(aboutYou);
+        dest.writeString(image);
+        dest.writeString(gender);
+        dest.writeByte((byte) (isAuthenticated ? 1 : 0));
+        dest.writeByte((byte) (isNew ? 1 : 0));
+        dest.writeByte((byte) (isCreated ? 1 : 0));
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -318,36 +348,18 @@ public class User implements Parcelable {
     }
 
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public String getAddress() {
+        return address;
     }
 
-    @Override
-    public void writeToParcel(@NonNull Parcel dest, int flags) {
-        dest.writeString(uId);
-        dest.writeString(username);
-        dest.writeParcelable(location, flags);
-        dest.writeTypedList(favAds);
-        dest.writeTypedList(ads);
-        dest.writeFloat(rating);
-        dest.writeTypedList(myReviews);
-        dest.writeParcelable(chat, flags);
-        dest.writeString(status);
-        dest.writeParcelable(lastSeen, flags);
-        dest.writeString(email);
-        dest.writeString(phone);
-        dest.writeString(aboutYou);
-        dest.writeString(image);
-        dest.writeString(gender);
-        dest.writeByte((byte) (isAuthenticated ? 1 : 0));
-        dest.writeByte((byte) (isNew ? 1 : 0));
-        dest.writeByte((byte) (isCreated ? 1 : 0));
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public void updateUser (User user){
         this.username = user.username;
         this.location = user.location;
+        this.address = user.address;
         this.rating = user.rating;
         this.phone = user.phone;
         this.aboutYou = user.aboutYou;

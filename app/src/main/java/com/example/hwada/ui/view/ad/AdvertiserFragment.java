@@ -177,15 +177,13 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
 
         binding.buttonCallAdvertiserFragment.setOnClickListener(this);
 
-        binding.tvDateAdvertiserFragment.setText(handleTime(ad.getTimeStamp()));
-        binding.tvAdDistanceAdvertiserFragment.setText(ad.getDistance()+"");
+        binding.shimmerAdvertiser.startShimmer();
+       setAdDataToView();
         debugViewModel = ViewModelProviders.of(getActivity()).get(DebugViewModel.class);
 
         if(user.getUId().equals(ad.getAuthorId())){
             binding.llContactAdvertiserFragment.setVisibility(View.GONE);
         }
-
-        getUserAddress(ad.getAuthorLocation());
 
         updateViews();
         setToSlider();
@@ -193,6 +191,15 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         getSimilarAds();
     }
 
+    private void closeShimmer(){
+        binding.shimmerAdvertiser.setVisibility(View.GONE);
+        binding.shimmerAdvertiser.stopShimmer();
+    }
+    private void setAdDataToView(){
+        binding.tvDateAdvertiserFragment.setText(handleTime(ad.getTimeStamp()));
+        binding.tvAdDistanceAdvertiserFragment.setText(ad.getDistance()+"");
+        binding.tvAdLocationAdvertiserFragment.setText(ad.getAuthorAddress());
+    }
     private void updateViews(){
         adsViewModel.updateViews(ad);
     }
@@ -343,14 +350,6 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         fragment.show(fragmentManager, fragment.getTag());
     }
 
-    public void getUserAddress(LocationCustom location) {
-        userAddressViewModel.getUserAddress(location).observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(String s) {
-                binding.tvAdLocationAdvertiserFragment.setText(s);
-            }
-        });
-    }
 
     public String handleTime(Timestamp timestamp){
         Date date = timestamp.toDate();
@@ -420,8 +419,10 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         return -1;
     }
     private void setRecycler(){
+        closeShimmer();
         adsGridAdapter = new AdsGridAdapter(getContext());
         adsGridAdapter.setList(user,adsList,this);
+        binding.recyclerGridFragmentAdvertiser.setVisibility(View.VISIBLE);
         binding.recyclerGridFragmentAdvertiser.setAdapter(adsGridAdapter);
         binding.recyclerGridFragmentAdvertiser.setLayoutManager(new GridLayoutManager(getContext(),2));
     }

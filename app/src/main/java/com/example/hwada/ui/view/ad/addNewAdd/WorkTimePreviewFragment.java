@@ -1,4 +1,4 @@
-package com.example.hwada.ui.view;
+package com.example.hwada.ui.view.ad.addNewAdd;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -6,27 +6,18 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.User;
@@ -37,16 +28,12 @@ import com.example.hwada.application.App;
 import com.example.hwada.databinding.FragmentWorkTimePreviewBinding;
 import com.example.hwada.ui.MainActivity;
 import com.example.hwada.viewmodel.AdsViewModel;
-import com.example.hwada.viewmodel.UserViewModel;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
 
 public class WorkTimePreviewFragment extends BottomSheetDialogFragment implements View.OnClickListener , WorkTimeEditFragment.GettingPassedData , WorkingTimeEditDaysAdapter.OnItemListener  {
 

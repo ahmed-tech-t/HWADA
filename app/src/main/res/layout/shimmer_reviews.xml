@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/nav_color"
+    android:layout_marginTop="8dp"
+    app:cardCornerRadius="5dp"
+    app:cardElevation="0dp"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:id="@+id/relative_layout_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center">
+
+            <LinearLayout
+                android:id="@+id/user_comment_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_toStartOf="@id/user_rating_comment"
+                android:orientation="horizontal">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/user_image_comment"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@color/shimmer"
+                    app:shapeAppearanceOverlay="@style/Circular"
+                    app:strokeColor="@null" />
+
+                <TextView
+                    android:id="@+id/username_comment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:padding="5dp"
+                    android:textColor="@color/black"
+                    android:textSize="15dp" />
+            </LinearLayout>
+
+            <RatingBar
+                android:id="@+id/user_rating_comment"
+                style="?android:attr/ratingBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_toStartOf="@id/review_item_menu"
+                android:elevation="0dp"
+                android:numStars="5"
+                android:progressTint="@color/yellow"
+                android:secondaryProgressTint="@android:color/transparent"
+                android:stepSize="0.1" />
+
+
+            <ImageView
+                android:id="@+id/review_item_menu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+
+                android:padding="5dp"
+                android:src="@drawable/option_icon" />
+        </RelativeLayout>
+
+
+        <TextView
+            android:layout_width="150dp"
+            android:id="@+id/comment_body"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:background="@drawable/curved_background_white_blue"
+            android:backgroundTint="@color/shimmer"
+            android:textSize="20dp"
+
+            android:layout_marginTop="10dp"
+            android:textColor="@color/black"
+            android:layout_below="@id/relative_layout_2"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/comment_body"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:drawableStart="@drawable/calendar_icon"
+            android:drawablePadding="5dp"
+            android:textSize="12dp" />
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>

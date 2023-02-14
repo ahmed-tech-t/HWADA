@@ -70,6 +70,8 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
         ad = getArguments().getParcelable("ad");
         user =getArguments().getParcelable("user");
 
+        binding.shimmerReviews.startShimmer();
+
         reportViewModel = ViewModelProviders.of(this).get(ReportViewModel.class);
         if(userMadeReview()){
             binding.linearLayoutCommentBox.setVisibility(View.GONE);
@@ -78,7 +80,7 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
 
         reviewViewModel =ViewModelProviders.of(this).get(ReviewViewModel.class);
         binding.tvReviewsAdReviewsFragment.setText(getString(R.string.reviews)+"("+ad.getAdReviews().size()+")");
-        setReviewsToRecycler();
+        getALlReviews();
     }
 
     @Override
@@ -89,16 +91,29 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
         }else binding.linearLayoutCommentBox.setVisibility(View.VISIBLE);
     }
 
-    public void setReviewsToRecycler() {
+    public void setRecycler() {
+        closeShimmer();
+
         adapter = new ReviewAdapter(getContext());
         try {
             binding.reviewRecyclerAdReviewFragment.setAdapter(adapter);
             if (ad.getAdReviews()==null) ad.initAdReviewsList();
             adapter.setList(ad.getAdReviews(),this);
+            if(!ad.getAdReviews().isEmpty())binding.reviewRecyclerAdReviewFragment.setVisibility(View.VISIBLE);
             binding.reviewRecyclerAdReviewFragment.setLayoutManager(new LinearLayoutManager(getActivity()));
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    private void getALlReviews(){
+        reviewViewModel.getAdReviews(ad).observe(getActivity(), new Observer<ArrayList<AdReview>>() {
+            @Override
+            public void onChanged(ArrayList<AdReview> adReviews) {
+                ad.setAdReviews(adReviews);
+                setRecycler();
+            }
+        });
     }
 
 
@@ -214,5 +229,10 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
     @Override
     public void getUpdatedReview(AdReview review, int pos) {
         adapter.updateItem(review,pos);
+    }
+
+    private void closeShimmer(){
+        binding.shimmerReviews.setVisibility(View.GONE);
+        binding.shimmerReviews.stopShimmer();
     }
 }

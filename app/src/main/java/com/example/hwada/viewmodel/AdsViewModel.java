@@ -51,4 +51,5 @@ public class AdsViewModel extends ViewModel {
     public void updateViews(Ad ad){
         repository.updateViews(ad);
     }
+
 }
