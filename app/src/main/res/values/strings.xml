@@ -126,7 +126,7 @@
     <string name="reviewNote">You must at least add rating to add comment * </string>
     <string name="addingNewReview">Adding new review...</string>
     <string name="report">report</string>
-    <string name="similarAds">Similar Ads</string>
+    <string name="similarAds"><b>Similar Ads</b></string>
     <string name="toLong">to long</string>
     <string name="updatingReview">Updating review</string>
     <string name="call">call</string>
@@ -148,4 +148,6 @@
     <string name="faildToLoadYourLocation">failed To Load Your Location</string>
     <string name="googleServicesWarning">Google service not available on this device</string>
     <string name="unsupportedLocation">we will support your location soon</string>
+    <string name="joinAt">join Hwada in </string>
+    <string name="lastSeen">last seen </string>
 </resources>

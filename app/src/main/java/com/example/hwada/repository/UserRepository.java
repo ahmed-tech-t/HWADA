@@ -161,42 +161,6 @@ public class UserRepository {
         rootRef.collection(DbHandler.userCollection).document(userId).update(data);
     }
 
-    public MutableLiveData<String> getUserStatus(String id) {
-        MutableLiveData<String> mutableLiveData = new MutableLiveData();
-       DocumentReference documentReference =  rootRef.collection(DbHandler.userCollection).document(id);
-        documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot snapshot, @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen failed.", e);
-                    return;
-                }
-                if (snapshot != null && snapshot.exists()) {
-                    String status = snapshot.getString("status");
-                    mutableLiveData.setValue(status);
-
-                } else {
-                    Log.d(TAG, "Current data: null");
-                }
-            }
-        });
-
-        return mutableLiveData;
-    }
-    public MutableLiveData<String> getUserLastSeen(String id) {
-        MutableLiveData<String> mutableLiveData = new MutableLiveData();
-        rootRef.collection(DbHandler.userCollection).document(id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot snapshot = task.getResult();
-                    String status = snapshot.getString("lastSeen");
-                    mutableLiveData.setValue(status);
-                }
-            }
-        });
-        return mutableLiveData;
-    }
 
     public MutableLiveData<ArrayList<Ad>> getAllUserAds(String id){
         MutableLiveData<ArrayList<Ad>> mutableLiveData = new MutableLiveData<>();
@@ -209,28 +173,9 @@ public class UserRepository {
                     ArrayList<Ad>ads = new ArrayList<>();
                     QuerySnapshot adQuerySnapshot = task.getResult();
                     for (QueryDocumentSnapshot document : adQuerySnapshot) {
-                        Ad ad = document.toObject(Ad.class);
-                        ArrayList<AdReview> reviews = new ArrayList<>();
-                        document.getReference().collection(DbHandler.Reviews).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                if (task.isSuccessful()){
-                                    QuerySnapshot reviewQuerySnapshot = task.getResult();
-                                    for (QueryDocumentSnapshot document : reviewQuerySnapshot) {
-                                        reviews.add(document.toObject(AdReview.class));
-                                    }
-                                    ad.setAdReviews(reviews);
-                                    ads.add(ad);
-                                    if(adQuerySnapshot.size()==ads.size()){
-                                        mutableLiveData.setValue(ads);
-                                        return;
-                                    }
-                                }else {
-                                    mutableLiveData.setValue(new ArrayList<>());
-                                }
-                            }
-                        });
+                        ads.add(document.toObject(Ad.class));
                     }
+                    mutableLiveData.setValue(ads);
                 }
             }
         });
@@ -254,6 +199,20 @@ public class UserRepository {
         return mutableLiveData;
     }
 
+    public MutableLiveData<User> getUserById(String id){
+        MutableLiveData <User> mutableLiveData = new MutableLiveData<>();
+        userDocumentRef(id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    mutableLiveData.setValue(task.getResult().toObject(User.class));
+                }else{
+                    mutableLiveData.setValue(new User());
+                }
+            }
+        });
+        return mutableLiveData;
+    }
 
     private DocumentReference userDocumentRef(String id){
         return rootRef.collection(DbHandler.userCollection).document(id);

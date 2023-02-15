@@ -56,12 +56,6 @@ public class UserViewModel extends ViewModel {
     public void setUserLastSeen(Timestamp lastSeen, String userId){
         userRepository.setUserLastSeen(lastSeen,userId);
     }
-    public LiveData<String> getUserStatus(String id){
-        return userRepository.getUserStatus(id);
-    }
-    public LiveData<String> getUserLastSeen(String id){
-        return userRepository.getUserLastSeen(id);
-    }
 
     public LiveData<ArrayList<Ad>> getAllUserAds(String id){
 
@@ -69,5 +63,9 @@ public class UserViewModel extends ViewModel {
     }
     public LiveData<User> userListener(String id){
         return userRepository.userListener(id);
+    }
+
+    public LiveData<User> getUserById(String id){
+        return userRepository.getUserById(id);
     }
 }

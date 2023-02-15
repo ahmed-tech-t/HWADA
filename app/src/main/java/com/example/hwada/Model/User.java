@@ -18,7 +18,7 @@ public class User implements Parcelable {
     private LocationCustom location;
     private ArrayList<Ad>favAds;
     private ArrayList<Ad>ads;
-
+    private Timestamp timeStamp ;
     private float rating;
     private ArrayList<MyReview> myReviews;
 
@@ -81,18 +81,20 @@ public class User implements Parcelable {
 
 
 
-    public User(String uId, String email) {
+    public User(String uId, String email,Timestamp timeStamp) {
         this.uId = uId;
         this.email = email;
+        this.timeStamp = timeStamp;
         this.favAds =new ArrayList<>();
         this.ads =new ArrayList<>();
         this.myReviews=new ArrayList<>();
     }
-    public User(String uId, String username, String email, String phone) {
+    public User(String uId, String username, String email, String phone,Timestamp timeStamp) {
         this.uId = uId;
         this.username = username;
         this.email = email;
         this.phone = phone;
+        this.timeStamp = timeStamp;
         this.favAds =new ArrayList<>();
         this.ads =new ArrayList<>();
         this.myReviews=new ArrayList<>();
@@ -105,6 +107,7 @@ public class User implements Parcelable {
         location = in.readParcelable(LocationCustom.class.getClassLoader());
         favAds = in.createTypedArrayList(Ad.CREATOR);
         ads = in.createTypedArrayList(Ad.CREATOR);
+        timeStamp = in.readParcelable(Timestamp.class.getClassLoader());
         rating = in.readFloat();
         myReviews = in.createTypedArrayList(MyReview.CREATOR);
         chat = in.readParcelable(Chat.class.getClassLoader());
@@ -128,6 +131,7 @@ public class User implements Parcelable {
         dest.writeParcelable(location, flags);
         dest.writeTypedList(favAds);
         dest.writeTypedList(ads);
+        dest.writeParcelable(timeStamp, flags);
         dest.writeFloat(rating);
         dest.writeTypedList(myReviews);
         dest.writeParcelable(chat, flags);
@@ -186,6 +190,14 @@ public class User implements Parcelable {
 
     public String getUsername() {
         return username;
+    }
+
+    public Timestamp getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(Timestamp timeStamp) {
+        this.timeStamp = timeStamp;
     }
 
     public void setUsername(String username) {

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/mainBackGround"
+    tools:context=".ui.UserProfileActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/white_background"
+        android:orientation="vertical"
+        android:layout_marginTop="60dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+       <LinearLayout
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:layout_marginTop="25dp"
+           android:layout_marginStart="10dp"
+           android:layout_marginEnd="10dp"
+           android:padding="5dp"
+           android:orientation="horizontal">
+           <com.google.android.material.imageview.ShapeableImageView
+               android:id="@+id/sim_user_image_user_profile_activity"
+               android:layout_width="100dp"
+               android:layout_height="100dp"
+               android:src="@drawable/user_account_icon"
+               app:shapeAppearanceOverlay="@style/Circular"
+               app:strokeColor="@null"/>
+           <RelativeLayout
+               android:layout_width="0dp"
+               android:layout_height="match_parent"
+               android:orientation="vertical"
+               android:layout_gravity="center"
+               android:layout_marginEnd="10dp"
+               android:layout_marginStart="10dp"
+               android:layout_weight="1">
+               <TextView
+                   android:id="@+id/tv_user_rating_user_profile_activity"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:drawableStart="@drawable/star_icon"
+                   android:drawablePadding="5dp"
+                   android:gravity="bottom"
+                   android:layout_alignParentEnd="true"
+                   android:layout_gravity="end"
+                   android:layout_marginStart="40dp"
+                   android:text="3.5"
+                   android:textColor="@color/gray"
+                   android:textSize="12dp"
+                   android:textStyle="bold" />
+              <LinearLayout
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:layout_centerVertical="true"
+                  android:layout_below="@id/tv_user_rating_user_profile_activity"
+                  android:orientation="vertical">
+                  <TextView
+                      android:id="@+id/tv_user_name_user_profile_activity"
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:text="Name"
+                      android:textSize="18dp"
+                      android:padding="10dp"
+                      android:textColor="@color/black"/>
+
+                  <TextView
+                      android:id="@+id/tv_user_join_date_user_profile_activity"
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:textSize="15dp"
+                      android:padding="5dp" />
+
+
+              </LinearLayout>
+           </RelativeLayout>
+       </LinearLayout>
+
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/transparent">
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_scrollFlags="scroll|enterAlwaysCollapsed">
+
+           <LinearLayout
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:orientation="vertical">
+               <LinearLayout
+                   android:id="@+id/ll_description_user_profile_activity"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:orientation="vertical"
+                   android:layout_marginBottom="5dp">
+                   <TextView
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       android:padding="10dp"
+                       android:textColor="@color/black"
+                       android:textSize="18dp"
+                       android:text="@string/description"/>
+                   <TextView
+                       android:id="@+id/tv_user_description_user_profile_activity"
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       android:layout_marginStart="10dp"
+                       android:textColor="@color/black"
+                       android:layout_marginEnd="10dp"
+                       android:padding="5dp" />
+               </LinearLayout>
+                   <TextView
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       android:padding="10dp"
+                       android:textColor="@color/black"
+                       android:textSize="18dp"
+                       style="bold"
+                       android:text="@string/similarAds"/>
+               </LinearLayout>
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+        </com.google.android.material.appbar.AppBarLayout>
+
+           <com.facebook.shimmer.ShimmerFrameLayout
+                       android:layout_width="match_parent"
+                       android:layout_height="match_parent"
+                       app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                       android:id="@+id/shimmer_user_profile_activity">
+                       <LinearLayout
+                           android:layout_width="match_parent"
+                           android:orientation="vertical"
+                           android:layout_height="wrap_content">
+                           <include layout="@layout/shimmer_grid_layout"/>
+                           <include layout="@layout/shimmer_grid_layout"/>
+                           <include layout="@layout/shimmer_grid_layout"/>
+                           <include layout="@layout/shimmer_grid_layout"/>
+
+                       </LinearLayout>
+
+                   </com.facebook.shimmer.ShimmerFrameLayout>
+           <androidx.recyclerview.widget.RecyclerView
+               android:id="@+id/recycler_user_profile_activity"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:visibility="gone"
+               android:layout_marginTop="5dp"
+               android:layout_margin="10dp"
+               app:layout_behavior="@string/appbar_scrolling_view_behavior"
+               android:background="@drawable/recycle_view_background"
+               android:paddingBottom="8dp"
+               android:clipToPadding="false"
+               android:orientation="vertical"/>
+
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

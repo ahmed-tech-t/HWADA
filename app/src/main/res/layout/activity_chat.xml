@@ -19,35 +19,51 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
-            android:id="@+id/ll_user_chat_activity"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:foreground="?android:attr/selectableItemBackground"
-            android:gravity="center"
-            android:orientation="horizontal">
+       <LinearLayout
+           android:id="@+id/ll_user_chat_activity"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:clickable="true"
+           android:foreground="?android:attr/selectableItemBackground"
+           android:orientation="vertical">
 
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/sim_user_status"
-                android:layout_width="8dp"
-                android:layout_height="8dp"
-                android:layout_gravity="center"
-                android:layout_margin="2dp"
-                android:background="@color/green"
-                app:shapeAppearanceOverlay="@style/Circular"
-                app:strokeColor="@null" />
+           <LinearLayout
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:gravity="center"
+               android:orientation="horizontal">
+               <com.google.android.material.imageview.ShapeableImageView
+                   android:id="@+id/sim_user_status"
+                   android:layout_width="8dp"
+                   android:layout_height="8dp"
+                   android:layout_gravity="center"
+                   android:layout_margin="2dp"
+                   android:visibility="gone"
+                   android:background="@color/green"
+                   app:shapeAppearanceOverlay="@style/Circular"
+                   app:strokeColor="@null" />
 
-            <TextView
-                android:id="@+id/username_chat_activity"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:padding="5dp"
-                android:textColor="@color/white"
-                android:textSize="18dp" />
-        </LinearLayout>
+               <TextView
+                   android:id="@+id/username_chat_activity"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_gravity="center"
+                   android:gravity="center"
+                   android:paddingTop="5dp"
+                   android:paddingEnd="5dp"
+                   android:paddingStart="5dp"
+                   android:textColor="@color/white"
+                   android:textSize="18dp" />
+           </LinearLayout>
+           <TextView
+               android:id="@+id/tv_receiver_last_seen_chat_activity"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:gravity="center"
+               android:paddingBottom="5dp"
+               android:layout_gravity="center"
+               android:textColor="@color/white" />
+       </LinearLayout>
 
         <View
             android:layout_width="match_parent"

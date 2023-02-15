@@ -17,6 +17,7 @@ import com.example.hwada.database.DbHandler;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -61,7 +62,8 @@ private DebugRepository debugRepository;
                     String name = firebaseUser.getDisplayName();
                     String email = firebaseUser.getEmail();
                     String phone = firebaseUser.getPhoneNumber();
-                    User user = new User(uid, name, email,phone);
+                    Timestamp timestamp = app.getCurrentDate();
+                    User user = new User(uid, name, email,phone,timestamp);
                     user.setImage(firebaseUser.getPhotoUrl().toString());
                     user.setNew(isNewUser);
                     authenticatedUserMutableLiveData.setValue(user);
@@ -127,7 +129,8 @@ private DebugRepository debugRepository;
                             String name = user.getUsername();
                             String email = user.getEmail();
                             String phone = user.getPhone();
-                            User user = new User(uid, name, email,phone);
+                            Timestamp timestamp = app.getCurrentDate();
+                            User user = new User(uid, name, email,phone,timestamp);
                             user.setNew(isNewUser);
                             authenticatedUserMutableLiveData.setValue(user);
                          }
@@ -150,7 +153,8 @@ private DebugRepository debugRepository;
                     FirebaseUser firebaseUser = auth.getCurrentUser();
                     if (firebaseUser != null) {
                         String uid = firebaseUser.getUid();
-                        User user = new User(uid, email);
+                        Timestamp timestamp = app.getCurrentDate();
+                        User user = new User(uid, email,timestamp);
                         authenticatedUserMutableLiveData.setValue(user);
                     }
                 }else {

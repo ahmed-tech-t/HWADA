@@ -77,7 +77,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
 
     String target = "toAdsActivity";
 
-    DebugViewModel debugViewModel ;
     private User user;
     ArrayList<Ad> adsList;
 
@@ -222,7 +221,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
       try {
           user = getArguments().getParcelable("user");
 
-          debugViewModel = ViewModelProviders.of(this).get(DebugViewModel.class);
           userAddressViewModel = ViewModelProviders.of(this).get(UserAddressViewModel.class);
 
           userViewModel = UserViewModel.getInstance();

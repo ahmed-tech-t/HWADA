@@ -1,5 +1,6 @@
 package com.example.hwada.ui.view.ad.menu;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -28,10 +29,12 @@ import com.example.hwada.adapter.AdsGridAdapter;
 import com.example.hwada.adapter.ReviewAdapter;
 import com.example.hwada.database.DbHandler;
 import com.example.hwada.databinding.FragmentAdReviewsBinding;
+import com.example.hwada.ui.UserProfileActivity;
 import com.example.hwada.ui.view.ad.ReviewFragment;
 import com.example.hwada.viewmodel.AdsViewModel;
 import com.example.hwada.viewmodel.ReportViewModel;
 import com.example.hwada.viewmodel.ReviewViewModel;
+import com.example.hwada.viewmodel.UserViewModel;
 
 import java.util.ArrayList;
 
@@ -43,6 +46,7 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
     Ad ad ;
     User user ;
 
+    UserViewModel userViewModel ;
     ReportViewModel reportViewModel ;
     ReviewViewModel reviewViewModel ;
 
@@ -70,6 +74,7 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
         ad = getArguments().getParcelable("ad");
         user =getArguments().getParcelable("user");
 
+        userViewModel = UserViewModel.getInstance();
         binding.shimmerReviews.startShimmer();
 
         reportViewModel = ViewModelProviders.of(this).get(ReportViewModel.class);
@@ -116,7 +121,6 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
         });
     }
 
-
     private void callReviewBottomSheet(String tag){
         ReviewFragment fragment = new ReviewFragment();
         Bundle bundle =new Bundle();
@@ -139,7 +143,12 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
     }
     @Override
     public void getClickedUserFromComments(int position) {
-
+        userViewModel.getUserById(ad.getAdReviews().get(position).getAuthorId()).observe(this, new Observer<User>() {
+            @Override
+            public void onChanged(User user) {
+                callUserProfileActivity(user);
+            }
+        });
     }
 
     @Override
@@ -214,6 +223,7 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
                     adapter.removeOneItem(pos);
                     binding.linearLayoutCommentBox.setVisibility(View.VISIBLE);
                     binding.tvReviewsAdReviewsFragment.setText(getString(R.string.reviews)+"("+ad.getAdReviews().size()+")");
+                    if(adapter.getItemCount()==0) binding.reviewRecyclerAdReviewFragment.setVisibility(View.GONE);
                 }
             }
         });
@@ -222,6 +232,7 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
     @Override
     public void getAddedReview(AdReview review) {
         binding.linearLayoutCommentBox.setVisibility(View.GONE);
+        binding.reviewRecyclerAdReviewFragment.setVisibility(View.VISIBLE);
         binding.tvReviewsAdReviewsFragment.setText(getString(R.string.reviews)+"("+ad.getAdReviews().size()+")");
         adapter.addItem(review);
     }
@@ -234,5 +245,11 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
     private void closeShimmer(){
         binding.shimmerReviews.setVisibility(View.GONE);
         binding.shimmerReviews.stopShimmer();
+    }
+
+    private void callUserProfileActivity(User u){
+        Intent intent = new Intent(getContext(), UserProfileActivity.class);
+        intent.putExtra("user",u);
+        startActivity(intent);
     }
 }

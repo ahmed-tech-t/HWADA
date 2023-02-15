@@ -104,10 +104,7 @@ public class App extends Application {
     }
 
     public SimpleDateFormat timeFormatInSecond(){
-        return new SimpleDateFormat("d MMM yyyy , h:mm , s , a", Locale.ENGLISH);
-    }
-    public SimpleDateFormat timeFormat(){
-        return new SimpleDateFormat("d MMM yyyy , h:mm a", Locale.ENGLISH);
+        return new SimpleDateFormat("d MMM yyyy , h:mm , s ,a", Locale.ENGLISH);
     }
     public boolean checkCameraPermission(Context context) {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)

@@ -54,10 +54,13 @@ import com.example.hwada.ui.view.images.ImagesFullDialogFragment;
 import com.example.hwada.viewmodel.ChatViewModel;
 import com.example.hwada.viewmodel.MessageViewModel;
 import com.example.hwada.viewmodel.UserViewModel;
+import com.google.firebase.Timestamp;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -118,8 +121,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onChanged(User user) {
                 receiverInfo = user;
+                binding.simUserStatus.setVisibility(View.VISIBLE);
                 binding.usernameChatActivity.setText(receiverInfo.getUsername());
-                getUserStatus();
+                setReceiverListener();
             }
         });
     }
@@ -171,8 +175,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         });
         binding.cameraChatActivity.setOnClickListener(this);
         binding.mediaChatActivity.setOnClickListener(this);
-
-
+        binding.llUserChatActivity.setOnClickListener(this);
     }
     private void scrollRecycleViewToBottom(){
         //scroll recycle to the bottom
@@ -186,20 +189,26 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private void setDataToFields(){
         binding.tvAdTitleChatActivity.setText(ad.getTitle());
         Glide.with(this).load(ad.getImagesUrl().get(0)).into(binding.simAdChatActivity);
+
     }
 
-    private void getUserStatus(){
-        userViewModel.getUserStatus(receiverInfo.getUId()).observe(this, new Observer<String>() {
+    private void setReceiverListener(){
+        userViewModel.userListener(receiverInfo.getUId()).observe(this, new Observer<User>() {
             @Override
-            public void onChanged(String s) {
-                setUserStatusToView(s);
+            public void onChanged(User u) {
+                setUserStatusToView(u.getStatus());
+                binding.tvReceiverLastSeenChatActivity.setText(getString(R.string.lastSeen)+" "+handleTime(user.getLastSeen()));
             }
         });
     }
     private void setUserStatusToView(String status){
         if(status.equals(DbHandler.ONLINE)){
+            binding.tvReceiverLastSeenChatActivity.setVisibility(View.GONE);
             binding.simUserStatus.setBackgroundColor(getResources().getColor(R.color.green));
-        }else binding.simUserStatus.setBackgroundColor(Color.RED);
+        }else {
+            binding.tvReceiverLastSeenChatActivity.setVisibility(View.VISIBLE);
+            binding.simUserStatus.setBackgroundColor(Color.RED);
+        }
     }
 
     @Override
@@ -274,6 +283,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             if(app.checkStoragePermissions()){
                 pickImagesHandler();
             }else app.requestStoragePermissions(this);
+        }else if(v.getId()==binding.llUserChatActivity.getId()){
+            callUserProfileActivity();
         }
     }
 
@@ -457,7 +468,32 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    private void callUserProfileActivity(){
+        Intent intent = new Intent(this, UserProfileActivity.class);
+        intent.putExtra("user",user);
+        startActivity(intent);
+    }
+    public String handleTime(Timestamp timestamp){
+        Date date = timestamp.toDate();
+        String dateString = app.getDateFromTimeStamp(timestamp);
+        try {
+            Calendar today = Calendar.getInstance();
+            Calendar inputDate = Calendar.getInstance();
+            inputDate.setTime(date);
 
+            if (inputDate.get(Calendar.YEAR) == today.get(Calendar.YEAR)
+                    && inputDate.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR)) {
+                return getString(R.string.today)+ dateString.split(",")[1]+ dateString.split(",")[3] ;
+            }
+            else if (inputDate.get(Calendar.YEAR) == today.get(Calendar.YEAR)
+                    && inputDate.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR) - 1) {
+                return getString(R.string.yesterday)+ dateString.split(",")[1] + dateString.split(",")[3];
+            }
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return dateString.split(",")[0];
+    }
 
 }
