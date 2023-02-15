@@ -59,7 +59,7 @@ public class AdsRepository {
 
         newAd.setId(adDocRef.getId());
 
-        StorageReference imageRef = storageRef.child("images").child(newAd.getAuthorId()).child(newAd.getCategory()).child(newAd.getSubCategory()).child(newAd.getId());
+        StorageReference imageRef = storageRef.child("images").child(newAd.getAuthor().getUId()).child(newAd.getCategory()).child(newAd.getSubCategory()).child(newAd.getId());
 
         List<String> downloadUrls = new ArrayList<>();
 
@@ -99,7 +99,6 @@ public class AdsRepository {
 
                 DocumentReference adDocRef = getAdColRef(newAd).document(newAd.getId());
 
-
                 DocumentReference userAdDocRef = getUserAdColRef(newAd).document(newAd.getId());
 
                 // add new Ad to Ad collection
@@ -128,6 +127,35 @@ public class AdsRepository {
             }
         });
 
+    }
+
+    private void updateAd(Ad ad){
+
+        rootRef.runTransaction(new Transaction.Function<Object>() {
+           @Nullable
+           @Override
+           public Object apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+               //update user in ads
+
+               HashMap<String, Object> data = new HashMap<>();
+               data.put("title", ad.getTitle());
+               data.put("description", ad.getDescription());
+               data.put("price", ad.getPrice());
+               data.put("daysSchedule", ad.getDaysSchedule());
+
+               DocumentReference temp0DocRef = getUserAdColRef(ad).document(ad.getId());
+               DocumentReference temp1DocRef = getAdColRef(ad).document(ad.getId());
+                   DocumentReference temp2DocRef = getUserAdColRef(ad).document(ad.getId());
+                   DocumentReference temp3DocRef = getAdColHomePageRef().document(ad.getId());
+
+                   transaction.update(temp1DocRef,data);
+                   transaction.update(temp1DocRef,data);
+                   transaction.update(temp2DocRef,data);
+                   transaction.update(temp3DocRef,data);
+
+                   transaction.update(temp0DocRef,data);
+               return null;
+           }});
     }
 
     //********************************
@@ -160,7 +188,7 @@ public class AdsRepository {
     }
     private CollectionReference getUserAdColRef(Ad ad){
         CollectionReference ref;
-        ref =  rootRef.collection(DbHandler.userCollection).document(ad.getAuthorId()).collection(DbHandler.adCollection);
+        ref =  rootRef.collection(DbHandler.userCollection).document(ad.getAuthor().getUId()).collection(DbHandler.adCollection);
         return ref;
     }
 

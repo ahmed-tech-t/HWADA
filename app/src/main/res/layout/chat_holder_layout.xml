@@ -26,33 +26,82 @@
             android:gravity="start"
             android:layout_gravity="center"
             android:orientation="vertical">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:id="@+id/chat_title_chat_holder"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/title"
-                    android:textSize="18dp"
-                    android:layout_marginEnd="10dp"
-                    android:layout_toStartOf="@id/date_last_message_chat_holder"
-                    android:layout_alignParentStart="true"
-                    android:textColor="@color/black"/>
+                    android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="5dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/linearLayout_6"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/receiver_name_chat_holder"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="18dp"
+                        android:maxLength="20"
+                        android:ellipsize="end"
+                        android:layout_alignParentStart="true"
+                        android:textColor="@color/black"/>
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/sim_receiver_image_chat_holder"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        app:shapeAppearanceOverlay="@style/Circular"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerCrop"
+                        app:strokeColor="@null"
+                        android:layout_marginStart="5dp"
+                        android:layout_gravity="center" />
+                </LinearLayout>
                 <TextView
                     android:layout_alignParentEnd="true"
                     android:id="@+id/date_last_message_chat_holder"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="10:5"
+                    android:layout_gravity="center"
                     android:layout_marginEnd="10dp"
                     android:textSize="12dp"
                     android:textColor="@color/gray"/>
-
-            </RelativeLayout>
-
-            <LinearLayout
+                </LinearLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/chat_title_chat_holder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15dp"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="10dp"
+                android:layout_marginStart="5dp"
+                android:text="text"
+                android:textColor="@color/white"
+                android:background="@drawable/curved_background_white_blue"
+                android:backgroundTint="@color/background"
+                android:paddingEnd="5dp"
+                android:paddingStart="5dp"
+                android:layout_alignParentStart="true" />
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/new_message_notification_chat_holder"
+                android:layout_gravity="center"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_marginEnd="15dp"
+                android:visibility="gone"
+                app:shapeAppearanceOverlay="@style/Circular"
+                app:strokeColor="@null"
+                android:layout_centerVertical="true"
+                android:background="@color/background"
+                android:layout_alignParentEnd="true"
+                />
+</RelativeLayout>
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
@@ -63,6 +112,7 @@
                     android:layout_gravity="center"
                     android:layout_width="15dp"
                     android:layout_height="15dp"
+                    android:layout_centerVertical="true"
                     android:layout_marginEnd="5dp"
                     android:layout_alignParentStart="true"
                     android:src="@drawable/message_not_sent"
@@ -74,32 +124,26 @@
                     android:layout_height="15dp"
                     android:layout_marginEnd="5dp"
                     android:visibility="gone"
+
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@id/message_status_chat_holder"
                     android:src="@drawable/image_icon"
                     />
                 <TextView
                     android:id="@+id/last_message_chat_holder"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
                     android:layout_gravity="center"
+                    android:maxLength="30"
+                    android:ellipsize="end"
+                    android:text="xcvxvxvxcvxvxvxvxvxvxcvxvxcv"
+                    android:layout_toEndOf="@id/image_icon_chat_holder"
                     android:layout_marginEnd="5dp"
                     android:textSize="15dp"
-                    android:text="gdfgdgdfgd"
                     android:textColor="@color/gray"/>
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/new_message_notification_chat_holder"
-                    android:layout_gravity="center"
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:layout_marginEnd="15dp"
-                    android:visibility="gone"
-                    app:shapeAppearanceOverlay="@style/Circular"
-                    app:strokeColor="@null"
-                    android:background="@color/background"
-                    android:layout_alignParentEnd="true"
-                    />
-            </LinearLayout>
+
+            </RelativeLayout>
         </LinearLayout>
 
     </LinearLayout>

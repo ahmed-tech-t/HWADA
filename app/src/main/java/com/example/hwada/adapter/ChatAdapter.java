@@ -63,11 +63,16 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
     @Override
     public void onBindViewHolder(@NonNull ChatViewHolder holder, int position) {
         holder.setIsRecyclable(false);
+
         Message lastMessage = list.get(position).getLastMessage();
 
+       //add title and image
         Glide.with(mContext).load(list.get(position).getAd().getImagesUrl().get(0)).into(holder.adImage);
         holder.title.setText(list.get(position).getAd().getTitle());
 
+        // add author name and image
+        Glide.with(mContext).load(list.get(position).getReceiver().getImage()).into(holder.receiverImage);
+        holder.receiverName.setText(list.get(position).getReceiver().getUsername());
 
         if (list.get(position).getLastMessage() == null) {
             holder.messageStatus.setVisibility(View.GONE);
@@ -99,9 +104,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
 
             //set alert if their is new messages
             if(lastMessage.getReceiverId().equals(userId)){
-                Log.e(TAG, "onBindViewHolder: "+lastMessage.getReceiverId());
-                Log.e(TAG, "onBindViewHolder: "+userId);
-                Log.e(TAG, "onBindViewHolder: "+ lastMessage.isSeen());
                 if(!lastMessage.isSeen()){
                     holder.newMessageNotification.setVisibility(View.VISIBLE);
                     holder.date.setTextColor(ContextCompat.getColor(mContext,R.color.background));
@@ -140,13 +142,15 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
     public class ChatViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         OnItemListener onItemListener;
-        TextView date ,title, lastMessage;
+        TextView date ,title, lastMessage , receiverName;
 
         ImageView adImage, messageStatus ,imageIcon;
-        ShapeableImageView newMessageNotification;
+        ShapeableImageView newMessageNotification,receiverImage;
         public ChatViewHolder(@NonNull View v, OnItemListener onItemListener) {
             super(v);
             date = v.findViewById(R.id.date_last_message_chat_holder);
+            receiverName = v.findViewById(R.id.receiver_name_chat_holder);
+            receiverImage = v.findViewById(R.id.sim_receiver_image_chat_holder);
             title = v.findViewById(R.id.chat_title_chat_holder);
             lastMessage =v.findViewById(R.id.last_message_chat_holder);
             adImage =v.findViewById(R.id.chat_image_chat_holder);

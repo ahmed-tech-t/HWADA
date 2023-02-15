@@ -181,7 +181,7 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
        setAdDataToView();
         debugViewModel = ViewModelProviders.of(getActivity()).get(DebugViewModel.class);
 
-        if(user.getUId().equals(ad.getAuthorId())){
+        if(user.getUId().equals(ad.getAuthor().getUId())){
             binding.llContactAdvertiserFragment.setVisibility(View.GONE);
         }
 
@@ -198,7 +198,7 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
     private void setAdDataToView(){
         binding.tvDateAdvertiserFragment.setText(handleTime(ad.getTimeStamp()));
         binding.tvAdDistanceAdvertiserFragment.setText(ad.getDistance()+"");
-        binding.tvAdLocationAdvertiserFragment.setText(ad.getAuthorAddress());
+        binding.tvAdLocationAdvertiserFragment.setText(ad.getAuthor().getAddress());
     }
     private void updateViews(){
         adsViewModel.updateViews(ad);
@@ -221,16 +221,13 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         if(v.getId() == binding.arrowAdvertiser.getId()){
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         }else if(v.getId() == binding.tvAdLocationAdvertiserFragment.getId()){
-
             if(app.isGooglePlayServicesAvailable(getActivity())){
                 callBottomSheet(new MapPreviewFragment());
             }else showToast(getString(R.string.googleServicesWarning));
         }else if(v.getId() == binding.buttonCallAdvertiserFragment.getId()){
             callCallActivity();
         }else if (v.getId() == binding.buttonChatAdvertiserFragment.getId()){
-            Ad tempAd = new Ad(ad.getId(),ad.getAuthorId(),ad.getTitle(),ad.getCategory(),ad.getSubCategory(),ad.getSubSubCategory(),ad.getImagesUrl());
-            tempAd.setAuthorName(ad.getAuthorName());
-            Chat chat = new Chat(tempAd,app.getCurrentDate(),ad.getAuthorId());
+            Chat chat = new Chat(ad,app.getCurrentDate(),ad.getAuthor().getUId());
             chatViewModel.addNewChat(user.getUId(),chat).observe(this, new Observer<Chat>() {
                 @Override
                 public void onChanged(Chat chat) {
@@ -307,13 +304,10 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
             public void onTabSelected(TabLayout.Tab tab) {
                 int position = tab.getPosition();
                 if(position==0){
-                    Log.e(TAG, "onTabSelected: 0" );
                     callFragment(new AdDescriptionFragment());
                 }else if(position==1){
-                    Log.e(TAG, "onTabSelected: 1" );
                     callFragment(new AdWorkingTimeFragment());
                 }else if (position == 2){
-                    Log.e(TAG, "onTabSelected: 2" );
                     callFragment(new AdReviewsFragment());
                 }
             }
@@ -362,20 +356,18 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
 
             if (inputDate.get(Calendar.YEAR) == today.get(Calendar.YEAR)
                     && inputDate.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR)) {
-                return getString(R.string.today)+" " + dateString.split(",")[1] ;
+                return getString(R.string.today)+" " + dateString.split(",")[1] + dateString.split(",")[3] ;
             }
             else if (inputDate.get(Calendar.YEAR) == today.get(Calendar.YEAR)
                     && inputDate.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR) - 1) {
-                return getString(R.string.yesterday)+" "+ dateString.split(",")[1];
+                return getString(R.string.yesterday)+" "+ dateString.split(",")[1]+ dateString.split(",")[3];
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return dateString;
+        return dateString.split(",")[0]+dateString.split(",")[1]+dateString.split(",")[3];
     }
-
-
 
 
     @Override
@@ -426,16 +418,16 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         binding.recyclerGridFragmentAdvertiser.setAdapter(adsGridAdapter);
         binding.recyclerGridFragmentAdvertiser.setLayoutManager(new GridLayoutManager(getContext(),2));
     }
+
     private void callAdvertiserFragment(int pos){
-        Bundle bundle = new Bundle();
-        bundle.putParcelable("user", user);
-        bundle.putParcelable("ad",adsList.get(pos));
-        bundle.putParcelableArrayList("adsList",adsList);
-        bundle.putInt("pos",pos);
-        advertiserFragment.setArguments(bundle);
-        advertiserFragment.show(getChildFragmentManager(),advertiserFragment.getTag());
+        if(!advertiserFragment.isAdded()){
+            Bundle bundle = new Bundle();
+            bundle.putParcelable("user", user);
+            bundle.putParcelable("ad",adsList.get(pos));
+            advertiserFragment.setArguments(bundle);
+            advertiserFragment.show(getChildFragmentManager(),advertiserFragment.getTag());
+        }
     }
-    
    private void callCallActivity(){
         Intent dial = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:"+user.getPhone()));
         startActivity(dial);

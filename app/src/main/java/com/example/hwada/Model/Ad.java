@@ -16,14 +16,9 @@ public class Ad implements Parcelable {
 
 
     private String id;
-    private String authorId;
-    private String authorName;
-    private LocationCustom authorLocation;
-
-    private String authorAddress;
+    private User author;
     private String title;
     private String description;
-    
     private Timestamp timeStamp;
     private float distance ;
     private float rating;
@@ -42,70 +37,21 @@ public class Ad implements Parcelable {
         this.adReviews =new ArrayList<>();
         this.imagesUri = new ArrayList<>();
         this.daysSchedule =new DaysSchedule();
+        this.author = new User();
         this.distance = 0;
     }
 
-    public Ad(String id, String category, String subCategory, String subSubCategory) {
-        this.id = id;
+    public Ad(String adId, String category, String subCategory, String subSubCategory) {
+        this.author = new User();
+        author.setUId(adId);
         this.category = category;
         this.subCategory = subCategory;
         this.subSubCategory = subSubCategory;
     }
-
-    public Ad(String id, String authorId, String title, String category, String subCategory, String subSubCategory, List<String> imagesUrl) {
-        this.id = id;
-        this.authorId = authorId;
-        this.title = title;
-        this.category = category;
-        this.subCategory = subCategory;
-        this.subSubCategory = subSubCategory;
-        this.imagesUrl = imagesUrl;
-    }
-
-    public Ad(String id, String authorId, String authorName, LocationCustom authorLocation, String title, String description, Timestamp timeStamp, float distance, float rating, String category, String subCategory, String subSubCategory, ArrayList<AdReview> adReviews, double price, DaysSchedule daysSchedule, List<String> imagesUrl, int views) {
-        this.id = id;
-        this.authorId = authorId;
-        this.authorName = authorName;
-        this.authorLocation = authorLocation;
-        this.title = title;
-        this.description = description;
-        this.timeStamp = timeStamp;
-        this.distance = distance;
-        this.rating = rating;
-        this.category = category;
-        this.subCategory = subCategory;
-        this.subSubCategory = subSubCategory;
-        this.adReviews = adReviews;
-        this.price = price;
-        this.daysSchedule = daysSchedule;
-        this.imagesUrl = imagesUrl;
-        this.views = views;
-    }
-
-    public Ad(String authorId, String authorName, LocationCustom authorLocation, String title, String description, double price, Timestamp timeStamp, String category, String subCategory , String subSubCategory) {
-        this.authorId = authorId;
-        this.authorName = authorName;
-        this.authorLocation = authorLocation;
-        this.title = title;
-        this.description = description;
-        this.timeStamp = timeStamp;
-        this.category = category;
-        this.subCategory = subCategory;
-        this.subSubCategory = subSubCategory;
-        this.adReviews =new ArrayList<>();
-        this.imagesUri = new ArrayList<>();
-        this.daysSchedule =new DaysSchedule();
-        this.price =price;
-
-    }
-
 
     protected Ad(Parcel in) {
         id = in.readString();
-        authorId = in.readString();
-        authorName = in.readString();
-        authorLocation = in.readParcelable(LocationCustom.class.getClassLoader());
-        authorAddress = in.readString();
+        author = in.readParcelable(User.class.getClassLoader());
         title = in.readString();
         description = in.readString();
         timeStamp = in.readParcelable(Timestamp.class.getClassLoader());
@@ -146,13 +92,6 @@ public class Ad implements Parcelable {
         return views;
     }
 
-    public String getAuthorAddress() {
-        return authorAddress;
-    }
-
-    public void setAuthorAddress(String authorAddress) {
-        this.authorAddress = authorAddress;
-    }
 
     public void setViews(int views) {
         this.views = views;
@@ -182,29 +121,6 @@ public class Ad implements Parcelable {
         this.id = id;
     }
 
-    public String getAuthorId() {
-        return authorId;
-    }
-
-    public void setAuthorId(String authorId) {
-        this.authorId = authorId;
-    }
-
-    public String getAuthorName() {
-        return authorName;
-    }
-
-    public void setAuthorName(String authorName) {
-        this.authorName = authorName;
-    }
-
-    public LocationCustom getAuthorLocation() {
-        return authorLocation;
-    }
-
-    public void setAuthorLocation(LocationCustom authorLocation) {
-        this.authorLocation = authorLocation;
-    }
 
     public String getTitle() {
         return title;
@@ -301,30 +217,12 @@ public class Ad implements Parcelable {
         this.daysSchedule = daysSchedule;
     }
 
+    public User getAuthor() {
+        return author;
+    }
 
-
-    @Override
-    public String toString() {
-        return "Ad{" +
-                "id='" + id + '\'' +
-                ", authorId='" + authorId + '\'' +
-                ", authorName='" + authorName + '\'' +
-                ", authorLocation=" + authorLocation +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", timeStamp='" + timeStamp + '\'' +
-                ", distance=" + distance +
-                ", rating=" + rating +
-                ", category='" + category + '\'' +
-                ", subCategory='" + subCategory + '\'' +
-                ", subSubCategory='" + subSubCategory + '\'' +
-                ", adReviews=" + adReviews +
-                ", price=" + price +
-                ", daysSchedule=" + daysSchedule +
-                ", imagesUri=" + imagesUri +
-                ", imagesUrl=" + imagesUrl +
-                ", views=" + views +
-                '}';
+    public void setAuthor(User author) {
+        this.author = author;
     }
 
     @Override
@@ -334,12 +232,8 @@ public class Ad implements Parcelable {
 
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
-
         dest.writeString(id);
-        dest.writeString(authorId);
-        dest.writeString(authorName);
-        dest.writeParcelable(authorLocation, flags);
-        dest.writeString(authorAddress);
+        dest.writeParcelable(author, flags);
         dest.writeString(title);
         dest.writeString(description);
         dest.writeParcelable(timeStamp, flags);
@@ -356,5 +250,25 @@ public class Ad implements Parcelable {
         dest.writeInt(views);
     }
 
-
+    @Override
+    public String toString() {
+        return "Ad{" +
+                "id='" + id + '\'' +
+                ", author=" + author +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", timeStamp=" + timeStamp +
+                ", distance=" + distance +
+                ", rating=" + rating +
+                ", category='" + category + '\'' +
+                ", subCategory='" + subCategory + '\'' +
+                ", subSubCategory='" + subSubCategory + '\'' +
+                ", adReviews=" + adReviews +
+                ", price=" + price +
+                ", daysSchedule=" + daysSchedule +
+                ", imagesUri=" + imagesUri +
+                ", imagesUrl=" + imagesUrl +
+                ", views=" + views +
+                '}';
+    }
 }

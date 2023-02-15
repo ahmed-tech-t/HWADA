@@ -315,7 +315,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
             advertiserFragment.setArguments(bundle);
             advertiserFragment.show(getChildFragmentManager(),advertiserFragment.getTag());
         }
-
     }
 
   private void setLocationArrowWhenLanguageIsArabic(){

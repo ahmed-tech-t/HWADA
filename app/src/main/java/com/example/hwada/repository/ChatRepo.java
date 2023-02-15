@@ -13,9 +13,11 @@ import com.example.hwada.Model.Message;
 import com.example.hwada.Model.User;
 import com.example.hwada.application.App;
 import com.example.hwada.database.DbHandler;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
@@ -55,7 +57,7 @@ public class ChatRepo {
     }
     public MutableLiveData<Chat> addNewChat(String senderId ,Chat chat){
         MutableLiveData <Chat> mutableLiveData = new MutableLiveData<>();
-        String chatId = getChatId(senderId,chat.getReceiverId(),chat.getAd());
+        String chatId = getChatId(senderId,chat.getReceiver().getUId(),chat.getAd());
         chat.setId(chatId);
 
         getChatRef(senderId).document(chatId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -71,15 +73,14 @@ public class ChatRepo {
                             @Nullable
                             @Override
                             public Object apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
-                                String receiverId = chat.getReceiverId();
+                                String receiverId = chat.getReceiver().getUId();
                                 DocumentReference docRefSender = getChatRef(senderId).document(chatId);
-                                DocumentReference docRefReceiver = getChatRef(chat.getReceiverId()).document(chatId);
+                                DocumentReference docRefReceiver = getChatRef(chat.getReceiver().getUId()).document(chatId);
 
                                 transaction.set(docRefSender,chat);
-                                chat.setReceiverId(senderId);
+                                chat.getReceiver().setUId(senderId);
                                 transaction.set(docRefReceiver,chat);
-                                chat.setReceiverId(receiverId);
-
+                                chat.getReceiver().setUId(receiverId);
                                 return null;
                             }
                         }).addOnCompleteListener(new OnCompleteListener<Object>() {
@@ -103,73 +104,53 @@ public class ChatRepo {
         MutableLiveData<ArrayList<Chat>> mutableLiveData = new MutableLiveData<>();
         getChatRef(userId)
                 .orderBy("lastMessage.timeStamp", Query.Direction.DESCENDING)
-                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    ArrayList<Chat> chatArrayList = new ArrayList<>();
-                    QuerySnapshot querySnapshot = task.getResult();
-                    List<DocumentSnapshot> documents = querySnapshot.getDocuments();
-                    if(documents.isEmpty()){
-                        Log.e(TAG, "onComplete: empty" );
-                        mutableLiveData.setValue(new ArrayList<>());
-                        return;
-                    }
-
-                    for (DocumentSnapshot document : documents) {
-
-                        Chat chat = document.toObject(Chat.class);
-
-                        getAdDocRef(chat.getAd()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                if (task.isSuccessful()){
-                                    DocumentSnapshot adSnapshot = task.getResult();
-                                    Ad ad = adSnapshot.toObject(Ad.class);
-                                    chat.setAd(ad);
-                                    chatArrayList.add(chat);
-                                    if(chatArrayList.size() == documents.size()){
-                                        mutableLiveData.setValue(chatArrayList);
-                                        return;
+                .get()
+                .continueWithTask(new Continuation<QuerySnapshot, Task<List<Chat>>>() {
+                    @Override
+                    public Task<List<Chat>> then(@NonNull Task<QuerySnapshot> task) {
+                        ArrayList<Task<Chat>> chatTasks = new ArrayList<>();
+                        QuerySnapshot querySnapshot = task.getResult();
+                        if (querySnapshot.isEmpty()) {
+                            return Tasks.forResult(new ArrayList<Chat>());
+                        }
+                        for (DocumentSnapshot document : task.getResult()) {
+                            Chat chat = document.toObject(Chat.class);
+                            Log.e(TAG, "then: chat" );
+                            Task<DocumentSnapshot> userTask = userDocumentRef(chat.getReceiver().getUId()).get();
+                            Task<DocumentSnapshot> adTask = getAdColRef(chat.getAd()).document(chat.getAd().getId()).get();
+                            Task<Chat> chatTask = Tasks.whenAllSuccess(userTask, adTask).continueWith(new Continuation<List<Object>, Chat>() {
+                                @Override
+                                public Chat then(@NonNull Task<List<Object>> task) {
+                                    List<Object> results = task.getResult();
+                                    // Update the chat with the user information
+                                    DocumentSnapshot userDoc = (DocumentSnapshot) results.get(0);
+                                    if (userDoc.exists()) {
+                                        chat.setReceiver(userDoc.toObject(User.class));
                                     }
+                                    DocumentSnapshot adDoc = (DocumentSnapshot) results.get(1);
+                                    if (adDoc.exists()) {
+                                        chat.setAd(adDoc.toObject(Ad.class));
+                                    }
+                                    return chat;
                                 }
-                            }
-                        });
+                            });
 
+                            chatTasks.add(chatTask);
+                        }
+                        return Tasks.whenAllSuccess(chatTasks);
                     }
-                } else {
-
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                e.printStackTrace();
-            }
-        });
+                }).continueWith(new Continuation<List<Chat>, Object>() {
+                    @Override
+                    public Object then(@NonNull Task<List<Chat>> task) throws Exception {
+                       mutableLiveData.setValue((ArrayList<Chat>) task.getResult());
+                        return null;
+                    }
+                });
         return mutableLiveData;
     }
 
-
-    private DocumentReference getAdDocRef(Ad ad){
-        DocumentReference adDocRef;
-        if (ad.getCategory().equals(DbHandler.FREELANCE)){
-            adDocRef = rootRef.collection(DbHandler.adCollection)
-                    .document(ad.getCategory())
-                    .collection(ad.getCategory())
-                    .document(ad.getSubCategory())
-                    .collection(ad.getSubSubCategory()).document(ad.getId());
-        }else {
-            adDocRef = rootRef.collection(DbHandler.adCollection)
-                    .document(ad.getCategory())
-                    .collection(ad.getSubCategory()).document(ad.getId());
-        }
-        return adDocRef;
-    }
-
-
     private String getChatId(String senderId , String receiverId, Ad ad){
-        if(ad.getAuthorId().equals(senderId)){
+        if(ad.getAuthor().getUId().equals(senderId)){
             return ad.getId()+receiverId;
         }
         return ad.getId()+senderId;
@@ -178,7 +159,9 @@ public class ChatRepo {
     private CollectionReference getChatRef(String id){
         return rootRef.collection(DbHandler.userCollection).document(id).collection(DbHandler.chatCollection);
     }
-
+    private DocumentReference userDocumentRef(String id){
+        return rootRef.collection(DbHandler.userCollection).document(id);
+    }
     public MutableLiveData<ArrayList<Chat>> chatListener(String userId){
         MutableLiveData<ArrayList<Chat>> mutableLiveData = new MutableLiveData<>();
         getChatRef(userId)
@@ -187,35 +170,76 @@ public class ChatRepo {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException e) {
                         if (e != null) {
-                            Log.w(TAG, "Listen failed.", e);
+                            Log.e(TAG, "Listen failed.", e);
+                            mutableLiveData.setValue(new ArrayList<>());
+                            return;
+                        }
+                        if (value.isEmpty()) {
+                            Log.e(TAG, "QuerySnapshot is empty.");
+                            mutableLiveData.setValue(new ArrayList<>());
                             return;
                         }
                         ArrayList<Chat> chats = new ArrayList<>();
                         for (QueryDocumentSnapshot doc : value) {
                             Chat chat = doc.toObject(Chat.class);
-                                     chats.add(chat);
+                            getAdColRef(chat.getAd()).document(chat.getAd().getId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    if(task.isSuccessful()){
+                                        chat.setAd(task.getResult().toObject(Ad.class));
+                                            userDocumentRef(chat.getReceiver().getUId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                      if (task.isSuccessful()){
+                                                          chat.setReceiver(task.getResult().toObject(User.class));
+                                                          chats.add(chat);
+                                                          if(value.size() == chats.size()) {
+                                                            mutableLiveData.setValue(chats);
+                                                          }
+                                                      }else{
+                                                          Log.e(TAG, "onComplete: failed to load chat");
+                                                          mutableLiveData.setValue(new ArrayList<>());
+                                                      }
+                                                }
+                                            });
+                                    }else {
+                                        Log.e(TAG, "onComplete: failed to load chat");
+                                        mutableLiveData.setValue(new ArrayList<>());
+                                    }
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    e.printStackTrace();
+                                }
+                            });
                         }
-                        mutableLiveData.setValue(chats);
                     }
-
                 });
         return mutableLiveData ;
     }
 
-    public MutableLiveData<User> getReceiverInfo(String id){
-        MutableLiveData<User> mutableLiveData = new MutableLiveData<>();
-        DocumentReference docRef = rootRef.collection(DbHandler.userCollection).document(id);
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                DocumentSnapshot snapshot = task.getResult();
-                User user = snapshot.toObject(User.class);
-                mutableLiveData.setValue(user);
-            }
-        });
-
-        return mutableLiveData;
+    private CollectionReference getAdColRef(Ad ad){
+        if (ad.getCategory().equals(DbHandler.FREELANCE)){
+            return getAdColRef(ad.getCategory(),ad.getSubCategory(),ad.getSubSubCategory());
+        }else {
+            return getAdColRef(ad.getCategory(),ad.getSubCategory());
+        }
     }
-
-
+    private CollectionReference getAdColRef(String category , String subCategory){
+        CollectionReference adColRef;
+        adColRef = rootRef.collection(DbHandler.adCollection)
+                .document(category)
+                .collection(subCategory);
+        return adColRef;
+    }
+    private CollectionReference getAdColRef(String category , String subCategory , String subSubCategory){
+        CollectionReference adColRef;
+        adColRef = rootRef.collection(DbHandler.adCollection)
+                .document(category)
+                .collection(category)
+                .document(subCategory)
+                .collection(subSubCategory);
+        return adColRef;
+    }
 }

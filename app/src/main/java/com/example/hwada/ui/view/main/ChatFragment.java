@@ -70,7 +70,7 @@ public class ChatFragment extends Fragment implements ChatAdapter.OnItemListener
                 .get(ChatViewModel.class);
 
 
-        //chatObserver();
+
         chatListener();
     }
 
@@ -82,11 +82,6 @@ public class ChatFragment extends Fragment implements ChatAdapter.OnItemListener
         binding.recyclerChatFragment.setLayoutManager( new LinearLayoutManager(getContext()));
     }
 
-    private void filterMessages(){
-        for (int i =0 ; i<chatList.size();i++) {
-            if(chatList.get(i).getLastMessage()== null) chatList.remove(i);
-        }
-    }
 
     @Override
     public void getItemPosition(int position) {
@@ -125,5 +120,7 @@ public class ChatFragment extends Fragment implements ChatAdapter.OnItemListener
             }
         });
     }
+
+
 
 }

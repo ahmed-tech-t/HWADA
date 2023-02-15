@@ -35,7 +35,4 @@ public class ChatViewModel extends AndroidViewModel {
     public LiveData<ArrayList<Chat>> chatListener(String userId){
         return repo.chatListener(userId);
     }
-    public LiveData<User>getReceiverInfo(String id){
-        return repo.getReceiverInfo(id);
-    }
 }

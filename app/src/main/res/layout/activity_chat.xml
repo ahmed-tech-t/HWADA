@@ -44,7 +44,7 @@
                    app:strokeColor="@null" />
 
                <TextView
-                   android:id="@+id/username_chat_activity"
+                   android:id="@+id/tv_receiver_name_chat_activity"
                    android:layout_width="wrap_content"
                    android:layout_height="wrap_content"
                    android:layout_gravity="center"
@@ -74,6 +74,8 @@
             android:id="@+id/ll_ad_chat_activity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:clickable="true"
+            android:background="?attr/selectableItemBackground"
             android:layout_margin="5dp">
 
             <TextView
@@ -83,6 +85,10 @@
                 android:layout_marginStart="10dp"
                 android:gravity="center_vertical"
                 android:text="title"
+                android:background="@drawable/curved_background_white_blue"
+                android:backgroundTint="@color/background"
+                android:paddingEnd="5dp"
+                android:paddingStart="5dp"
                 android:textColor="@color/white"
                 android:textSize="18dp"
                 app:layout_constraintBottom_toBottomOf="parent"

@@ -57,7 +57,7 @@ public class ReviewRepo {
     }
     private CollectionReference getUserAdColRef(Ad ad){
         CollectionReference ref;
-        ref =  rootRef.collection(DbHandler.userCollection).document(ad.getAuthorId()).collection(DbHandler.adCollection);
+        ref =  rootRef.collection(DbHandler.userCollection).document(ad.getAuthor().getUId()).collection(DbHandler.adCollection);
         return ref;
     }
     private CollectionReference getAdColHomePageRef(){
@@ -204,7 +204,7 @@ public class ReviewRepo {
 
                 //delete review from user ad collection
 
-                reviewDocRef = rootRef.collection(DbHandler.userCollection).document(ad.getAuthorId()).collection(DbHandler.adCollection)
+                reviewDocRef = rootRef.collection(DbHandler.userCollection).document(ad.getAuthor().getUId()).collection(DbHandler.adCollection)
                         .document(ad.getId()).collection(DbHandler.Reviews).document(review.getId());
                 transaction.delete(reviewDocRef);
 

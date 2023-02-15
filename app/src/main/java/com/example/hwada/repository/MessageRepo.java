@@ -201,14 +201,14 @@ public class MessageRepo {
     }
 
     private String getChatId(Message message, Ad ad){
-        if(ad.getAuthorId().equals(message.getSenderId())){
+        if(ad.getAuthor().getUId().equals(message.getSenderId())){
             return ad.getId()+message.getReceiverId();
         }
         return ad.getId()+message.getSenderId();
     }
 
     private String getChatId(String senderId , String receiverId, Ad ad){
-        if(ad.getAuthorId().equals(senderId)){
+        if(ad.getAuthor().getUId().equals(senderId)){
             return ad.getId()+receiverId;
         }
         return ad.getId()+senderId;

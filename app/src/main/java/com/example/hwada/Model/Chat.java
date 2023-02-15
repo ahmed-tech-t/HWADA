@@ -14,18 +14,20 @@ public class Chat implements Parcelable {
     private Ad ad;
     Message lastMessage ;
     ArrayList<Message> messages ;
-    String receiverId;
+    User receiver;
     Timestamp timeStamp;
     public Chat() {
         messages = new ArrayList<>();
         lastMessage = new Message();
+        receiver = new User();
         ad = new Ad();
     }
 
     public Chat(Ad ad, Timestamp timeStamp, String receiverId) {
         this.ad = ad;
         this.timeStamp = timeStamp;
-        this.receiverId = receiverId;
+        this.receiver = new User();
+        this.receiver.setUId(receiverId);
     }
 
 
@@ -34,7 +36,8 @@ public class Chat implements Parcelable {
         this.ad = ad;
         this.lastMessage = lastMessage;
         this.timeStamp = timeStamp;
-        this.receiverId = receiverId;
+        this.receiver = new User();
+        this.receiver.setUId(receiverId);
     }
 
 
@@ -43,7 +46,7 @@ public class Chat implements Parcelable {
         ad = in.readParcelable(Ad.class.getClassLoader());
         lastMessage = in.readParcelable(Message.class.getClassLoader());
         messages = in.createTypedArrayList(Message.CREATOR);
-        receiverId = in.readString();
+        receiver = in.readParcelable(User.class.getClassLoader());
         timeStamp = in.readParcelable(Timestamp.class.getClassLoader());
     }
 
@@ -67,17 +70,13 @@ public class Chat implements Parcelable {
         this.id = id;
     }
 
-    public String getReceiverId() {
-        return receiverId;
+    public User getReceiver() {
+        return receiver;
     }
 
-    public void setReceiverId(String receiverId) {
-        this.receiverId = receiverId;
+    public void setReceiver(User receiver) {
+        this.receiver = receiver;
     }
-
-
-
-
 
     public Message getLastMessage() {
         return lastMessage;
@@ -119,9 +118,9 @@ public class Chat implements Parcelable {
                 ", lastMessage=" + lastMessage +
                 ", timeStamp='" + timeStamp + '\'' +
                 ", messages=" + messages +
-                ", receiverId='" + receiverId + '\'' +
                 '}'+"\n";
     }
+
 
     @Override
     public int describeContents() {
@@ -134,7 +133,7 @@ public class Chat implements Parcelable {
         dest.writeParcelable(ad, flags);
         dest.writeParcelable(lastMessage, flags);
         dest.writeTypedList(messages);
-        dest.writeString(receiverId);
+        dest.writeParcelable(receiver, flags);
         dest.writeParcelable(timeStamp, flags);
     }
 }

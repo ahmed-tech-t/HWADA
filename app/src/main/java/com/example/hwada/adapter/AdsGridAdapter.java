@@ -149,7 +149,7 @@ public class AdsGridAdapter extends RecyclerView.Adapter<AdsGridAdapter.HomeView
 
             if (inputDate.get(Calendar.YEAR) == today.get(Calendar.YEAR)
                     && inputDate.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR)) {
-                return mContext.getString(R.string.today)+" " + dateString.split(",")[1] ;
+                return mContext.getString(R.string.today)+" " + dateString.split(",")[1]+dateString.split(",")[3] ;
             }
             else if (inputDate.get(Calendar.YEAR) == today.get(Calendar.YEAR)
                     && inputDate.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR) - 1) {
@@ -168,8 +168,8 @@ public class AdsGridAdapter extends RecyclerView.Adapter<AdsGridAdapter.HomeView
         location1.setLongitude(user.getLocation().getLongitude());
 
         Location location2 = new Location("ad");
-        location2.setLatitude(list.get(pos).getAuthorLocation().getLatitude());
-        location2.setLongitude(list.get(pos).getAuthorLocation().getLongitude());
+        location2.setLatitude(list.get(pos).getAuthor().getLocation().getLatitude());
+        location2.setLongitude(list.get(pos).getAuthor().getLocation().getLongitude());
 
         float distanceInMeters = location1.distanceTo(location2)/1000;
 

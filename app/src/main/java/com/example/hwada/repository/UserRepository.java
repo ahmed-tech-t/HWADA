@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
@@ -22,6 +23,7 @@ import com.example.hwada.Model.LocationCustom;
 import com.example.hwada.Model.MyReview;
 import com.example.hwada.Model.User;
 import com.example.hwada.database.DbHandler;
+import com.example.hwada.viewmodel.UserViewModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -36,6 +38,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Transaction;
 import com.google.gson.Gson;
 
 import org.checkerframework.checker.units.qual.A;
@@ -58,9 +61,12 @@ public class UserRepository {
 
     MutableLiveData<User> userMutableLiveData;
 
+    UserViewModel userViewModel ;
+
     public UserRepository (){
         this.auth = FirebaseAuth.getInstance();
         userMutableLiveData = new MutableLiveData<>();
+        userViewModel = UserViewModel.getInstance();
     }
 
 
@@ -71,15 +77,14 @@ public class UserRepository {
         data.put("phone",user.getPhone());
         data.put("aboutYou",user.getAboutYou());
         data.put("gender",user.getGender());
-        rootRef.collection(DbHandler.userCollection).document(auth.getUid()).update(data).addOnCompleteListener(new OnCompleteListener<Void>() {
+
+        rootRef.collection(DbHandler.userCollection).document(user.getUId()).update(data).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()){
-                    updateSuccess.setValue(user);
-                }
+                if(task.isSuccessful()) updateSuccess.setValue(user);
             }
         });
-        return updateSuccess ;
+           return updateSuccess ;
     }
     public MutableLiveData<Boolean> updateUserLocation(LocationCustom location,String address) {
         MutableLiveData<Boolean> mutableLiveData = new MutableLiveData<>();
@@ -216,6 +221,14 @@ public class UserRepository {
 
     private DocumentReference userDocumentRef(String id){
         return rootRef.collection(DbHandler.userCollection).document(id);
+    }
+
+    private CollectionReference getAdColRef(String category , String subCategory){
+        CollectionReference adColRef;
+        adColRef = rootRef.collection(DbHandler.adCollection)
+                .document(category)
+                .collection(subCategory);
+        return adColRef;
     }
 
 

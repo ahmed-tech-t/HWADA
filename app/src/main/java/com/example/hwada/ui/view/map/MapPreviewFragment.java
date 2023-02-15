@@ -130,8 +130,8 @@ public class MapPreviewFragment extends BottomSheetDialogFragment implements OnM
             Log.e(TAG, "onMapReady: Map is ready ");
 
             binding.icLocationMapPreviewFragment.setOnClickListener(this);
-            if(ad.getAuthorLocation()!=null) {
-                setMapSettingAndMoveCamera(ad.getAuthorLocation());
+            if(ad.getAuthor().getLocation()!=null) {
+                setMapSettingAndMoveCamera(ad.getAuthor().getLocation());
             }
 
         }catch (Exception e){
@@ -230,7 +230,7 @@ public class MapPreviewFragment extends BottomSheetDialogFragment implements OnM
             }
             mMap.addMarker(new MarkerOptions()
                     .position(latLng) // position
-                    .title(getUserAddress(ad.getAuthorLocation()))
+                    .title(getUserAddress(ad.getAuthor().getLocation()))
                     .icon(markerImage())
             );
             mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.empty_map_style));

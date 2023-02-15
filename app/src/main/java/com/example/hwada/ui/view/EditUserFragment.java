@@ -150,15 +150,16 @@ public class EditUserFragment extends BottomSheetDialogFragment implements View.
         }else if(v.getId() == binding.saveButtonAddNewAd.getId()){
             if(fieldsNotEmpty()){
                 app.hideKeyboardFrom(getContext(), v);
+                tempUser.setUId(user.getUId());
                 tempUser.setPhone(binding.phoneEditUserFragment.getText().toString());
                 tempUser.setUsername(binding.userNameEditUserFragment.getText().toString());
                 tempUser.setAboutYou(binding.aboutUEditUserFragment.getText().toString());
-                updateUser(v);
+                updateUser();
             }
         }
     }
 
-    private void updateUser(View v){
+    private void updateUser(){
         userViewModel.updateUser(tempUser);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
     }

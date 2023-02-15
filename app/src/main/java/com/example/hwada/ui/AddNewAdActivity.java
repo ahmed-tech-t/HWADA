@@ -88,10 +88,7 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
     
     private void initAd(Intent intent){
         newAd = new Ad();
-        newAd.setAuthorId(user.getUId());
-        newAd.setAuthorName(user.getUsername());
-        newAd.setAuthorLocation(user.getLocation());
-        newAd.setAuthorAddress(user.getAddress());
+        newAd.setAuthor(user);
         newAd.setCategory(intent.getStringExtra("category"));
         newAd.setSubCategory(intent.getStringExtra("subCategory"));
         newAd.setSubSubCategory(intent.getStringExtra("subSubCategory"));
@@ -298,8 +295,8 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
         
         private void setUserAddress(){
             binding.tvUserAddressAddNewAdActivity.setText(user.getAddress());
-            newAd.setAuthorLocation(user.getLocation());
-            newAd.setAuthorAddress(user.getAddress());
+            newAd.getAuthor().setLocation(user.getLocation());
+            newAd.getAuthor().setAddress(user.getAddress());
             
         }
     @Override
