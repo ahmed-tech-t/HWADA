@@ -47,7 +47,18 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
     }
 
     @Override
+    public long getItemId(int position) {
+        return super.getItemId(position);
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return super.getItemViewType(position);
+    }
+
+    @Override
     public void onBindViewHolder(@NonNull ReviewViewHolder holder, int position) {
+        holder.setIsRecyclable(false);
         holder.username.setText(list.get(position).getAuthorName());
         holder.body.setText(list.get(position).getBody());
         holder.date.setText(handleTime(list.get(position).getTimeStamp()));
@@ -110,19 +121,21 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
     }
     public void removeOneItem(int position){
         list.remove(position);
-        notifyItemRemoved(position);
-        notifyItemRangeChanged(position,list.size());
+        notifyDataSetChanged();
     }
 
     public void addItem(AdReview review) {
         Log.e(TAG, "addItem: " + review );
-        list.add(review);
+        list.add(0,review);
         notifyDataSetChanged();
     }
 
+    public ArrayList<AdReview> getList(){
+        return list ;
+    }
     public void updateItem(AdReview review , int pos){
         list.set(pos, review);
-        notifyItemChanged(pos);
+        notifyDataSetChanged();
     }
     public String handleTime(Timestamp timestamp){
         Date date = timestamp.toDate();

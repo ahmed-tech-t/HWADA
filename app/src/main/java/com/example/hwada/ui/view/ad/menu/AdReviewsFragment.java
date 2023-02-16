@@ -78,23 +78,15 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
         binding.shimmerReviews.startShimmer();
 
         reportViewModel = ViewModelProviders.of(this).get(ReportViewModel.class);
-        if(userMadeReview()){
-            binding.linearLayoutCommentBox.setVisibility(View.GONE);
-        }else binding.linearLayoutCommentBox.setVisibility(View.VISIBLE);
-        Glide.with(getActivity()).load(user.getImage()).into(binding.userImageAdReview);
-
         reviewViewModel =ViewModelProviders.of(this).get(ReviewViewModel.class);
-        binding.tvReviewsAdReviewsFragment.setText(getString(R.string.reviews)+"("+ad.getAdReviews().size()+")");
         getALlReviews();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if(userMadeReview()){
-            binding.linearLayoutCommentBox.setVisibility(View.GONE);
-        }else binding.linearLayoutCommentBox.setVisibility(View.VISIBLE);
-    }
+       // initReviewBox();
+     }
 
     public void setRecycler() {
         closeShimmer();
@@ -106,6 +98,7 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
             adapter.setList(ad.getAdReviews(),this);
             if(!ad.getAdReviews().isEmpty())binding.reviewRecyclerAdReviewFragment.setVisibility(View.VISIBLE);
             binding.reviewRecyclerAdReviewFragment.setLayoutManager(new LinearLayoutManager(getActivity()));
+            binding.reviewRecyclerAdReviewFragment.setHasFixedSize(true);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -117,10 +110,18 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
             public void onChanged(ArrayList<AdReview> adReviews) {
                 ad.setAdReviews(adReviews);
                 setRecycler();
+                initReviewBox();
             }
         });
     }
 
+    private void initReviewBox(){
+        binding.tvReviewsAdReviewsFragment.setText(getString(R.string.reviews)+"("+ad.getAdReviews().size()+")");
+        Glide.with(getActivity()).load(user.getImage()).into(binding.userImageAdReview);
+        if(userMadeReview()){
+            binding.linearLayoutCommentBox.setVisibility(View.GONE);
+        }else binding.linearLayoutCommentBox.setVisibility(View.VISIBLE);
+    }
     private void callReviewBottomSheet(String tag){
         ReviewFragment fragment = new ReviewFragment();
         Bundle bundle =new Bundle();
@@ -145,8 +146,8 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
     public void getClickedUserFromComments(int position) {
         userViewModel.getUserById(ad.getAdReviews().get(position).getAuthorId()).observe(this, new Observer<User>() {
             @Override
-            public void onChanged(User user) {
-                callUserProfileActivity(user);
+            public void onChanged(User u) {
+                callUserProfileActivity(u);
             }
         });
     }
@@ -216,11 +217,14 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
     }
 
     private void deleteReview(AdReview review,int pos){
+        Log.e(TAG, "deleteReview: "+pos );
+        adapter.getList();
         reviewViewModel.deleteReview(user,ad,review).observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean success) {
                 if(success){
                     adapter.removeOneItem(pos);
+                    Log.e(TAG, "onChanged: "+adapter.getList());
                     binding.linearLayoutCommentBox.setVisibility(View.VISIBLE);
                     binding.tvReviewsAdReviewsFragment.setText(getString(R.string.reviews)+"("+ad.getAdReviews().size()+")");
                     if(adapter.getItemCount()==0) binding.reviewRecyclerAdReviewFragment.setVisibility(View.GONE);
@@ -233,8 +237,9 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
     public void getAddedReview(AdReview review) {
         binding.linearLayoutCommentBox.setVisibility(View.GONE);
         binding.reviewRecyclerAdReviewFragment.setVisibility(View.VISIBLE);
-        binding.tvReviewsAdReviewsFragment.setText(getString(R.string.reviews)+"("+ad.getAdReviews().size()+")");
         adapter.addItem(review);
+        Log.e(TAG, "onChanged: "+adapter.getList());
+        binding.tvReviewsAdReviewsFragment.setText(getString(R.string.reviews)+"("+ad.getAdReviews().size()+")");
     }
 
     @Override
@@ -249,7 +254,8 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
 
     private void callUserProfileActivity(User u){
         Intent intent = new Intent(getContext(), UserProfileActivity.class);
-        intent.putExtra("user",u);
+        intent.putExtra("user",user);
+        intent.putExtra("receiver",u);
         startActivity(intent);
     }
 }

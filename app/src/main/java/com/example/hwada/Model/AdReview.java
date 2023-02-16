@@ -137,4 +137,17 @@ public class AdReview implements Parcelable {
         dest.writeFloat(rating);
         dest.writeString(body);
     }
+
+    @Override
+    public String toString() {
+        return "AdReview{" +
+                "id='" + id + '\'' +
+                ", timeStamp=" + timeStamp +
+                ", authorId='" + authorId + '\'' +
+                ", authorName='" + authorName + '\'' +
+                ", authorImage='" + authorImage + '\'' +
+                ", rating=" + rating +
+                ", body='" + body + '\'' +
+                '}';
+    }
 }

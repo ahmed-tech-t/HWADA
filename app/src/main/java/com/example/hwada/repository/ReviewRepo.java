@@ -1,5 +1,6 @@
 package com.example.hwada.repository;
 
+import android.graphics.Path;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -18,6 +19,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Transaction;
@@ -67,7 +69,9 @@ public class ReviewRepo {
     public MutableLiveData<ArrayList<AdReview>> getAdReviews(Ad ad){
         MutableLiveData<ArrayList<AdReview>> mutableLiveData = new MutableLiveData<>();
         ArrayList<AdReview> adReviews = new ArrayList<>();
-        getAdColRef(ad).document(ad.getId()).collection(DbHandler.Reviews).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        getAdColRef(ad).document(ad.getId()).collection(DbHandler.Reviews)
+                .orderBy("timeStamp", Query.Direction.DESCENDING)
+                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
