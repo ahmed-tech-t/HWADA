@@ -1,11 +1,15 @@
 package com.example.hwada.ui.view;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -39,6 +43,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.ArrayList;
 
 
@@ -50,6 +55,7 @@ public class EditUserFragment extends BottomSheetDialogFragment implements View.
     User tempUser ;
     App app ;
     UserViewModel userViewModel ;
+    int PICK_IMAGE = 4 ;
     private static final String TAG = "EditUserFragment";
 
     @Override
@@ -146,7 +152,8 @@ public class EditUserFragment extends BottomSheetDialogFragment implements View.
         if(v.getId()==binding.arrowEditUser.getId()){
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         }else if(v.getId() == binding.userImageEditUserFragment.getId()){
-           // callBottomSheet(new ImageFragment());
+            if(app.checkStoragePermissions()) pickImageFromGallery();
+            else app.requestStoragePermissions(getContext());
         }else if(v.getId() == binding.saveButtonAddNewAd.getId()){
             if(fieldsNotEmpty()){
                 app.hideKeyboardFrom(getContext(), v);
@@ -178,7 +185,26 @@ public class EditUserFragment extends BottomSheetDialogFragment implements View.
             }
         });
     }
-   private void setDataToSpinner(String gender){
+
+    private void pickImageFromGallery(){
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMAGE && resultCode == RESULT_OK && data != null) {
+            // get the selected image URI
+            Uri uri = data.getData();
+            Picasso.get().load(uri).into(binding.userImageEditUserFragment);
+            tempUser.setImage(uri.toString());
+        }
+    }
+
+    private void setDataToSpinner(String gender){
        if(gender != null){
            if(gender.equals("Female")){
                binding.spinnerGenderEditUserFragment.setSelection(1);

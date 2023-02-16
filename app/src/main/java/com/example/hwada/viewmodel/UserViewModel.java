@@ -33,9 +33,6 @@ public class UserViewModel extends ViewModel {
     }
 
 
-   private MutableLiveData<User> userMutableLiveData = new MutableLiveData<>();
-   public MutableLiveData<User> updateUserLiveData = new MutableLiveData<>();
-
     private static final String TAG = "UserViewModel";
     UserRepository userRepository ;
 
@@ -43,7 +40,7 @@ public class UserViewModel extends ViewModel {
 
 
     public void updateUser (User user){
-       updateUserLiveData = userRepository.updateUser(user);
+        userRepository.updateUser(user);
     }
 
     public LiveData<Boolean> updateLocationUser(LocationCustom location,String address){

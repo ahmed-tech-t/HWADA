@@ -217,14 +217,11 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
     }
 
     private void deleteReview(AdReview review,int pos){
-        Log.e(TAG, "deleteReview: "+pos );
-        adapter.getList();
         reviewViewModel.deleteReview(user,ad,review).observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean success) {
                 if(success){
                     adapter.removeOneItem(pos);
-                    Log.e(TAG, "onChanged: "+adapter.getList());
                     binding.linearLayoutCommentBox.setVisibility(View.VISIBLE);
                     binding.tvReviewsAdReviewsFragment.setText(getString(R.string.reviews)+"("+ad.getAdReviews().size()+")");
                     if(adapter.getItemCount()==0) binding.reviewRecyclerAdReviewFragment.setVisibility(View.GONE);
@@ -238,7 +235,6 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
         binding.linearLayoutCommentBox.setVisibility(View.GONE);
         binding.reviewRecyclerAdReviewFragment.setVisibility(View.VISIBLE);
         adapter.addItem(review);
-        Log.e(TAG, "onChanged: "+adapter.getList());
         binding.tvReviewsAdReviewsFragment.setText(getString(R.string.reviews)+"("+ad.getAdReviews().size()+")");
     }
 

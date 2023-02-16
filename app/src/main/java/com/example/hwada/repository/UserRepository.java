@@ -4,6 +4,7 @@ import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
 import android.app.Application;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
@@ -26,6 +27,7 @@ import com.example.hwada.database.DbHandler;
 import com.example.hwada.viewmodel.UserViewModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -39,6 +41,10 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Transaction;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageException;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
 
 import org.checkerframework.checker.units.qual.A;
@@ -60,7 +66,8 @@ public class UserRepository {
     private FirebaseAuth auth ;
 
     MutableLiveData<User> userMutableLiveData;
-
+    FirebaseStorage storage = FirebaseStorage.getInstance();
+    StorageReference storageRef = storage.getReference();
     UserViewModel userViewModel ;
 
     public UserRepository (){
@@ -70,22 +77,144 @@ public class UserRepository {
     }
 
 
-    public MutableLiveData<User> updateUser(User user) {
-        MutableLiveData<User> updateSuccess = new MutableLiveData();
-        Map<String, Object> data = new HashMap<>();
-        data.put("username",user.getUsername());
-        data.put("phone",user.getPhone());
-        data.put("aboutYou",user.getAboutYou());
-        data.put("gender",user.getGender());
+    /**
+     *
+     *  update user block
+     * **/
 
-        rootRef.collection(DbHandler.userCollection).document(user.getUId()).update(data).addOnCompleteListener(new OnCompleteListener<Void>() {
+    public void updateUser(User user){
+       if(user.getImage()!=null){
+          deleteOldImage(user);
+       }else {
+           getAllUserReviews(user);
+       }
+    }
+    private void deleteOldImage(User user){
+        StorageReference imageRef = storageRef.child(DbHandler.userImage).child(user.getUId()).child(DbHandler.profileImage);
+        imageRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if(task.isSuccessful()) updateSuccess.setValue(user);
+            public void onSuccess(Void aVoid) {
+                /**
+                 * upload user image
+                 * **/
+                uploadUserImage(user,imageRef);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                if (e instanceof StorageException && ((StorageException) e).getErrorCode() == StorageException.ERROR_OBJECT_NOT_FOUND) {
+                    Log.e(TAG, "Image does not exist at location");
+                    uploadUserImage(user,imageRef);
+                } else {
+                    Log.e(TAG, "Error deleting image: " + e.getMessage());
+                }
             }
         });
-           return updateSuccess ;
     }
+    private void uploadUserImage(User user , StorageReference imageRef){
+        imageRef.putFile(Uri.parse(user.getImage())).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                if(task.isSuccessful()){
+                    if(task.getResult().getMetadata()!=null){
+                        Task<Uri> url = task.getResult().getStorage().getDownloadUrl();
+                        url.addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                user.setImage(String.valueOf(uri));
+                                /**
+                                 *
+                                 * get all user reviews
+                                 **/
+                               getAllUserReviews(user);
+                            }
+                        });
+                    }
+
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+        });
+    }
+    private void getAllUserReviews(User user){
+        DocumentReference userDocRef = rootRef.collection(DbHandler.userCollection).document(user.getUId());
+        userDocRef.collection(DbHandler.MyReviews).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if(task.isSuccessful()){
+                    ArrayList<MyReview> myReviews = new ArrayList<>();
+                    if(task.getResult().isEmpty()){
+                        Log.e(TAG, "onComplete: my reviews is Empty" );
+                        _updateUser(user);
+                        return;
+                    }
+                    for (DocumentSnapshot snapshot : task.getResult()) {
+                        myReviews.add(snapshot.toObject(MyReview.class));
+                    }
+                    user.setMyReviews(myReviews);
+                    _updateUser(user);
+                }
+            }
+        });
+    }
+    private void _updateUser(User user){
+        MutableLiveData<User> mutableLiveData = new MutableLiveData<>();
+        rootRef.runTransaction(new Transaction.Function<Object>() {
+            @Nullable
+            @Override
+            public Object apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+
+                Map<String, Object> myReviewData = new HashMap<>();
+                myReviewData.put("authorName",user.getUsername());
+                if(user.getImage()!=null) myReviewData.put("authorImage",user.getImage());
+
+                for (MyReview myReview: user.getMyReviews()) {
+
+                    DocumentReference myReviewAdDocRef = getAdReviewsColRef(getAdColRef(myReview),myReview).document(myReview.getReviewId());
+                    transaction.update(myReviewAdDocRef,myReviewData);
+                    DocumentReference myReviewHomeAdDocRef = getAdReviewsColRef(getAdColHomePageRef(),myReview).document(myReview.getReviewId());
+                    transaction.update(myReviewHomeAdDocRef,myReviewData);
+                    DocumentReference myReviewUserAdDocRef = getAdReviewsColRef(getUserAdColRef(myReview.getAdAuthorId()),myReview).document(myReview.getReviewId());
+                    transaction.update(myReviewUserAdDocRef,myReviewData);
+                }
+
+                Map<String, Object> userData = new HashMap<>();
+                userData.put("username",user.getUsername());
+                userData.put("phone",user.getPhone());
+                userData.put("aboutYou",user.getAboutYou());
+                userData.put("gender",user.getGender());
+                if(user.getImage()!=null) userData.put("image",user.getImage());
+
+                DocumentReference userDocRef = rootRef.collection(DbHandler.userCollection).document(user.getUId());
+                transaction.update(userDocRef,userData);
+                return null;
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                e.printStackTrace();
+                Log.e(TAG, "onFailure: "+e.getMessage());
+                Log.e(TAG, "onFailure: failed to update user" );
+            }
+        });
+    }
+
+/**
+ *
+ *
+ * **/
+
+private CollectionReference getAdReviewsColRef(CollectionReference adColRef,MyReview myReview){
+    Log.e(TAG, "getAdReviewsColRef: " );
+   return adColRef.document(myReview.getAdId()).collection(DbHandler.Reviews);
+}
+
+
+
     public MutableLiveData<Boolean> updateUserLocation(LocationCustom location,String address) {
         MutableLiveData<Boolean> mutableLiveData = new MutableLiveData<>();
         Map<String, Object> data = new HashMap<>();
@@ -109,20 +238,6 @@ public class UserRepository {
             }
         });
         return mutableLiveData;
-    }
-    public MutableLiveData<Boolean> updateUserImage(User user) {
-        MutableLiveData<Boolean>updateImageSuccess = new MutableLiveData<>();
-        Map<String, Object> data = new HashMap<>();
-        data.put("image",user.getImage());
-        rootRef.collection(DbHandler.userCollection).document(auth.getUid()).update(data).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()){
-                    updateImageSuccess.setValue(true);
-                } else updateImageSuccess.setValue(false);
-            }
-        });
-        return updateImageSuccess;
     }
 
     public MutableLiveData<Boolean> updateUserFavAds(User user) {
@@ -223,13 +338,38 @@ public class UserRepository {
         return rootRef.collection(DbHandler.userCollection).document(id);
     }
 
+    private CollectionReference getAdColHomePageRef(){
+        return getAdColRef(DbHandler.homePage,DbHandler.homePage);
+    }
+    private CollectionReference getAdColRef(MyReview myReview){
+        Log.e(TAG, "getAdColRef: 1" );
+        if (myReview.getCategory().equals(DbHandler.FREELANCE)){
+            return getAdColRef(myReview.getCategory(),myReview.getSubCategory(),myReview.getSubSubCategory());
+        }else {
+            return getAdColRef(myReview.getCategory(),myReview.getSubCategory());
+        }
+    }
     private CollectionReference getAdColRef(String category , String subCategory){
         CollectionReference adColRef;
+        Log.e(TAG, "getAdColRef: 2" );
         adColRef = rootRef.collection(DbHandler.adCollection)
                 .document(category)
                 .collection(subCategory);
         return adColRef;
     }
-
-
+    private CollectionReference getAdColRef(String category , String subCategory , String subSubCategory){
+        CollectionReference adColRef;
+        Log.e(TAG, "getAdColRef: 3" );
+        adColRef = rootRef.collection(DbHandler.adCollection)
+                .document(category)
+                .collection(category)
+                .document(subCategory)
+                .collection(subSubCategory);
+        return adColRef;
+    }
+    private CollectionReference getUserAdColRef(String userId){
+        CollectionReference ref;
+        ref =  rootRef.collection(DbHandler.userCollection).document(userId).collection(DbHandler.adCollection);
+        return ref;
+    }
 }

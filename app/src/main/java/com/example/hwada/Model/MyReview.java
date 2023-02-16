@@ -5,9 +5,14 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import com.google.firebase.database.PropertyName;
+
+import java.util.Map;
+
 public class MyReview implements Parcelable {
     String reviewId;
-    String addId;
+    String adId;
+    String adAuthorId;
     String category;
     String subCategory;
     String subSubCategory;
@@ -16,52 +21,29 @@ public class MyReview implements Parcelable {
     public MyReview() {
     }
 
-    public MyReview(String addId, String category, String subCategory, String subSubCategory) {
-        this.addId = addId;
+    public MyReview(String adId, String category, String subCategory, String subSubCategory) {
+        this.adId = adId;
         this.category = category;
         this.subCategory = subCategory;
         this.subSubCategory = subSubCategory;
     }
 
-    public MyReview( String reviewId,String addId, String category, String subCategory, String subSubCategory) {
-        this.addId = addId;
-        this.reviewId =reviewId ;
+    public MyReview(String reviewId, String adId, String adAuthorId, String category, String subCategory, String subSubCategory) {
+        this.reviewId = reviewId;
+        this.adId = adId;
+        this.adAuthorId = adAuthorId;
         this.category = category;
         this.subCategory = subCategory;
-        this.subSubCategory =subSubCategory;
+        this.subSubCategory = subSubCategory;
     }
-
-
-
 
     protected MyReview(Parcel in) {
         reviewId = in.readString();
-        addId = in.readString();
+        adId = in.readString();
+        adAuthorId = in.readString();
         category = in.readString();
         subCategory = in.readString();
         subSubCategory = in.readString();
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(reviewId);
-        dest.writeString(addId);
-        dest.writeString(category);
-        dest.writeString(subCategory);
-        dest.writeString(subSubCategory);
-    }
-
-    public String getReviewId() {
-        return reviewId;
-    }
-
-    public void setReviewId(String reviewId) {
-        this.reviewId = reviewId;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
     }
 
     public static final Creator<MyReview> CREATOR = new Creator<MyReview>() {
@@ -76,13 +58,28 @@ public class MyReview implements Parcelable {
         }
     };
 
-
-    public String getAddId() {
-        return addId;
+    public String getAdId() {
+        return adId;
     }
 
-    public void setAddId(String addId) {
-        this.addId = addId;
+    public void setAdId(String adId) {
+        this.adId = adId;
+    }
+
+    public String getAdAuthorId() {
+        return adAuthorId;
+    }
+
+    public void setAdAuthorId(String adAuthorId) {
+        this.adAuthorId = adAuthorId;
+    }
+
+    public String getReviewId() {
+        return reviewId;
+    }
+
+    public void setReviewId(String reviewId) {
+        this.reviewId = reviewId;
     }
 
     public String getCategory() {
@@ -98,7 +95,7 @@ public class MyReview implements Parcelable {
     }
 
     public void setSubCategory(String subCategory) {
-        subCategory = subCategory;
+        this.subCategory = subCategory;
     }
     public String getSubSubCategory() {
         return subSubCategory;
@@ -108,4 +105,36 @@ public class MyReview implements Parcelable {
         this.subSubCategory = subSubCategory;
     }
 
+    @Override
+    public String toString() {
+        return "MyReview{" +
+                "reviewId='" + reviewId + '\'' +
+                ", adId='" + adId + '\'' +
+                ", category='" + category + '\'' +
+                ", subCategory='" + subCategory + '\'' +
+                ", subSubCategory='" + subSubCategory + '\'' +
+                '}';
+    }
+    public MyReview(Map<String,Object>data){
+        this.reviewId = data.get("reviewId").toString();
+        this.adId = data.get("adId").toString();
+        this.category = data.get("category").toString();
+        this.subCategory = data.get("subCategory").toString();
+        this.subSubCategory =data.get("subSubCategory").toString();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeString(reviewId);
+        dest.writeString(adId);
+        dest.writeString(adAuthorId);
+        dest.writeString(category);
+        dest.writeString(subCategory);
+        dest.writeString(subSubCategory);
+    }
 }

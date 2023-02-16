@@ -8,7 +8,8 @@ public class DbHandler {
    public static final String favAdsCollection ="FavAds";
    public static final String chatCollection ="Chat";
    public static final String messagesCollection ="Messages";
-
+   public static final String userImage ="userImage";
+   public static final String profileImage = "profileImage";
 
    public static final String ONLINE = "online";
    public static final String OFFLINE = "offline";

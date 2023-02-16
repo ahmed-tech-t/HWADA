@@ -110,7 +110,7 @@ public class ReviewRepo {
 
                 //set to my reviews to user collection
                 reviewDocRef = rootRef.collection(DbHandler.userCollection).document(user.getUId()).collection(DbHandler.MyReviews).document(review.getId());
-                MyReview myReview = new MyReview(review.getId(), ad.getId(), ad.getCategory(), ad.getSubCategory(), ad.getSubSubCategory());
+                MyReview myReview = new MyReview(review.getId(), ad.getId(),ad.getAuthorId(), ad.getCategory(), ad.getSubCategory(), ad.getSubSubCategory());
                 transaction.set(reviewDocRef, myReview);
 
                 //set ad review to home page ad collection
