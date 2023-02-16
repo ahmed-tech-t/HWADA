@@ -49,7 +49,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
         return new ChatViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.chat_holder_layout, parent, false), pOnItemListener);
     }
 
-
     @Override
     public long getItemId(int position) {
         return super.getItemId(position);
@@ -201,6 +200,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
         list.get(pos).setLastMessage(lastMessage);
         moveToTop(list.get(pos));
     }
+    public void updateLastMessageStatus(int pos, Message lastMessage){
+        list.get(pos).setLastMessage(lastMessage);
+        notifyItemChanged(pos);
+    }
     private void moveToTop(Chat chat) {
         list.remove(chat);
         list.add(0, chat);
@@ -208,6 +211,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
     }
     public ArrayList<Chat>getList(){
         return list;
+    }
+    public void addItem(Chat c, int position) {
+        list.add(position, c);
+        notifyItemInserted(position);
     }
 
 }

@@ -70,7 +70,7 @@
             android:layout_height="1dp"
             android:background="@color/white_gray" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <RelativeLayout
             android:id="@+id/ll_ad_chat_activity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -78,22 +78,36 @@
             android:background="?attr/selectableItemBackground"
             android:layout_margin="5dp">
 
-            <TextView
-                android:id="@+id/tv_ad_title_chat_activity"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:gravity="center_vertical"
-                android:text="title"
-                android:background="@drawable/curved_background_white_blue"
-                android:backgroundTint="@color/background"
-                android:paddingEnd="5dp"
-                android:paddingStart="5dp"
-                android:textColor="@color/white"
-                android:textSize="18dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+          <LinearLayout
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_alignParentStart="true"
+              android:layout_marginEnd="20dp"
+              android:layout_toStartOf="@id/sim_ad_chat_activity"
+              android:layout_centerVertical="true" >
+              <TextView
+                  android:id="@+id/tv_ad_title_chat_activity"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_marginStart="10dp"
+                  android:gravity="center_vertical"
+                  android:text="title"
+                  android:background="@drawable/curved_background_white_blue"
+                  android:backgroundTint="@color/background"
+                  android:paddingEnd="5dp"
+                  android:maxLines="1"
+
+                  android:ellipsize="marquee"
+                  android:marqueeRepeatLimit="marquee_forever"
+                  android:scrollHorizontally="true"
+                  android:singleLine="true"
+
+
+                  android:paddingStart="5dp"
+                  android:textColor="@color/white"
+                  android:textSize="18dp"
+               />
+          </LinearLayout>
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/sim_ad_chat_activity"
@@ -102,12 +116,11 @@
                 android:layout_height="50dp"
                 android:scaleType="matrix"
                 android:layout_marginEnd="10dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+              android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
                 app:shapeAppearanceOverlay="@style/RoundedSquare"
                 app:strokeColor="@null" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </RelativeLayout>
 
         <View
             android:layout_width="match_parent"

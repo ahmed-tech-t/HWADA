@@ -16,7 +16,9 @@ public class Ad implements Parcelable {
 
 
     private String id;
-    private User author;
+    private String authorId ;
+    private LocationCustom authorLocation ;
+    private String authorAddress ;
     private String title;
     private String description;
     private Timestamp timeStamp;
@@ -26,7 +28,6 @@ public class Ad implements Parcelable {
     private String subCategory;
     private String subSubCategory;
     private ArrayList<AdReview> adReviews;
-
     private double price;
     private DaysSchedule daysSchedule ;
     private List<Uri> imagesUri;
@@ -37,21 +38,22 @@ public class Ad implements Parcelable {
         this.adReviews =new ArrayList<>();
         this.imagesUri = new ArrayList<>();
         this.daysSchedule =new DaysSchedule();
-        this.author = new User();
         this.distance = 0;
     }
 
     public Ad(String adId, String category, String subCategory, String subSubCategory) {
-        this.author = new User();
-        author.setUId(adId);
+        this.id = adId;
         this.category = category;
         this.subCategory = subCategory;
         this.subSubCategory = subSubCategory;
     }
 
+
     protected Ad(Parcel in) {
         id = in.readString();
-        author = in.readParcelable(User.class.getClassLoader());
+        authorId = in.readString();
+        authorLocation = in.readParcelable(LocationCustom.class.getClassLoader());
+        authorAddress = in.readString();
         title = in.readString();
         description = in.readString();
         timeStamp = in.readParcelable(Timestamp.class.getClassLoader());
@@ -217,12 +219,29 @@ public class Ad implements Parcelable {
         this.daysSchedule = daysSchedule;
     }
 
-    public User getAuthor() {
-        return author;
+
+    public String getAuthorId() {
+        return authorId;
     }
 
-    public void setAuthor(User author) {
-        this.author = author;
+    public void setAuthorId(String authorId) {
+        this.authorId = authorId;
+    }
+
+    public LocationCustom getAuthorLocation() {
+        return authorLocation;
+    }
+
+    public void setAuthorLocation(LocationCustom authorLocation) {
+        this.authorLocation = authorLocation;
+    }
+
+    public String getAuthorAddress() {
+        return authorAddress;
+    }
+
+    public void setAuthorAddress(String authorAddress) {
+        this.authorAddress = authorAddress;
     }
 
     @Override
@@ -233,7 +252,9 @@ public class Ad implements Parcelable {
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeString(id);
-        dest.writeParcelable(author, flags);
+        dest.writeString(authorId);
+        dest.writeParcelable(authorLocation, flags);
+        dest.writeString(authorAddress);
         dest.writeString(title);
         dest.writeString(description);
         dest.writeParcelable(timeStamp, flags);
@@ -248,27 +269,5 @@ public class Ad implements Parcelable {
         dest.writeTypedList(imagesUri);
         dest.writeStringList(imagesUrl);
         dest.writeInt(views);
-    }
-
-    @Override
-    public String toString() {
-        return "Ad{" +
-                "id='" + id + '\'' +
-                ", author=" + author +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", timeStamp=" + timeStamp +
-                ", distance=" + distance +
-                ", rating=" + rating +
-                ", category='" + category + '\'' +
-                ", subCategory='" + subCategory + '\'' +
-                ", subSubCategory='" + subSubCategory + '\'' +
-                ", adReviews=" + adReviews +
-                ", price=" + price +
-                ", daysSchedule=" + daysSchedule +
-                ", imagesUri=" + imagesUri +
-                ", imagesUrl=" + imagesUrl +
-                ", views=" + views +
-                '}';
     }
 }

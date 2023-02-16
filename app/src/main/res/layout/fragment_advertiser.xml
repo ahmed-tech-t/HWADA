@@ -52,7 +52,8 @@
                   android:layout_height="48dp"/>
 
           </LinearLayout>
-            <RelativeLayout
+
+        <RelativeLayout
             android:id="@+id/constraintLayout"
             android:layout_width="match_parent"
             android:layout_marginEnd="20dp"
@@ -102,7 +103,16 @@
                 android:drawableEnd="@drawable/calendar_icon"
                 android:layout_alignParentRight="true"/>
             </RelativeLayout>
-
+                <TextView
+                    android:id="@+id/tv_ad_title_advertiser_fragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    android:textSize="20dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginStart="10dp"
+                    android:padding="5dp"/>
                 <TextView
                     android:id="@+id/tv_ad_location_advertiser_fragment"
                     android:layout_width="match_parent"

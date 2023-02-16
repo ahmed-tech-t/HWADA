@@ -64,7 +64,9 @@ private DebugRepository debugRepository;
                     String phone = firebaseUser.getPhoneNumber();
                     Timestamp timestamp = app.getCurrentDate();
                     User user = new User(uid, name, email,phone,timestamp);
-                    user.setImage(firebaseUser.getPhotoUrl().toString());
+                    if(firebaseUser.getPhotoUrl().toString().length()==0){
+                        user.setImage("https://firebasestorage.googleapis.com/v0/b/hwada-3b250.appspot.com/o/images%2F149071.png?alt=media&token=56c56692-4ea2-4443-9733-986c5ea1ec13");
+                    }else user.setImage(firebaseUser.getPhotoUrl().toString());
                     user.setNew(isNewUser);
                     authenticatedUserMutableLiveData.setValue(user);
                 }
@@ -131,6 +133,7 @@ private DebugRepository debugRepository;
                             String phone = user.getPhone();
                             Timestamp timestamp = app.getCurrentDate();
                             User user = new User(uid, name, email,phone,timestamp);
+                            user.setImage("https://firebasestorage.googleapis.com/v0/b/hwada-3b250.appspot.com/o/images%2F149071.png?alt=media&token=56c56692-4ea2-4443-9733-986c5ea1ec13");
                             user.setNew(isNewUser);
                             authenticatedUserMutableLiveData.setValue(user);
                          }

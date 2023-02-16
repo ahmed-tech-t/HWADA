@@ -157,7 +157,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     binding.cameraChatActivity.setVisibility(View.GONE);
                 }
                 if(s.length()==0)binding.cameraChatActivity.setVisibility(View.VISIBLE);
-
             }
 
             @Override
@@ -182,7 +181,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private void setDataToFields(){
         binding.tvAdTitleChatActivity.setText(ad.getTitle());
         Glide.with(this).load(ad.getImagesUrl().get(0)).into(binding.simAdChatActivity);
-
+        binding.tvAdTitleChatActivity.setSelected(true);
+        binding.tvReceiverLastSeenChatActivity.setSelected(true);
     }
 
     private void setReceiverListener(){
@@ -440,8 +440,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             uris.add(uri);
             callImagesFullDialogFragment(uris,0);
         }else app.requestStoragePermissions(this);
-
-        //}
     }
 
     private void callImagesFullDialogFragment(ArrayList<String> url,int pos){
@@ -464,8 +462,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     private void callUserProfileActivity(){
         Intent intent = new Intent(this, UserProfileActivity.class);
-        intent.putExtra("user",chat.getReceiver());
-        startActivity(intent);
+        intent.putExtra("receiver",chat.getReceiver());
+        intent.putExtra("user",user);
+    startActivity(intent);
     }
     public String handleTime(Timestamp timestamp){
         Date date = timestamp.toDate();

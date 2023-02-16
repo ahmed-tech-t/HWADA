@@ -181,7 +181,7 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
        setAdDataToView();
         debugViewModel = ViewModelProviders.of(getActivity()).get(DebugViewModel.class);
 
-        if(user.getUId().equals(ad.getAuthor().getUId())){
+        if(user.getUId().equals(ad.getAuthorId())){
             binding.llContactAdvertiserFragment.setVisibility(View.GONE);
         }
 
@@ -198,7 +198,8 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
     private void setAdDataToView(){
         binding.tvDateAdvertiserFragment.setText(handleTime(ad.getTimeStamp()));
         binding.tvAdDistanceAdvertiserFragment.setText(ad.getDistance()+"");
-        binding.tvAdLocationAdvertiserFragment.setText(ad.getAuthor().getAddress());
+        binding.tvAdLocationAdvertiserFragment.setText(ad.getAuthorAddress());
+        binding.tvAdTitleAdvertiserFragment.setText(ad.getTitle());
     }
     private void updateViews(){
         adsViewModel.updateViews(ad);
@@ -227,7 +228,7 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         }else if(v.getId() == binding.buttonCallAdvertiserFragment.getId()){
             callCallActivity();
         }else if (v.getId() == binding.buttonChatAdvertiserFragment.getId()){
-            Chat chat = new Chat(ad,app.getCurrentDate(),ad.getAuthor().getUId());
+            Chat chat = new Chat(ad,app.getCurrentDate(),ad.getAuthorId());
             chatViewModel.addNewChat(user.getUId(),chat).observe(this, new Observer<Chat>() {
                 @Override
                 public void onChanged(Chat chat) {
@@ -413,6 +414,7 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
     private void setRecycler(){
         closeShimmer();
         adsGridAdapter = new AdsGridAdapter(getContext());
+
         adsGridAdapter.setList(user,adsList,this);
         binding.recyclerGridFragmentAdvertiser.setVisibility(View.VISIBLE);
         binding.recyclerGridFragmentAdvertiser.setAdapter(adsGridAdapter);

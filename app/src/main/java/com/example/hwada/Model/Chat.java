@@ -136,4 +136,14 @@ public class Chat implements Parcelable {
         dest.writeParcelable(receiver, flags);
         dest.writeParcelable(timeStamp, flags);
     }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other instanceof Chat) {
+            Chat otherObj = (Chat) other;
+            return this.id.equals(otherObj.id);
+        }
+        return false;
+    }
+
 }

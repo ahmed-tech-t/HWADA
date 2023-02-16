@@ -49,7 +49,8 @@ public class ChatFragment extends Fragment implements ChatAdapter.OnItemListener
     ChatViewModel chatViewModel ;
     User user;
     ArrayList<Chat> chatList;
-    private long latestTimestamp = 0;
+    ChatAdapter adapter;
+
 
     private static final String TAG = "ChatFragment";
     @Override
@@ -68,14 +69,12 @@ public class ChatFragment extends Fragment implements ChatAdapter.OnItemListener
 
         chatViewModel = new ViewModelProvider(this, (ViewModelProvider.Factory) new ViewModelProvider.AndroidViewModelFactory(getActivity().getApplication()))
                 .get(ChatViewModel.class);
-
-
+        adapter = new ChatAdapter(getContext());
 
         chatListener();
     }
 
     private void setRecycler(){
-        ChatAdapter adapter = new ChatAdapter(getContext());
         adapter.setList(user.getUId(),chatList,this);
         binding.recyclerChatFragment.setAdapter(adapter);
         if(chatList.size()==0)binding.recyclerChatFragment.setBackgroundResource(R.drawable.empty_page);
@@ -115,12 +114,51 @@ public class ChatFragment extends Fragment implements ChatAdapter.OnItemListener
             @Override
             public void onChanged(ArrayList<Chat> chats) {
                 binding.loadingChatFragment.setVisibility(View.GONE);
-                chatList = chats;
-                setRecycler();
+                handelRecyclerWhenChatChanged(chats);
             }
         });
     }
 
+    private void handelRecyclerWhenChatChanged(ArrayList<Chat>chats){
+        chats = checkChatList(chats);
+        if(chatList == null) {
+            //get all messages
+            chatList = checkChatList(chats);
+            setRecycler();
+        }else {
+            for (Chat c:chats) {
+                int pos  = chatList.indexOf(c) ;
+                if(pos==-1){
+                    //add new chat
+                    adapter.addItem(c,0);
+                    setRecycler();
+                }else{
+                    if(!chatList.get(pos).getLastMessage().getId().equals(c.getLastMessage().getId())){
+                        if(c.getLastMessage().isSent()){
+                            adapter.updateLastMessage(pos,c.getLastMessage());
+                            setRecycler();
+                        }
+                    }else {
+                        //update status
+                        if(chatList.get(pos).getLastMessage().isStatusChanged(c.getLastMessage())){
+                            adapter.updateLastMessageStatus(pos,c.getLastMessage());
+                            setRecycler();
+                        }
+                    }
+                }
+            }
+        }
 
+
+    }
+    private ArrayList<Chat> checkChatList(ArrayList<Chat> chat){
+        ArrayList<Chat> temp = new ArrayList<>();
+        for (int i = 0; i < chat.size(); i++) {
+            if(chat.get(i).getLastMessage()!=null){
+                temp.add(chat.get(i));
+            }
+        }
+        return temp;
+    }
 
 }

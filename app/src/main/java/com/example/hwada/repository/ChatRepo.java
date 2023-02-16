@@ -150,7 +150,7 @@ public class ChatRepo {
     }
 
     private String getChatId(String senderId , String receiverId, Ad ad){
-        if(ad.getAuthor().getUId().equals(senderId)){
+        if(ad.getAuthorId().equals(senderId)){
             return ad.getId()+receiverId;
         }
         return ad.getId()+senderId;
@@ -169,6 +169,7 @@ public class ChatRepo {
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException e) {
+                        Log.e(TAG, "onEvent: start function" );
                         if (e != null) {
                             Log.e(TAG, "Listen failed.", e);
                             mutableLiveData.setValue(new ArrayList<>());
@@ -180,8 +181,8 @@ public class ChatRepo {
                             return;
                         }
                         ArrayList<Chat> chats = new ArrayList<>();
-                        for (QueryDocumentSnapshot doc : value) {
-                            Chat chat = doc.toObject(Chat.class);
+                        for (DocumentChange change : value.getDocumentChanges()) {
+                            Chat chat = change.getDocument().toObject(Chat.class);
                             getAdColRef(chat.getAd()).document(chat.getAd().getId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                 @Override
                                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -193,11 +194,13 @@ public class ChatRepo {
                                                       if (task.isSuccessful()){
                                                           chat.setReceiver(task.getResult().toObject(User.class));
                                                           chats.add(chat);
-                                                          if(value.size() == chats.size()) {
+                                                          if(value.getDocumentChanges().size() == chats.size()) {
+
                                                             mutableLiveData.setValue(chats);
+
                                                           }
                                                       }else{
-                                                          Log.e(TAG, "onComplete: failed to load chat");
+                                                         // Log.e(TAG, "onComplete: failed to load chat");
                                                           mutableLiveData.setValue(new ArrayList<>());
                                                       }
                                                 }

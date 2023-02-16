@@ -59,7 +59,7 @@ public class AdsRepository {
 
         newAd.setId(adDocRef.getId());
 
-        StorageReference imageRef = storageRef.child("images").child(newAd.getAuthor().getUId()).child(newAd.getCategory()).child(newAd.getSubCategory()).child(newAd.getId());
+        StorageReference imageRef = storageRef.child("images").child(newAd.getAuthorId()).child(newAd.getCategory()).child(newAd.getSubCategory()).child(newAd.getId());
 
         List<String> downloadUrls = new ArrayList<>();
 
@@ -188,7 +188,7 @@ public class AdsRepository {
     }
     private CollectionReference getUserAdColRef(Ad ad){
         CollectionReference ref;
-        ref =  rootRef.collection(DbHandler.userCollection).document(ad.getAuthor().getUId()).collection(DbHandler.adCollection);
+        ref =  rootRef.collection(DbHandler.userCollection).document(ad.getAuthorId()).collection(DbHandler.adCollection);
         return ref;
     }
 

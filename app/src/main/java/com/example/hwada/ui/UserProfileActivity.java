@@ -33,6 +33,7 @@ public class UserProfileActivity extends AppCompatActivity implements AdsGridAda
     FavViewModel favViewModel ;
 
     User user ;
+    User receiver ;
     ArrayList<Ad> adsList;
     App app ;
     AdvertiserFragment advertiserFragment ;
@@ -62,6 +63,7 @@ public class UserProfileActivity extends AppCompatActivity implements AdsGridAda
 
 
         user = intent.getParcelableExtra("user");
+        receiver = intent.getParcelableExtra("receiver");
 
         binding.simUserImageUserProfileActivity.setOnClickListener(this);
         binding.shimmerUserProfileActivity.startShimmer();
@@ -89,7 +91,7 @@ public class UserProfileActivity extends AppCompatActivity implements AdsGridAda
 
     }
     private void getAlUserAds(){
-        userViewModel.getAllUserAds(user.getUId()).observe(this, new Observer<ArrayList<Ad>>() {
+        userViewModel.getAllUserAds(receiver.getUId()).observe(this, new Observer<ArrayList<Ad>>() {
             @Override
             public void onChanged(ArrayList<Ad> ads) {
                 adsList = ads;
@@ -98,19 +100,19 @@ public class UserProfileActivity extends AppCompatActivity implements AdsGridAda
         });
     }
     private void setDataToView(){
-        Picasso.get().load(user.getImage()).into(binding.simUserImageUserProfileActivity);
-        binding.tvUserNameUserProfileActivity.setText(user.getUsername());
+        Picasso.get().load(receiver.getImage()).into(binding.simUserImageUserProfileActivity);
+        binding.tvUserNameUserProfileActivity.setText(receiver.getUsername());
 
-        if(user.getAboutYou()==null){
+        if(receiver.getAboutYou()==null){
             binding.llDescriptionUserProfileActivity.setVisibility(View.GONE);
         }
-        binding.tvUserDescriptionUserProfileActivity.setText(user.getAboutYou());
+        binding.tvUserDescriptionUserProfileActivity.setText(receiver.getAboutYou());
 
-        String joinDate = app.getDateFromTimeStamp(user.getTimeStamp()).split(",")[0];
+        String joinDate = app.getDateFromTimeStamp(receiver.getTimeStamp()).split(",")[0];
         String join = getString(R.string.joinAt)+" "+ joinDate;
         binding.tvUserJoinDateUserProfileActivity.setText(join);
 
-        binding.tvUserRatingUserProfileActivity.setText(Double.toString(user.getRating()));
+        binding.tvUserRatingUserProfileActivity.setText(Double.toString(receiver.getRating()));
     }
     @Override
     protected void onResume() {
@@ -179,13 +181,13 @@ public class UserProfileActivity extends AppCompatActivity implements AdsGridAda
     @Override
     public void onClick(View v) {
         if(v.getId()==binding.simUserImageUserProfileActivity.getId()){
-            if(user.getImage()!=null) callImageDialog();
+            if(receiver.getImage()!=null) callImageDialog();
         }
     }
 
     public void callImageDialog() {
         Bundle bundle = new Bundle();
-        bundle.putString("image", user.getImage());
+        bundle.putString("image", receiver.getImage());
         ImageMiniDialogFragment fragment = new ImageMiniDialogFragment();
         fragment.setArguments(bundle);
         FragmentManager fragmentManager = getSupportFragmentManager();

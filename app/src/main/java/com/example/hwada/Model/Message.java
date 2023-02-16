@@ -220,4 +220,19 @@ public class Message implements Parcelable {
         }
         return false;
     }
+
+    public boolean isStatusChanged(Message m){
+        if(this.sent!= m.sent)return true;
+        if (this.delivered!= m.delivered)return true;
+        if(this.seen != m.seen) return  true;
+        return false;
+    }
+
+    public String printStatus(){
+        return  ", seen=" + seen +
+                ", delivered=" + delivered +
+                ", sent=" + sent ;
+    }
+
+
 }

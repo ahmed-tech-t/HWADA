@@ -198,8 +198,8 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
             location1.setLongitude(user.getLocation().getLongitude());
 
             Location location2 = new Location("ad");
-            location2.setLatitude(list.get(pos).getAuthor().getLocation().getLatitude());
-            location2.setLongitude(list.get(pos).getAuthor().getLocation().getLongitude());
+            location2.setLatitude(list.get(pos).getAuthorLocation().getLatitude());
+            location2.setLongitude(list.get(pos).getAuthorLocation().getLongitude());
 
 
             float distanceInMeters = location1.distanceTo(location2)/1000;
