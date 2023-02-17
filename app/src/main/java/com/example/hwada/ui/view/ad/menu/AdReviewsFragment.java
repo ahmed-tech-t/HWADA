@@ -90,6 +90,7 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
 
     public void setRecycler() {
         closeShimmer();
+        binding.adRatingAdReviewsFragment.setRating(ad.getRating());
 
         adapter = new ReviewAdapter(getContext());
         try {

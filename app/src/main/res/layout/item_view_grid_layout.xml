@@ -90,6 +90,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:maxLength="3"
                 android:drawableStart="@drawable/star_small_icon"
                 android:drawablePadding="5dp"
                 android:gravity="bottom"

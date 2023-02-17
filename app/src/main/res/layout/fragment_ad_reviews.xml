@@ -25,7 +25,7 @@
             android:textSize="20dp" />
 
         <RatingBar
-            android:id="@+id/item_user_rating"
+            android:id="@+id/ad_rating_ad_reviews_fragment"
             style="?android:attr/ratingBarStyleIndicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

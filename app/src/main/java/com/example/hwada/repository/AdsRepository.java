@@ -1,20 +1,15 @@
 package com.example.hwada.repository;
 
-import android.app.Application;
 import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.AdReview;
-import com.example.hwada.Model.DaysSchedule;
-import com.example.hwada.Model.LocationCustom;
 import com.example.hwada.Model.MyReview;
-import com.example.hwada.Model.User;
 import com.example.hwada.database.DbHandler;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -23,7 +18,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
@@ -48,10 +42,20 @@ public class AdsRepository {
     FirebaseStorage storage = FirebaseStorage.getInstance();
     StorageReference storageRef = storage.getReference();
 
+    UserRepository userRepo ;
     private static final String TAG = "AdsRepository";
 
+
+    public AdsRepository(){
+        userRepo = new UserRepository();
+    }
+    public AdsRepository(UserRepository userRepo) {
+        this.userRepo = userRepo;
+    }
     //********************************
-    //add new ad
+    /**
+     * add new add
+     **/
     public MutableLiveData<Ad>addNewAd(Ad newAd){
         MutableLiveData<Ad> addNewAdSuccess = new MutableLiveData<>();
 
@@ -99,7 +103,7 @@ public class AdsRepository {
 
                 DocumentReference adDocRef = getAdColRef(newAd).document(newAd.getId());
 
-                DocumentReference userAdDocRef = getUserAdColRef(newAd).document(newAd.getId());
+                DocumentReference userAdDocRef = getUserAdColRef(newAd.getAuthorId()).document(newAd.getId());
 
                 // add new Ad to Ad collection
                 transaction.set(adDocRef,newAd);
@@ -129,6 +133,9 @@ public class AdsRepository {
 
     }
 
+    /**
+     * update ad
+     **/
     private void updateAd(Ad ad){
 
         rootRef.runTransaction(new Transaction.Function<Object>() {
@@ -143,10 +150,10 @@ public class AdsRepository {
                data.put("price", ad.getPrice());
                data.put("daysSchedule", ad.getDaysSchedule());
 
-               DocumentReference temp0DocRef = getUserAdColRef(ad).document(ad.getId());
+               DocumentReference temp0DocRef = getUserAdColRef(ad.getAuthorId()).document(ad.getId());
                DocumentReference temp1DocRef = getAdColRef(ad).document(ad.getId());
-                   DocumentReference temp2DocRef = getUserAdColRef(ad).document(ad.getId());
-                   DocumentReference temp3DocRef = getAdColHomePageRef().document(ad.getId());
+               DocumentReference temp2DocRef = getUserAdColRef(ad.getAuthorId()).document(ad.getId());
+               DocumentReference temp3DocRef = getAdColHomePageRef().document(ad.getId());
 
                    transaction.update(temp1DocRef,data);
                    transaction.update(temp1DocRef,data);
@@ -160,24 +167,35 @@ public class AdsRepository {
 
     //********************************
 
-    private CollectionReference getAdColHomePageRef(){
+    /**
+     *get Ad collections references
+     **/
+    public CollectionReference getAdColHomePageRef(){
            return getAdColRef(DbHandler.homePage,DbHandler.homePage);
     }
-    private CollectionReference getAdColRef(Ad ad){
+    public CollectionReference getAdColRef(Ad ad){
         if (ad.getCategory().equals(DbHandler.FREELANCE)){
             return getAdColRef(ad.getCategory(),ad.getSubCategory(),ad.getSubSubCategory());
         }else {
            return getAdColRef(ad.getCategory(),ad.getSubCategory());
         }
     }
-    private CollectionReference getAdColRef(String category , String subCategory){
+    public CollectionReference getAdColRef(MyReview myReview){
+        Log.e(TAG, "getAdColRef: 1" );
+        if (myReview.getCategory().equals(DbHandler.FREELANCE)){
+            return getAdColRef(myReview.getCategory(),myReview.getSubCategory(),myReview.getSubSubCategory());
+        }else {
+            return getAdColRef(myReview.getCategory(),myReview.getSubCategory());
+        }
+    }
+    public CollectionReference getAdColRef(String category , String subCategory){
         CollectionReference adColRef;
         adColRef = rootRef.collection(DbHandler.adCollection)
                 .document(category)
                 .collection(subCategory);
         return adColRef;
     }
-    private CollectionReference getAdColRef(String category , String subCategory , String subSubCategory){
+    public CollectionReference getAdColRef(String category , String subCategory , String subSubCategory){
         CollectionReference adColRef;
         adColRef = rootRef.collection(DbHandler.adCollection)
                 .document(category)
@@ -186,14 +204,17 @@ public class AdsRepository {
                 .collection(subSubCategory);
         return adColRef;
     }
-    private CollectionReference getUserAdColRef(Ad ad){
+    public CollectionReference getUserAdColRef(String userId){
         CollectionReference ref;
-        ref =  rootRef.collection(DbHandler.userCollection).document(ad.getAuthorId()).collection(DbHandler.adCollection);
+        ref =  rootRef.collection(DbHandler.userCollection).document(userId).collection(DbHandler.adCollection);
         return ref;
     }
 
     //**************************************
 
+    /**
+     * get All Ads
+     **/
     public MutableLiveData<ArrayList<Ad>> getAllAds(String category ,String subCategory){
        return getAllAds(getAdColRef(category,subCategory));
     }
@@ -235,7 +256,9 @@ public class AdsRepository {
     }
     //**************************************
 
-
+    /**
+     * update views
+     **/
     public void updateViews(Ad ad){
 
         rootRef.runTransaction(new Transaction.Function<Object>() {
@@ -243,7 +266,7 @@ public class AdsRepository {
             @Override
             public Object apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
                 DocumentReference adDocRef = getAdColRef(ad).document(ad.getId());
-                DocumentReference userAdDocRef = getUserAdColRef(ad).document(ad.getId());
+                DocumentReference userAdDocRef = getUserAdColRef(ad.getAuthorId()).document(ad.getId());
                 DocumentReference adHomeDocRef = getAdColHomePageRef().document(ad.getId());
 
                 DocumentSnapshot snapshot = transaction.get(adDocRef);
@@ -256,9 +279,52 @@ public class AdsRepository {
                 return null;
             }
         });
-
-
-
     }
 
+
+    /**
+     * UPDATE AD RATING
+     **/
+
+    private double calcAdRating(ArrayList<AdReview> adReviews){
+        double rating = 0 ;
+        for (AdReview review:adReviews) {
+            rating+=review.getRating();
+        }
+        Log.e(TAG, "calcAdRating: "+rating/adReviews.size() );
+        if(rating == 0)return 0;
+        return rating/adReviews.size();
+    }
+    public void updateAdRating(Ad ad,ArrayList<AdReview> adReviews) {
+
+        rootRef.runTransaction(new Transaction.Function<Object>() {
+            @Nullable
+            @Override
+            public Object apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+                Map<String,Object>data = new HashMap<>();
+                data.put("rating",calcAdRating(adReviews));
+
+                transaction.update(getAdColRef(ad).document(ad.getId()),data);
+                transaction.update(getAdColHomePageRef().document(ad.getId()),data);
+                transaction.update(getUserAdColRef(ad.getAuthorId()).document(ad.getId()),data);
+
+                return null;
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Object>() {
+            @Override
+            public void onComplete(@NonNull Task<Object> task) {
+                if(task.isSuccessful()){
+                    Log.e(TAG, "onComplete: "+ ad.getAuthorId());
+
+                    userRepo.getAllUserAds(ad.getAuthorId(),true);
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                e.printStackTrace();
+                Log.e(TAG, "onFailure: failed to update ad rating" );
+            }
+        });
+    }
 }

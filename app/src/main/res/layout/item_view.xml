@@ -168,7 +168,8 @@
            android:drawablePadding="5dp"
            android:gravity="bottom"
            android:layout_marginStart="40dp"
-           android:text="3.5"
+           android:text="3.3"
+           android:maxLength="3"
            android:textColor="@color/gray"
            android:textSize="12dp"
            android:textStyle="bold" />

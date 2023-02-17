@@ -38,6 +38,6 @@ public class ReviewViewModel extends AndroidViewModel {
         adReviewLiveData = repo.addReview(user , ad ,review);
     }
     public LiveData<ArrayList<AdReview>> getAdReviews(Ad ad){
-        return repo.getAdReviews(ad);
+        return repo.getAdReviews(ad,false);
     }
 }

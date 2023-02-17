@@ -56,7 +56,7 @@ public class UserViewModel extends ViewModel {
 
     public LiveData<ArrayList<Ad>> getAllUserAds(String id){
 
-        return userRepository.getAllUserAds(id);
+        return userRepository.getAllUserAds(id,false);
     }
     public LiveData<User> userListener(String id){
         return userRepository.userListener(id);

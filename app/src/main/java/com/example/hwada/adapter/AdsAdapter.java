@@ -71,7 +71,6 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
                 .priority(Priority.HIGH);
         new GlideImageLoader(holder.userImage,new ProgressBar(mContext)).load(url,options);
 
-      //  Picasso.get().load(list.get(position).getImagesUrl().get(0)).into(holder.userImage);
 
         //fav image
         if(adIsInFavList(list.get(position).getId())){

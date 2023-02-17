@@ -47,6 +47,7 @@
                    android:layout_height="wrap_content"
                    android:drawableStart="@drawable/star_icon"
                    android:drawablePadding="5dp"
+                   android:maxLength="3"
                    android:gravity="bottom"
                    android:layout_alignParentEnd="true"
                    android:layout_gravity="end"

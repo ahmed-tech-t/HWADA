@@ -2,29 +2,19 @@ package com.example.hwada.repository;
 
 import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
-import android.app.Application;
-import android.location.Location;
 import android.net.Uri;
-import android.os.Build;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 
 import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.AdReview;
-import com.example.hwada.Model.Chat;
-import com.example.hwada.Model.DaysSchedule;
-import com.example.hwada.Model.DebugModel;
 import com.example.hwada.Model.LocationCustom;
 import com.example.hwada.Model.MyReview;
 import com.example.hwada.Model.User;
 import com.example.hwada.database.DbHandler;
-import com.example.hwada.viewmodel.UserViewModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -45,17 +35,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.google.gson.Gson;
 
-import org.checkerframework.checker.units.qual.A;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,12 +49,12 @@ public class UserRepository {
     MutableLiveData<User> userMutableLiveData;
     FirebaseStorage storage = FirebaseStorage.getInstance();
     StorageReference storageRef = storage.getReference();
-    UserViewModel userViewModel ;
+    AdsRepository adRepo;
 
     public UserRepository (){
         this.auth = FirebaseAuth.getInstance();
         userMutableLiveData = new MutableLiveData<>();
-        userViewModel = UserViewModel.getInstance();
+        adRepo = new AdsRepository(this);
     }
 
 
@@ -174,11 +155,11 @@ public class UserRepository {
 
                 for (MyReview myReview: user.getMyReviews()) {
 
-                    DocumentReference myReviewAdDocRef = getAdReviewsColRef(getAdColRef(myReview),myReview).document(myReview.getReviewId());
+                    DocumentReference myReviewAdDocRef = getAdReviewsColRef(adRepo.getAdColRef(myReview),myReview).document(myReview.getReviewId());
                     transaction.update(myReviewAdDocRef,myReviewData);
-                    DocumentReference myReviewHomeAdDocRef = getAdReviewsColRef(getAdColHomePageRef(),myReview).document(myReview.getReviewId());
+                    DocumentReference myReviewHomeAdDocRef = getAdReviewsColRef(adRepo.getAdColHomePageRef(),myReview).document(myReview.getReviewId());
                     transaction.update(myReviewHomeAdDocRef,myReviewData);
-                    DocumentReference myReviewUserAdDocRef = getAdReviewsColRef(getUserAdColRef(myReview.getAdAuthorId()),myReview).document(myReview.getReviewId());
+                    DocumentReference myReviewUserAdDocRef = getAdReviewsColRef(adRepo.getUserAdColRef(myReview.getAdAuthorId()),myReview).document(myReview.getReviewId());
                     transaction.update(myReviewUserAdDocRef,myReviewData);
                 }
 
@@ -209,7 +190,6 @@ public class UserRepository {
  * **/
 
 private CollectionReference getAdReviewsColRef(CollectionReference adColRef,MyReview myReview){
-    Log.e(TAG, "getAdReviewsColRef: " );
    return adColRef.document(myReview.getAdId()).collection(DbHandler.Reviews);
 }
 
@@ -240,35 +220,6 @@ private CollectionReference getAdReviewsColRef(CollectionReference adColRef,MyRe
         return mutableLiveData;
     }
 
-    public MutableLiveData<Boolean> updateUserFavAds(User user) {
-        MutableLiveData<Boolean>updateFavAdsSuccess = new MutableLiveData<>();
-        Map<String, Object> data = new HashMap<>();
-        data.put("favoriteAds",user.getFavAds());
-        rootRef.collection(DbHandler.userCollection).document(auth.getUid()).update(data).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()){
-                    updateFavAdsSuccess.setValue(true);
-                } else updateFavAdsSuccess.setValue(false);
-            }
-        });
-        return updateFavAdsSuccess ;
-    }
-
-    public MutableLiveData<Boolean> updateUserReviews(User user) {
-        MutableLiveData<Boolean>updateMyReviewsSuccess = new MutableLiveData<>();
-        Map<String, Object> data = new HashMap<>();
-        data.put("myReviews",user.getMyReviews());
-        rootRef.collection(DbHandler.userCollection).document(auth.getUid()).update(data).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()){
-                    updateMyReviewsSuccess.setValue(true);
-                } else updateMyReviewsSuccess.setValue(false);
-            }
-        });
-        return updateMyReviewsSuccess;
-    }
 
     public void setUserStatus(String status,String userId){
         Map<String, Object> data = new HashMap<>();
@@ -282,7 +233,7 @@ private CollectionReference getAdReviewsColRef(CollectionReference adColRef,MyRe
     }
 
 
-    public MutableLiveData<ArrayList<Ad>> getAllUserAds(String id){
+    public MutableLiveData<ArrayList<Ad>> getAllUserAds(String id,boolean updateRating){
         MutableLiveData<ArrayList<Ad>> mutableLiveData = new MutableLiveData<>();
         userDocumentRef(id).collection(DbHandler.adCollection)
                 .orderBy("timeStamp", Query.Direction.DESCENDING)
@@ -295,6 +246,7 @@ private CollectionReference getAdReviewsColRef(CollectionReference adColRef,MyRe
                     for (QueryDocumentSnapshot document : adQuerySnapshot) {
                         ads.add(document.toObject(Ad.class));
                     }
+                    if(updateRating) updateUserRating(ads);
                     mutableLiveData.setValue(ads);
                 }
             }
@@ -338,38 +290,16 @@ private CollectionReference getAdReviewsColRef(CollectionReference adColRef,MyRe
         return rootRef.collection(DbHandler.userCollection).document(id);
     }
 
-    private CollectionReference getAdColHomePageRef(){
-        return getAdColRef(DbHandler.homePage,DbHandler.homePage);
-    }
-    private CollectionReference getAdColRef(MyReview myReview){
-        Log.e(TAG, "getAdColRef: 1" );
-        if (myReview.getCategory().equals(DbHandler.FREELANCE)){
-            return getAdColRef(myReview.getCategory(),myReview.getSubCategory(),myReview.getSubSubCategory());
-        }else {
-            return getAdColRef(myReview.getCategory(),myReview.getSubCategory());
+
+    private double calcUserRating(ArrayList<Ad> ads){
+        double rating = 0 ;
+        for (Ad ad:ads) {
+            rating+=ad.getRating();
         }
+        if(rating == 0)return 0;
+        return rating/ads.size();
     }
-    private CollectionReference getAdColRef(String category , String subCategory){
-        CollectionReference adColRef;
-        Log.e(TAG, "getAdColRef: 2" );
-        adColRef = rootRef.collection(DbHandler.adCollection)
-                .document(category)
-                .collection(subCategory);
-        return adColRef;
-    }
-    private CollectionReference getAdColRef(String category , String subCategory , String subSubCategory){
-        CollectionReference adColRef;
-        Log.e(TAG, "getAdColRef: 3" );
-        adColRef = rootRef.collection(DbHandler.adCollection)
-                .document(category)
-                .collection(category)
-                .document(subCategory)
-                .collection(subSubCategory);
-        return adColRef;
-    }
-    private CollectionReference getUserAdColRef(String userId){
-        CollectionReference ref;
-        ref =  rootRef.collection(DbHandler.userCollection).document(userId).collection(DbHandler.adCollection);
-        return ref;
+    public void updateUserRating(ArrayList<Ad> ads) {
+        userDocumentRef(ads.get(0).getAuthorId()).update("rating",calcUserRating(ads));
     }
 }

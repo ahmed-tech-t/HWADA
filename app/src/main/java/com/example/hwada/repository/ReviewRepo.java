@@ -34,42 +34,19 @@ public class ReviewRepo {
 
     private static final String TAG = "ReviewRepo";
 
-    private CollectionReference getAdColRef(Ad ad){
-        if (ad.getCategory().equals(DbHandler.FREELANCE)){
-            return getAdColRef(ad.getCategory(),ad.getSubCategory(),ad.getSubSubCategory());
-        }else {
-            return getAdColRef(ad.getCategory(),ad.getSubCategory());
-        }
-    }
-    private CollectionReference getAdColRef(String category , String subCategory){
-        CollectionReference adColRef;
-        adColRef = rootRef.collection(DbHandler.adCollection)
-                .document(category)
-                .collection(subCategory);
-        return adColRef;
-    }
-    private CollectionReference getAdColRef(String category , String subCategory , String subSubCategory){
-        CollectionReference adColRef;
-        adColRef = rootRef.collection(DbHandler.adCollection)
-                .document(category)
-                .collection(category)
-                .document(subCategory)
-                .collection(subSubCategory);
-        return adColRef;
-    }
-    private CollectionReference getUserAdColRef(Ad ad){
-        CollectionReference ref;
-        ref =  rootRef.collection(DbHandler.userCollection).document(ad.getAuthorId()).collection(DbHandler.adCollection);
-        return ref;
-    }
-    private CollectionReference getAdColHomePageRef(){
-        return getAdColRef(DbHandler.homePage,DbHandler.homePage);
+    AdsRepository adsRepo;
+    public ReviewRepo(){
+        adsRepo = new AdsRepository();
     }
 
-    public MutableLiveData<ArrayList<AdReview>> getAdReviews(Ad ad){
+
+    /**
+     * GET ADD REVIEWS
+     **/
+    public MutableLiveData<ArrayList<AdReview>> getAdReviews(Ad ad,boolean updateRating){
         MutableLiveData<ArrayList<AdReview>> mutableLiveData = new MutableLiveData<>();
         ArrayList<AdReview> adReviews = new ArrayList<>();
-        getAdColRef(ad).document(ad.getId()).collection(DbHandler.Reviews)
+        adsRepo.getAdColRef(ad).document(ad.getId()).collection(DbHandler.Reviews)
                 .orderBy("timeStamp", Query.Direction.DESCENDING)
                 .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
@@ -78,16 +55,27 @@ public class ReviewRepo {
                     for (QueryDocumentSnapshot reviewSnapshot : task.getResult()) {
                         adReviews.add(reviewSnapshot.toObject(AdReview.class));
                     }
+
+                    if(updateRating){
+                        AdsRepository adsRepository = new AdsRepository();
+                        adsRepository.updateAdRating(ad,adReviews);
+                    }
                     mutableLiveData.setValue(adReviews);
                 } else {
                     Log.d(TAG, "onComplete: can't load ad review");
                     mutableLiveData.setValue(new ArrayList<>());
                 }
             }
-        });
+
+                });
 
         return mutableLiveData;
     }
+
+
+    /**
+     * ADD NEW REVIEW
+     **/
 
     public MutableLiveData<AdReview> addReview(User user, Ad ad , AdReview review){
         MutableLiveData<AdReview> reviewMutableLiveData = new MutableLiveData<>();
@@ -99,12 +87,12 @@ public class ReviewRepo {
 
 
                 //set ad review to ad collection
-                reviewDocRef = getAdColRef(ad).document(ad.getId()).collection(DbHandler.Reviews).document();
+                reviewDocRef = adsRepo.getAdColRef(ad).document(ad.getId()).collection(DbHandler.Reviews).document();
                 review.setId(reviewDocRef.getId());
                 transaction.set(reviewDocRef,review);
 
                 //set ad review to user ad collection
-                reviewDocRef = getUserAdColRef(ad).document(ad.getId()).collection(DbHandler.Reviews).document(review.getId());
+                reviewDocRef = adsRepo.getUserAdColRef(ad.getAuthorId()).document(ad.getId()).collection(DbHandler.Reviews).document(review.getId());
                 transaction.set(reviewDocRef, review);
 
 
@@ -114,7 +102,7 @@ public class ReviewRepo {
                 transaction.set(reviewDocRef, myReview);
 
                 //set ad review to home page ad collection
-                reviewDocRef = getAdColHomePageRef().document(ad.getId()).collection(DbHandler.Reviews).document(review.getId());
+                reviewDocRef = adsRepo.getAdColHomePageRef().document(ad.getId()).collection(DbHandler.Reviews).document(review.getId());
                 transaction.set(reviewDocRef,review);
 
                 return null;
@@ -123,6 +111,7 @@ public class ReviewRepo {
             @Override
             public void onComplete(@NonNull Task<Object> task) {
                 if(task.isSuccessful()){
+                    getAdReviews(ad, true);
                     reviewMutableLiveData.setValue(review);
                 }
             }
@@ -136,6 +125,11 @@ public class ReviewRepo {
         return reviewMutableLiveData ;
 
     }
+
+
+    /**
+     * EDIT REVIEW
+     **/
     public MutableLiveData<AdReview> editReview(Ad ad , AdReview review){
         MutableLiveData<AdReview> reviewMutableLiveData = new MutableLiveData<>();
         rootRef.runTransaction(new Transaction.Function<Object>() {
@@ -149,17 +143,17 @@ public class ReviewRepo {
                 data.put("rating",review.getRating());
 
                 //set ad review to ad collection
-                reviewDocRef = getAdColRef(ad).document(ad.getId()).collection(DbHandler.Reviews).document(review.getId());
+                reviewDocRef = adsRepo.getAdColRef(ad).document(ad.getId()).collection(DbHandler.Reviews).document(review.getId());
                 review.setId(reviewDocRef.getId());
                 transaction.update(reviewDocRef,data);
 
                 //set ad review to user ad collection
-                reviewDocRef = getUserAdColRef(ad).document(ad.getId()).collection(DbHandler.Reviews).document(review.getId());
+                reviewDocRef = adsRepo.getUserAdColRef(ad.getAuthorId()).document(ad.getId()).collection(DbHandler.Reviews).document(review.getId());
                 transaction.update(reviewDocRef, data);
 
 
                 //set ad review to home page ad collection
-                reviewDocRef = getAdColHomePageRef().document(ad.getId()).collection(DbHandler.Reviews).document(review.getId());
+                reviewDocRef = adsRepo.getAdColHomePageRef().document(ad.getId()).collection(DbHandler.Reviews).document(review.getId());
                 transaction.update(reviewDocRef,data);
 
                 return null;
@@ -168,6 +162,7 @@ public class ReviewRepo {
             @Override
             public void onComplete(@NonNull Task<Object> task) {
                 if(task.isSuccessful()){
+                    getAdReviews(ad, true);
                     reviewMutableLiveData.setValue(review);
                 }
             }
@@ -182,6 +177,9 @@ public class ReviewRepo {
 
     }
 
+    /**
+     * DELETE REVIEW
+     **/
     public MutableLiveData<Boolean> deleteReview(User user , Ad ad , AdReview review){
         MutableLiveData<Boolean> deleteReviewMutableLiveDate = new MutableLiveData<>();
         rootRef.runTransaction(new Transaction.Function<Object>() {
@@ -193,11 +191,11 @@ public class ReviewRepo {
                 Log.e(TAG, "apply: "+user.getEmail() );
 
                 //delete review from ad collection
-                reviewDocRef = getAdColRef(ad).document(ad.getId()).collection(DbHandler.Reviews).document(review.getId());
+                reviewDocRef = adsRepo.getAdColRef(ad).document(ad.getId()).collection(DbHandler.Reviews).document(review.getId());
                 transaction.delete(reviewDocRef);
 
                 //delete review from home page ad collection
-                reviewDocRef = getAdColHomePageRef().document(ad.getId()).collection(DbHandler.Reviews).document(review.getId());
+                reviewDocRef = adsRepo.getAdColHomePageRef().document(ad.getId()).collection(DbHandler.Reviews).document(review.getId());
                 transaction.delete(reviewDocRef);
 
                 //set to my reviews to user collection
@@ -218,6 +216,7 @@ public class ReviewRepo {
             @Override
             public void onComplete(@NonNull Task<Object> task) {
                 if (task.isSuccessful()){
+                    getAdReviews(ad, true);
                     deleteReviewMutableLiveDate.setValue(true);
                 }
             }
