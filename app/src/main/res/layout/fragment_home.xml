@@ -66,9 +66,10 @@
                 />
 
             <ImageView
-                android:id="@+id/im_filter"
+                android:id="@+id/im_filter_home_fragment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:padding="10dp"
                 android:clickable="true"
                 android:src="@drawable/filter_icon" />
 
@@ -296,18 +297,26 @@
 
         </com.facebook.shimmer.ShimmerFrameLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_home_fragment"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_refresh_home_fragment"
             android:visibility="gone"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="5dp"
-            android:layout_margin="10dp"
-            android:background="@drawable/empty_page"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            android:paddingBottom="?actionBarSize"
-            android:clipToPadding="false"
-            android:orientation="vertical"/>
+            android:layout_margin="10dp">
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_home_fragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/empty_page"
+                android:orientation="vertical"
+                android:layout_marginBottom="5dp"
+                android:clipToPadding="false"
+                android:paddingBottom="?actionBarSize" />
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     </LinearLayout>

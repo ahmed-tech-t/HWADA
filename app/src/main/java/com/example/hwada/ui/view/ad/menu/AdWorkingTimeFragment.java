@@ -42,50 +42,13 @@ public class AdWorkingTimeFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         ad = getArguments().getParcelable("ad");
-        setWorkingTimeToAdapter();
+        setRecycler();
     }
-    private void setWorkingTimeToAdapter(){
-        ArrayList<String> days = getDays();
-        ArrayList<ArrayList<WorkingTime>> tempSchedule = getSchedule();
-        ArrayList<ArrayList<WorkingTime>> schedule = new ArrayList<>();
-
-        Log.e(TAG, "setWorkingTimeToAdapter: "+schedule );
-
-        for (int i = 0; i < tempSchedule.size();i++) {
-            if(tempSchedule.get(i).size() > 0){
-                schedule.add(tempSchedule.get(i));
-            }
-        }
-
-        Log.e(TAG, "setWorkingTimeToAdapter: "+schedule);
+    private void setRecycler(){
+        ad.getDaysSchedule().getDays().entrySet().removeIf(entry -> entry.getValue() == null || entry.getValue().isEmpty());
         adapter = new WorkingTimePreviewDaysAdapter();
-        adapter.setDaysSchedule(schedule,days,getContext());
+        adapter.setDaysSchedule(ad.getDaysSchedule(),getContext());
         binding.recyclerAdWorkingTimeFragment.setAdapter(adapter);
         binding.recyclerAdWorkingTimeFragment.setLayoutManager(new LinearLayoutManager(getContext()));
     }
-
-
-    private ArrayList getDays(){
-        ArrayList days  =new ArrayList(Arrays.asList(getString(R.string.saturday),
-                getString(R.string.sunday),
-                getString(R.string.monday),
-                getString(R.string.tuesday),
-                getString(R.string.wednesday),
-                getString(R.string.thursday),
-                getString(R.string.friday)));
-    return days;
-    }
-    private ArrayList<ArrayList<WorkingTime>>getSchedule(){
-        ArrayList<ArrayList<WorkingTime>> temp = new ArrayList<>();
-        temp.add(ad.getDaysSchedule().getSaturday());
-        temp.add(ad.getDaysSchedule().getSunday());
-        temp.add(ad.getDaysSchedule().getMonday());
-        temp.add(ad.getDaysSchedule().getTuesday());
-        temp.add(ad.getDaysSchedule().getWednesday());
-        temp.add(ad.getDaysSchedule().getThursday());
-        temp.add(ad.getDaysSchedule().getFriday());
-        return temp;
-    }
-
-
 }

@@ -19,6 +19,8 @@ import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
 import com.example.hwada.application.App;
+import com.example.hwada.databinding.ItemViewBinding;
+import com.example.hwada.databinding.ItemViewMyAdsBinding;
 import com.example.hwada.util.GlideImageLoader;
 import com.google.firebase.Timestamp;
 
@@ -33,6 +35,9 @@ import java.util.Locale;
 public class MyAdsAdapter extends RecyclerView.Adapter<MyAdsAdapter.MyAdsViewHolder> {
     private ArrayList<Ad> list = new ArrayList();
     private User user ;
+
+    ItemViewMyAdsBinding binding;
+
     OnItemListener pOnItemListener;
     Context mContext;
     private static final String TAG = "AdsAdapter";
@@ -44,27 +49,23 @@ public class MyAdsAdapter extends RecyclerView.Adapter<MyAdsAdapter.MyAdsViewHol
     @NonNull
     @Override
     public MyAdsAdapter.MyAdsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new MyAdsAdapter.MyAdsViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_view_my_ads, parent, false),pOnItemListener);
+        binding = ItemViewMyAdsBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+       return new MyAdsViewHolder(binding.getRoot(),pOnItemListener);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyAdsAdapter.MyAdsViewHolder holder, int position) {
 
-        String url = list.get(position).getImagesUrl().get(0);
+        String url = list.get(position).getMainImage();
         RequestOptions options = new RequestOptions()
                 .priority(Priority.HIGH);
         new GlideImageLoader(holder.userImage,new ProgressBar(mContext)).load(url,options);
 
 
         holder.title.setText(list.get(position).getTitle());
-        if(list.get(position).getDescription().length()>137){
-            holder.description.setText(list.get(position).getDescription().substring(0, Math.min(list.get(position).getDescription().length(), 137))+"...");
-        }else{
-            holder.description.setText(list.get(position).getDescription());
-        }
+        holder.description.setText(list.get(position).getDescription());
         holder.rating.setText(list.get(position).getRating()+"");
 
-        list.get(position).setDistance(Float.valueOf(getDistance(position)));
         holder.views.setText(list.get(position).getViews()+"");
         holder.date.setText(handleTime(list.get(position).getTimeStamp()));
         DecimalFormat decimalFormat = new DecimalFormat("#");
@@ -82,31 +83,36 @@ public class MyAdsAdapter extends RecyclerView.Adapter<MyAdsAdapter.MyAdsViewHol
     public void setList(User user, OnItemListener onItemListener) {
         this.user = user;
         this.list = user.getAds();
-        this.mContext =mContext ;
         this.pOnItemListener = onItemListener;
         notifyDataSetChanged();
     }
 
     public class MyAdsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        ImageView userImage  ;
+        ImageView userImage ,menu ;
         TextView title , description , date , views , price , rating;
         OnItemListener onItemListener;
         public MyAdsViewHolder(@NonNull View v, OnItemListener onItemListener) {
             super(v);
-            userImage = v.findViewById(R.id.item_user_image);
-            title = v.findViewById(R.id.item_jop_title);
-            description = v.findViewById(R.id.item_description);
-            date = v.findViewById(R.id.item_date);
-            price =v.findViewById(R.id.price_item);
-            rating = v.findViewById(R.id.item_user_rating);
-            views = v.findViewById(R.id.tv_view_item_view_my_ads);
+            menu = binding.menuItem ;
+            userImage = binding.itemUserImage;
+            title = binding.itemJopTitle;
+            description = binding.itemDescription;
+            date = binding.itemDate;
+            price = binding.priceItem;
+            rating = binding.itemUserRating;
+            views = binding.tvViewItemViewMyAds;
             this.onItemListener = onItemListener;
             v.setOnClickListener(this);
+            menu.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-            onItemListener.getItemPosition(getAdapterPosition());
+            if(v.getId() == binding.menuItem.getId()){
+                onItemListener.getClickedItemMenu(getAdapterPosition(),menu);
+            }else{
+                onItemListener.getItemPosition(getAdapterPosition());
+            }
         }
     }
 
@@ -122,9 +128,7 @@ public class MyAdsAdapter extends RecyclerView.Adapter<MyAdsAdapter.MyAdsViewHol
 
     public interface OnItemListener{
         void getItemPosition(int position);
-    }
-    private boolean adIsInFavList(String id){
-        return false;
+        void getClickedItemMenu(int position,ImageView imageView);
     }
 
     public String handleTime(Timestamp timestamp){
@@ -138,32 +142,17 @@ public class MyAdsAdapter extends RecyclerView.Adapter<MyAdsAdapter.MyAdsViewHol
 
             if (inputDate.get(Calendar.YEAR) == today.get(Calendar.YEAR)
                     && inputDate.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR)) {
-                return mContext.getString(R.string.today)+"  " + dateString.split(",")[1] ;
+                return mContext.getString(R.string.today)+"  " + dateString.split(",")[1]+dateString.split(",")[3] ;
             }
             else if (inputDate.get(Calendar.YEAR) == today.get(Calendar.YEAR)
                     && inputDate.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR) - 1) {
-                return mContext.getString(R.string.yesterday)+"  "+ dateString.split(",")[1];
+                return mContext.getString(R.string.yesterday)+"  "+ dateString.split(",")[1]+dateString.split(",")[3];
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return dateString.split(",")[0];
+        return dateString.split(",")[0]+dateString.split(",")[3];
     }
 
-    public String getDistance(int pos){
-        Location location1 = new Location("user");
-        if(user.getLocation()!=null){
-            location1.setLatitude(user.getLocation().getLatitude());
-            location1.setLongitude(user.getLocation().getLongitude());
-
-            Location location2 = new Location("ad");
-            location2.setLatitude(list.get(pos).getAuthorLocation().getLatitude());
-            location2.setLongitude(list.get(pos).getAuthorLocation().getLongitude());
-
-            float distanceInMeters = location1.distanceTo(location2)/1000;
-            return String.format(Locale.US, "%.2f", distanceInMeters);
-        }
-        return "-1";
-    }
 }

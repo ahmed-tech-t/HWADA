@@ -24,6 +24,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -169,8 +170,8 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         user = getArguments().getParcelable("user");
         ad = getArguments().getParcelable("ad");
 
-        adsViewModel = AdsViewModel.getInstance();
-        userViewModel =  UserViewModel.getInstance();
+        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        adsViewModel =   new ViewModelProvider(this).get(AdsViewModel.class);
         favViewModel = FavViewModel.getInstance();
         chatViewModel = ViewModelProviders.of(this).get(ChatViewModel.class);
         userAddressViewModel = ViewModelProviders.of(this).get(UserAddressViewModel.class);

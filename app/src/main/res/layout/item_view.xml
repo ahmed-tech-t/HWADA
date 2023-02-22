@@ -27,7 +27,7 @@
                android:background="@color/white_blue"
                android:padding="5dp"
                android:layout_margin="5dp"
-               android:scaleType="centerCrop"
+               android:scaleType="matrix"
                android:layout_centerHorizontal="true"
                app:strokeColor="@null"
                android:layout_alignParentTop="true"

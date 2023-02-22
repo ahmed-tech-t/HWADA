@@ -66,7 +66,7 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
     public void onBindViewHolder(@NonNull HomeViewHolder holder, int position) {
 
         //post image
-        String url = list.get(position).getImagesUrl().get(0);
+        String url = list.get(position).getMainImage();
         RequestOptions options = new RequestOptions()
                 .priority(Priority.HIGH);
         new GlideImageLoader(holder.userImage,new ProgressBar(mContext)).load(url,options);

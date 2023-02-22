@@ -77,8 +77,8 @@ public class FavoritesFragment extends Fragment implements AdsGridAdapter.OnItem
         user = getArguments().getParcelable("user");
 
         favViewModel = FavViewModel.getInstance() ;
-        userViewModel = UserViewModel.getInstance();
 
+        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
         binding.shimmerFavFragment.startShimmer();
 
         getAllFavAds();
@@ -172,7 +172,6 @@ public class FavoritesFragment extends Fragment implements AdsGridAdapter.OnItem
                 setRecycler();
             }
         });
-
     }
 
 }

@@ -14,7 +14,6 @@ import java.util.List;
 
 public class Ad implements Parcelable {
 
-
     private String id;
     private String authorId ;
     private LocationCustom authorLocation ;
@@ -24,21 +23,24 @@ public class Ad implements Parcelable {
     private Timestamp timeStamp;
     private float distance ;
     private float rating;
+    private String mainImage;
     private String category;
     private String subCategory;
     private String subSubCategory;
     private ArrayList<AdReview> adReviews;
     private double price;
     private DaysSchedule daysSchedule ;
-    private List<Uri> imagesUri;
+    private List<String> imagesUri;
     private List<String> imagesUrl;
     private int views ;
+   private boolean isActive ;
 
     public Ad(){
-        this.adReviews =new ArrayList<>();
+        daysSchedule = new DaysSchedule();
+        this.adReviews = new ArrayList<>();
         this.imagesUri = new ArrayList<>();
-        this.daysSchedule =new DaysSchedule();
         this.distance = 0;
+        this.rating = 0 ;
     }
 
     public Ad(String adId, String category, String subCategory, String subSubCategory) {
@@ -46,6 +48,11 @@ public class Ad implements Parcelable {
         this.category = category;
         this.subCategory = subCategory;
         this.subSubCategory = subSubCategory;
+        daysSchedule = new DaysSchedule();
+        this.adReviews = new ArrayList<>();
+        this.imagesUri = new ArrayList<>();
+        this.distance = 0;
+        this.rating = 0 ;
     }
 
 
@@ -59,15 +66,17 @@ public class Ad implements Parcelable {
         timeStamp = in.readParcelable(Timestamp.class.getClassLoader());
         distance = in.readFloat();
         rating = in.readFloat();
+        mainImage = in.readString();
         category = in.readString();
         subCategory = in.readString();
         subSubCategory = in.readString();
         adReviews = in.createTypedArrayList(AdReview.CREATOR);
         price = in.readDouble();
         daysSchedule = in.readParcelable(DaysSchedule.class.getClassLoader());
-        imagesUri = in.createTypedArrayList(Uri.CREATOR);
+        imagesUri = in.createStringArrayList();
         imagesUrl = in.createStringArrayList();
         views = in.readInt();
+        isActive = in.readByte() != 0;
     }
 
     public static final Creator<Ad> CREATOR = new Creator<Ad>() {
@@ -160,6 +169,14 @@ public class Ad implements Parcelable {
         return rating;
     }
 
+    public String getMainImage() {
+        return mainImage;
+    }
+
+    public void setMainImage(String mainImage) {
+        this.mainImage = mainImage;
+    }
+
     public void setRating(float rating) {
         this.rating = rating;
     }
@@ -188,18 +205,12 @@ public class Ad implements Parcelable {
         this.adReviews = adReviews;
     }
 
-    public void removeImageFromImagesUri(int pos) {
-        imagesUri.remove(pos);
-    }
-    public void setImageToImagesUri(Uri image) {
-        imagesUri.add(image);
-    }
 
-    public List<Uri> getImagesUri() {
+    public List<String> getImagesUri() {
         return imagesUri;
     }
 
-    public void setImagesUri(List<Uri> imagesUri) {
+    public void setImagesUri(List<String> imagesUri) {
         this.imagesUri = imagesUri;
     }
 
@@ -244,6 +255,14 @@ public class Ad implements Parcelable {
         this.authorAddress = authorAddress;
     }
 
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -251,6 +270,7 @@ public class Ad implements Parcelable {
 
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
+
         dest.writeString(id);
         dest.writeString(authorId);
         dest.writeParcelable(authorLocation, flags);
@@ -260,14 +280,42 @@ public class Ad implements Parcelable {
         dest.writeParcelable(timeStamp, flags);
         dest.writeFloat(distance);
         dest.writeFloat(rating);
+        dest.writeString(mainImage);
         dest.writeString(category);
         dest.writeString(subCategory);
         dest.writeString(subSubCategory);
         dest.writeTypedList(adReviews);
         dest.writeDouble(price);
         dest.writeParcelable(daysSchedule, flags);
-        dest.writeTypedList(imagesUri);
+        dest.writeStringList(imagesUri);
         dest.writeStringList(imagesUrl);
         dest.writeInt(views);
+        dest.writeByte((byte) (isActive ? 1 : 0));
+    }
+
+
+    @Override
+    public String toString() {
+        return "Ad{" +
+                "id='" + id + '\'' +
+                ", authorId='" + authorId + '\'' +
+                ", authorLocation=" + authorLocation +
+                ", authorAddress='" + authorAddress + '\'' +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", timeStamp=" + timeStamp +
+                ", distance=" + distance +
+                ", rating=" + rating +
+                ", category='" + category + '\'' +
+                ", subCategory='" + subCategory + '\'' +
+                ", subSubCategory='" + subSubCategory + '\'' +
+                ", adReviews=" + adReviews +
+                ", price=" + price +
+                ", daysSchedule=" + daysSchedule +
+                ", imagesUri=" + imagesUri +
+                ", imagesUrl=" + imagesUrl +
+                ", views=" + views +
+                ", isActive=" + isActive +
+                '}';
     }
 }

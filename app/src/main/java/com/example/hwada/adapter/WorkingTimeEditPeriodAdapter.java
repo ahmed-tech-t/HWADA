@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.hwada.Model.WorkingTime;
 import com.example.hwada.R;
+import com.example.hwada.databinding.WorkingTimeEditPeriodLayoutBinding;
 
 import java.util.ArrayList;
 
@@ -18,10 +19,14 @@ public class WorkingTimeEditPeriodAdapter extends RecyclerView.Adapter<WorkingTi
     private ArrayList<WorkingTime> list = new ArrayList();
     OnItemListener pOnItemListener;
 
+    WorkingTimeEditPeriodLayoutBinding binding ;
+
     @NonNull
     @Override
     public WorkingTimeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new WorkingTimeViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.working_time_edit_period_layout, parent, false), pOnItemListener);
+
+        binding = WorkingTimeEditPeriodLayoutBinding.inflate(LayoutInflater.from(parent.getContext()),parent,false);
+        return new WorkingTimeViewHolder(binding.getRoot(),pOnItemListener);
     }
 
     @Override
@@ -49,9 +54,9 @@ public class WorkingTimeEditPeriodAdapter extends RecyclerView.Adapter<WorkingTi
 
         public WorkingTimeViewHolder(@NonNull View v, OnItemListener onItemListener) {
             super(v);
-            remove = v.findViewById(R.id.button_remove_time);
-            from = v.findViewById(R.id.from_working_time);
-            to = v.findViewById(R.id.to_working_time);
+            remove = binding.buttonRemoveTime;
+            from = binding.fromWorkingTime;
+            to = binding.toWorkingTime;
             this.onItemListener = onItemListener;
 
             from.setOnClickListener(this);

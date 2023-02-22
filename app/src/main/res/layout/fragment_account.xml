@@ -34,12 +34,25 @@
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:clickable="true"
+                android:background="@color/white_blue"
                 android:src="@drawable/user_account_icon"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:shapeAppearanceOverlay="@style/Circular"
                 app:strokeColor="@null" />
+
+            <ProgressBar
+                android:id="@+id/progress_bar_user_image_fragment_account"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="@+id/user_image_account_fragment"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:indeterminate="true"
+                android:indeterminateTint="@color/white"
+                android:indeterminateTintMode="src_atop"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
                 android:id="@+id/membership_background"

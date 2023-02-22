@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.hwada.Model.Chat;
 import com.example.hwada.R;
 import com.squareup.picasso.Picasso;
 
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.ImagesViewHolder> {
-    private List<Uri> list = new ArrayList();
+    private List<String> list = new ArrayList();
     OnItemListener pOnItemListener;
 
     String TAG ="ImagesAdapter";
@@ -37,7 +38,7 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.ImagesView
         return list.size();
     }
 
-    public void setList(List<Uri> list, OnItemListener onItemListener) {
+    public void setList(List<String> list, OnItemListener onItemListener) {
         this.list = list;
         this.pOnItemListener = onItemListener;
         notifyDataSetChanged();
@@ -69,9 +70,22 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.ImagesView
         notifyItemRangeChanged(position, list.size());
     }
 
-    public void addItems(int position ,List<Uri> temp){
+    public void addItems(int position ,List<String> temp){
         list.addAll(position, temp);
         notifyItemRangeInserted(position, temp.size());
+    }
+    public void addItem(String uri){
+        list.add(uri);
+        notifyDataSetChanged();
+    }
+    public void clearList(){
+        list.clear();
+        notifyDataSetChanged();
+    }
+    public void moveToTop(int pos,String s) {
+        list.remove(pos);
+        list.add(0, s);
+        notifyDataSetChanged();
     }
 
 }

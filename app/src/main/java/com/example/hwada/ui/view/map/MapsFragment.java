@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.Manifest;
@@ -39,6 +40,7 @@ import com.example.hwada.Model.User;
 import com.example.hwada.R;
 import com.example.hwada.application.App;
 import com.example.hwada.databinding.FragmentMapsBinding;
+import com.example.hwada.viewmodel.AdsViewModel;
 import com.example.hwada.viewmodel.DebugViewModel;
 import com.example.hwada.viewmodel.UserAddressViewModel;
 import com.example.hwada.viewmodel.UserViewModel;
@@ -196,8 +198,7 @@ public class MapsFragment extends BottomSheetDialogFragment implements OnMapRead
         super.onActivityCreated(savedInstanceState);
       try {
           user = getArguments().getParcelable("user");
-          userViewModel = UserViewModel.getInstance();
-          debugViewModel = ViewModelProviders.of(getActivity()).get(DebugViewModel.class);
+          userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
           userAddressViewModel = ViewModelProviders.of(this).get(UserAddressViewModel.class);
 
       }catch (Exception e){

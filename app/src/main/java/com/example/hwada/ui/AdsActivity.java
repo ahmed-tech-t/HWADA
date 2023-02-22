@@ -4,8 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -28,7 +30,7 @@ import com.example.hwada.viewmodel.UserViewModel;
 
 import java.util.ArrayList;
 
-public class AdsActivity extends AppCompatActivity implements View.OnClickListener , AdsAdapter.OnItemListener {
+public class AdsActivity extends AppCompatActivity implements View.OnClickListener , AdsAdapter.OnItemListener , SwipeRefreshLayout.OnRefreshListener {
 
     AdsAdapter adapter;
     ArrayList<Ad> adsList;
@@ -68,13 +70,15 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
 
         binding.shimmerAdsActivity.startShimmer();
 
-        userViewModel = UserViewModel.getInstance();
-        adsViewModel =  AdsViewModel.getInstance() ;
+        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        adsViewModel =   new ViewModelProvider(this).get(AdsViewModel.class);
         favViewModel = FavViewModel.getInstance() ;
 
         category = intent.getStringExtra("category");
         subCategory = intent.getStringExtra("subCategory");
         subSubCategory = intent.getStringExtra("subSubCategory");
+
+        binding.swipeRefreshAdsActivity.setOnRefreshListener(this);
 
         advertiserFragment = new AdvertiserFragment();
         debounceHandler = new Handler();
@@ -100,7 +104,7 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
             adapter.setList(user,adsList,this);
             binding.recyclerAdsActivity.setAdapter(adapter);
 
-            binding.recyclerAdsActivity.setVisibility(View.VISIBLE);
+            binding.swipeRefreshAdsActivity.setVisibility(View.VISIBLE);
             if(adsList.size()>0) binding.recyclerAdsActivity.setBackgroundResource(R.drawable.recycle_view_background);
             binding.recyclerAdsActivity.setLayoutManager(new LinearLayoutManager(this));
         }catch (Exception e){
@@ -166,6 +170,7 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
         adsViewModel.getAllAds(category,subCategory).observe(this, ads -> {
             adsList = ads;
             setRecycler();
+            if(binding.swipeRefreshAdsActivity.isRefreshing()) binding.swipeRefreshAdsActivity.setRefreshing(false);
         });
     }
 
@@ -173,6 +178,7 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
         adsViewModel.getAllAds(category,subCategory,subSubCategory).observe(this, ads -> {
             adsList = ads;
            setRecycler();
+            if(binding.swipeRefreshAdsActivity.isRefreshing()) binding.swipeRefreshAdsActivity.setRefreshing(false);
         });
     }
 
@@ -200,12 +206,18 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
     @Override
     protected void onResume() {
         super.onResume();
-        app.setUserOnline(user.getUId());
+        app.setUserOnline(user.getUId(),this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        app.setUserOffline(user.getUId());
+        app.setUserOffline(user.getUId(),this);
+    }
+
+    @Override
+    public void onRefresh() {
+        getAllAds();
+
     }
 }

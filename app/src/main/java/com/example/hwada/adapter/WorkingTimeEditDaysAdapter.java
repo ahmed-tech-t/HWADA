@@ -2,6 +2,7 @@ package com.example.hwada.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,38 +15,47 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.hwada.Model.DaysSchedule;
 import com.example.hwada.Model.WorkingTime;
 import com.example.hwada.R;
+import com.example.hwada.databinding.WorkingTimeEditDaysLayoutBinding;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 
 public class WorkingTimeEditDaysAdapter extends RecyclerView.Adapter<WorkingTimeEditDaysAdapter.MainWorkingTimeViewHolder> {
-    private ArrayList<String> list = new ArrayList();
+    DaysSchedule days ;
     OnItemListener pOnItemListener;
     String DAY_TAG;
     Context context ;
-
-    ArrayList<WorkingTime>workingTimes;
     String TAG ="MainWorkingTimeAdapter";
+
+    WorkingTimeEditDaysLayoutBinding binding ;
     @NonNull
     @Override
     public MainWorkingTimeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new MainWorkingTimeViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.working_time_edit_days_layout, parent, false), pOnItemListener);
+        binding = WorkingTimeEditDaysLayoutBinding.inflate(LayoutInflater.from(parent.getContext()),parent, false);
+        return new MainWorkingTimeViewHolder(binding.getRoot(),pOnItemListener);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MainWorkingTimeViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        holder.button.setText("add");
-        holder.title.setText(list.get(position));
+        String dayTitle = days.getDayTitleFromPosition(position);
+        String dayVal = days.getDayValFromPosition(position);
+        holder.button.setText(context.getString(R.string.add));
+        holder.title.setText(dayTitle);
         WorkingTimePreviewPeriodAdapter innerAdapter = new WorkingTimePreviewPeriodAdapter();
 
-        if(workingTimes!=null  ) {
-                holder.button.setVisibility(View.VISIBLE);
-                holder.switch_.setChecked(true);
-                holder.button.setText(R.string.edit);
-                innerAdapter.setList(workingTimes,list.get(position).toLowerCase(Locale.ROOT));
+        String day = days.getDayValFromPosition(position);
+        ArrayList<WorkingTime> workingTimes = (ArrayList<WorkingTime>) days.getDays().get(day);
+        if(workingTimes.size()>0) {
+            holder.button.setVisibility(View.VISIBLE);
+            holder.switch_.setChecked(true);
+            holder.button.setText(R.string.edit);
+            innerAdapter.setList(workingTimes,dayVal);
         }
         holder.innerRecycler.setAdapter(innerAdapter);
         holder.innerRecycler.setLayoutManager(new LinearLayoutManager(context));
@@ -59,9 +69,9 @@ public class WorkingTimeEditDaysAdapter extends RecyclerView.Adapter<WorkingTime
                 if(isChecked){
                     holder.button.setVisibility(View.VISIBLE);
                     holder.innerRecycler.setVisibility(View.VISIBLE);
-
                 }else {
                     holder.innerRecycler.setAdapter(new WorkingTimePreviewPeriodAdapter());
+                    holder.button.setText(context.getString(R.string.add));
                     holder.button.setVisibility(View.GONE);
                     holder.innerRecycler.setVisibility(View.GONE);
                 }
@@ -71,11 +81,11 @@ public class WorkingTimeEditDaysAdapter extends RecyclerView.Adapter<WorkingTime
 
     @Override
     public int getItemCount() {
-        return list.size();
+        return days.getDays().size();
     }
 
-    public void setList(ArrayList<String> list,String dayTag,Context context, OnItemListener onItemListener) {
-        this.list = list;
+    public void setList(DaysSchedule days,String dayTag,Context context, OnItemListener onItemListener) {
+        this.days = days;
         this.context =context;
         this.DAY_TAG =dayTag;
         this.pOnItemListener = onItemListener;
@@ -91,27 +101,30 @@ public class WorkingTimeEditDaysAdapter extends RecyclerView.Adapter<WorkingTime
         TextView title ;
         public MainWorkingTimeViewHolder(@NonNull View v, OnItemListener onItemListener) {
             super(v);
-            innerRecycler = v.findViewById(R.id.recycler_main_work_time);
-            button = v.findViewById(R.id.button_right_main_work_time);
-            title =  v.findViewById(R.id.tv_title_main_work_time);
-            switch_ = v.findViewById(R.id.switch_day_preview);
+            innerRecycler = binding.recyclerMainWorkTime;
+            button = binding.buttonRightMainWorkTime;
+            title = binding.tvTitleMainWorkTime;
+            switch_ = binding.switchDayPreview;
+
             this.onItemListener = onItemListener;
             button.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-            onItemListener.rightButtonClicked(getAdapterPosition(),list.get(getAdapterPosition()).toLowerCase(Locale.ROOT));
+            onItemListener.rightButtonClicked(getAdapterPosition());
         }
     }
 
     public void updateRecycler(ArrayList<WorkingTime> workingTimes,int pos){
-        this.workingTimes = workingTimes;
+        Log.e(TAG, "updateRecycler: "+workingTimes);
+        String day = days.getDayValFromPosition(pos);
+        days.getDays().put(day,workingTimes);
         notifyItemChanged(pos);
     }
 
     public interface OnItemListener {
-        void rightButtonClicked(int pos,String day);
+        void rightButtonClicked(int pos);
         void switchClicked(boolean isChecked,int pos);
     }
 

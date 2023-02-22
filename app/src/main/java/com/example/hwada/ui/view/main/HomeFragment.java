@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Handler;
 import android.util.Log;
@@ -39,6 +40,8 @@ import com.example.hwada.application.App;
 import com.example.hwada.database.DbHandler;
 import com.example.hwada.databinding.FragmentHomeBinding;
 import com.example.hwada.ui.MainActivity;
+import com.example.hwada.ui.view.FilterFragment;
+import com.example.hwada.ui.view.images.ImageMiniDialogFragment;
 import com.example.hwada.ui.view.map.MapsFragment;
 import com.example.hwada.ui.view.ad.AdvertiserFragment;
 import com.example.hwada.viewmodel.AdsViewModel;
@@ -67,7 +70,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class HomeFragment extends Fragment implements View.OnClickListener , AdsAdapter.OnItemListener  {
+public class HomeFragment extends Fragment implements View.OnClickListener , AdsAdapter.OnItemListener , SwipeRefreshLayout.OnRefreshListener {
     AdsViewModel adsViewModel;
     FavViewModel favViewModel ;
     UserAddressViewModel userAddressViewModel ;
@@ -103,7 +106,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
         binding.shimmerHomeFragment.startShimmer();
 
         binding.userAddress.setOnClickListener(this);
-
+        binding.imFilterHomeFragment.setOnClickListener(this);
         setLocationArrowWhenLanguageIsArabic();
 
         debounceHandler = new Handler();
@@ -117,7 +120,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
         closeShimmer();
         try {
             adapter = new AdsAdapter(getContext());
-            binding.recyclerHomeFragment.setVisibility(View.VISIBLE);
+            binding.swipeRefreshHomeFragment.setVisibility(View.VISIBLE);
             if(adsList.size()>0)binding.recyclerHomeFragment.setBackgroundResource(R.drawable.recycle_view_background);
 
             adapter.setList(user, adsList,this);
@@ -129,27 +132,19 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
         }
     }
 
-    private void adsObserver(){
+    private void getAllAds(){
         adsViewModel.getAllAds().observe(getActivity(), ads -> {
             adsList = ads;
             setRecycler();
+            if(binding.swipeRefreshHomeFragment.isRefreshing()){
+                binding.swipeRefreshHomeFragment.setRefreshing(false);
+            }
         });
     }
 
     private void closeShimmer(){
         binding.shimmerHomeFragment.setVisibility(View.GONE);
         binding.shimmerHomeFragment.stopShimmer();
-    }
-    public void newAdObserver(){
-        adsViewModel.newAdLiveData.observe(getActivity(), new Observer<Ad>() {
-            @Override
-            public void onChanged(Ad ad) {
-                user.getAds().add(ad);
-                adapter.addItem(ad);
-                if(adsList.size()>0)binding.recyclerHomeFragment.setBackgroundResource(R.drawable.recycle_view_background);
-                adapter.notifyDataSetChanged();
-            }
-        });
     }
 
     private void userFavAdsListener(){
@@ -208,6 +203,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
                ((MainActivity) getActivity()).callCategoryActivity(DbHandler.FREELANCE, target);
            } else if (v.getId() == binding.handcraftCategory.getId()) {
                ((MainActivity) getActivity()).callAdsActivity(DbHandler.HANDCRAFT, DbHandler.HANDCRAFT,"");
+           }else if(v.getId() == binding.imFilterHomeFragment.getId()){
+               callFilterDialog();
            }
        }catch (Exception e){
            app.reportError(e,getContext());
@@ -223,14 +220,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
 
           userAddressViewModel = ViewModelProviders.of(this).get(UserAddressViewModel.class);
 
-          userViewModel = UserViewModel.getInstance();
-          adsViewModel =  AdsViewModel.getInstance() ;
+          userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+          adsViewModel =  new ViewModelProvider(this).get(AdsViewModel.class);
           favViewModel = FavViewModel.getInstance() ;
 
           app =(App) getContext().getApplicationContext();
+          binding.swipeRefreshHomeFragment.setOnRefreshListener(this);
 
-          adsObserver();
-          newAdObserver();
+          getAllAds();
           setUserListener();
           userFavAdsListener();
       }catch (Exception e){
@@ -323,4 +320,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
           binding.userAddress.setCompoundDrawablesWithIntrinsicBounds(R.drawable.arrow_left, 0, R.drawable.distance_icon, 0);
       }
   }
+
+    public void callFilterDialog() {
+        FilterFragment fragment = new FilterFragment();
+        FragmentManager fragmentManager = getChildFragmentManager();
+        fragment.show(fragmentManager, fragment.getTag());
+    }
+
+    @Override
+    public void onRefresh() {
+        getAllAds();
+    }
 }

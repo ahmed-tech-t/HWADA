@@ -3,6 +3,7 @@ package com.example.hwada.ui;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -20,8 +21,10 @@ import com.example.hwada.application.App;
 import com.example.hwada.databinding.ActivityUserProfileBinding;
 import com.example.hwada.ui.view.ad.AdvertiserFragment;
 import com.example.hwada.ui.view.images.ImageMiniDialogFragment;
+import com.example.hwada.viewmodel.AdsViewModel;
 import com.example.hwada.viewmodel.FavViewModel;
 import com.example.hwada.viewmodel.UserViewModel;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -58,7 +61,7 @@ public class UserProfileActivity extends AppCompatActivity implements AdsGridAda
         app = (App) getApplication();
         Intent intent = getIntent();
 
-        userViewModel = UserViewModel.getInstance();
+        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
         favViewModel = FavViewModel.getInstance() ;
 
 
@@ -83,9 +86,8 @@ public class UserProfileActivity extends AppCompatActivity implements AdsGridAda
         AdsGridAdapter adapter = new AdsGridAdapter(this);
         adapter.setList(user,adsList,this);
         binding.recyclerUserProfileActivity.setVisibility(View.VISIBLE);
-        if(adsList.size()>0) {
-            binding.recyclerUserProfileActivity.setBackgroundResource(R.drawable.recycle_view_background);
-        }
+        if(!adsList.isEmpty())binding.recyclerUserProfileActivity.setBackgroundResource(R.drawable.recycle_view_background);
+
         binding.recyclerUserProfileActivity.setAdapter(adapter);
         binding.recyclerUserProfileActivity.setLayoutManager(new GridLayoutManager(this,2));
 
@@ -100,7 +102,17 @@ public class UserProfileActivity extends AppCompatActivity implements AdsGridAda
         });
     }
     private void setDataToView(){
-        Picasso.get().load(receiver.getImage()).into(binding.simUserImageUserProfileActivity);
+        Picasso.get().load(receiver.getImage()).into(binding.simUserImageUserProfileActivity, new Callback() {
+            @Override
+            public void onSuccess() {
+                binding.progressBarUserProfileActivity.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onError(Exception e) {
+
+            }
+        });
         binding.tvUserNameUserProfileActivity.setText(receiver.getUsername());
 
         if(receiver.getAboutYou()==null){
@@ -117,13 +129,13 @@ public class UserProfileActivity extends AppCompatActivity implements AdsGridAda
     @Override
     protected void onResume() {
         super.onResume();
-        app.setUserOnline(user.getUId());
+        app.setUserOnline(user.getUId(),this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        app.setUserOffline(user.getUId());
+        app.setUserOffline(user.getUId(),this);
     }
 
     @Override

@@ -1,35 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false" >HWA DA</string>
-    <string name="saturdayVal" translatable="false" >saturday</string>
-    <string name="sundayVal" translatable="false" >sunday</string>
-    <string name="mondayVal" translatable="false" >monday</string>
-    <string name="tuesdayVal" translatable="false">tuesday</string>
-    <string name="wednesdayVal" translatable="false">wednesday</string>
-    <string name="thursdayVal" translatable="false">thursday</string>
-    <string name="fridayVal" translatable="false">friday</string>
-    <string name="workingTimesVal" translatable="false">workingTimes</string>
-    <string name="userVal" translatable="false" >user</string>
-    <string name="adVal" translatable="false">ad</string>
-    <string name="tagVal" translatable="false">tag</string>
-    <string name="fromVal" translatable="false">from</string>
-    <string name="toVal" translatable="false">to</string>
-    <string name="editModeVal" translatable="false">edit</string>
-    <string name="newModeVal" translatable="false">new</string>
-    <string name="modeVal" translatable="false">mode</string>
-    <string name="categoryVal" translatable="false">category</string>
-    <string name="subCategoryVal" translatable="false">subCategory</string>
-    <string name="subSubCategoryVal" translatable="false">subSubCategory</string>
-    <string name="homeVal" translatable="false">home</string>
-    <string name="chatVal" translatable="false">chat</string>
-    <string name="favVal" translatable="false">fav</string>
-    <string name="accountVal" translatable="false">account</string>
-    <string name="targetVal" translatable="false">target</string>
-
-    <!--
-
-
-
-    -->
+    <string name="app_name">HWA DA</string>
     <string name="username_hint"><font size="15">UserName</font></string>
     <string name="email_hint"><font size="15">Email</font></string>
     <string name="phone_hint"><font size="15">Phone</font></string>
@@ -180,10 +150,6 @@
     <string name="unsupportedLocation">we will support your location soon</string>
     <string name="joinAt">join Hwada in </string>
     <string name="lastSeen">last seen </string>
-
     <string name="stop">stop</string>
-    <string name="loadingImagesInstruction">Loading your Images ...</string>
-    <string name="failedToLoadImages">Failed to load Images .. Please check your connection and try again</string>
-    <string name="updateAdMessage">your ads list will be updated automatically once update is complete</string>
 
 </resources>

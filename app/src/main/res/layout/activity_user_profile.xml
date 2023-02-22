@@ -26,13 +26,29 @@
            android:layout_marginEnd="10dp"
            android:padding="5dp"
            android:orientation="horizontal">
+           <RelativeLayout
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content">
+
+
            <com.google.android.material.imageview.ShapeableImageView
                android:id="@+id/sim_user_image_user_profile_activity"
                android:layout_width="100dp"
                android:layout_height="100dp"
+               android:background="@color/white_blue"
                android:src="@drawable/user_account_icon"
+               android:layout_centerInParent="true"
                app:shapeAppearanceOverlay="@style/Circular"
                app:strokeColor="@null"/>
+           <ProgressBar
+               android:id="@+id/progress_bar_user_profile_activity"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:indeterminate="true"
+               android:layout_centerInParent="true"
+               android:indeterminateTint="@color/white"
+               android:indeterminateTintMode="src_atop" />
+           </RelativeLayout>
            <RelativeLayout
                android:layout_width="0dp"
                android:layout_height="match_parent"
@@ -154,12 +170,12 @@
            <androidx.recyclerview.widget.RecyclerView
                android:id="@+id/recycler_user_profile_activity"
                android:layout_width="match_parent"
-               android:layout_height="wrap_content"
+               android:layout_height="match_parent"
                android:visibility="gone"
                android:layout_marginTop="5dp"
                android:layout_margin="10dp"
                app:layout_behavior="@string/appbar_scrolling_view_behavior"
-               android:background="@drawable/recycle_view_background"
+               android:background="@drawable/empty_page"
                android:paddingBottom="8dp"
                android:clipToPadding="false"
                android:orientation="vertical"/>

@@ -179,24 +179,21 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
            params.height = (int) imageHeight;
            image.setLayoutParams(params);
        }
+   if(list.get(pos).getUri() != null){
+       Uri uri = list.get(pos).getUri();
+       progressBar.setVisibility(View.VISIBLE);
+       Picasso.get().load(uri).placeholder(R.color.forest_Green).into(image, new Callback() {
+                   @Override
+                   public void onSuccess() {
+                       progressBar.setVisibility(View.GONE);
+                   }
 
-       if(list.get(pos).getUri() != null){
-          Uri uri = list.get(pos).getUri();
-           progressBar.setVisibility(View.VISIBLE);
-           Picasso.get().load(uri).placeholder(R.color.forest_Green).into(image, new Callback() {
-                       @Override
-                       public void onSuccess() {
-                           progressBar.setVisibility(View.GONE);
-                       }
-
-                       @Override
-                       public void onError(Exception e) {
-                           progressBar.setVisibility(View.GONE);
-                       }
-                   });
-
-
-       }else {
+                   @Override
+                   public void onError(Exception e) {
+                       progressBar.setVisibility(View.GONE);
+                   }
+               });
+   }else {
            String url = list.get(pos).getUrl();
            String fileName = "Title_" + list.get(pos).getId() + ".jpg";
            File imageFile = new File(mContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES), fileName);

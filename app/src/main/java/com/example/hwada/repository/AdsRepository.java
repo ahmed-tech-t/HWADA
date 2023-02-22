@@ -1,10 +1,14 @@
 package com.example.hwada.repository;
 
+import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
+
+import android.app.Application;
 import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.hwada.Model.Ad;
@@ -25,10 +29,14 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Transaction;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.ListResult;
+import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
+import java.net.PortUnreachableException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,64 +51,114 @@ public class AdsRepository {
     StorageReference storageRef = storage.getReference();
 
     UserRepository userRepo ;
+    Application application ;
     private static final String TAG = "AdsRepository";
 
 
-    public AdsRepository(){
-        userRepo = new UserRepository();
+    public AdsRepository(Application application){
+        this.application = application;
+        userRepo = new UserRepository(application);
     }
-    public AdsRepository(UserRepository userRepo) {
+    public AdsRepository(UserRepository userRepo ,Application application) {
+        this.application =application;
         this.userRepo = userRepo;
     }
     //********************************
     /**
      * add new add
      **/
-    public MutableLiveData<Ad>addNewAd(Ad newAd){
-        MutableLiveData<Ad> addNewAdSuccess = new MutableLiveData<>();
 
-        DocumentReference adDocRef = getAdColRef(newAd).document();
 
-        newAd.setId(adDocRef.getId());
+    public void addOrUpdateAd(Ad ad , boolean isNewAd){
+        if(isNewAd){
+           uploadAdImages(ad, true);
+        }else {
+            deleteAdImages(ad,false);
+        }
+    }
 
-        StorageReference imageRef = storageRef.child("images").child(newAd.getAuthorId()).child(newAd.getCategory()).child(newAd.getSubCategory()).child(newAd.getId());
+    private void deleteAdImages(Ad ad, boolean isNewAd) {
+        StorageReference imageRef = storageRef.child("adImages").child(ad.getAuthorId()).child(ad.getCategory()).child(ad.getSubCategory()).child(ad.getId());
+        imageRef.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
+            @Override
+            public void onSuccess(ListResult listResult) {
+                for (StorageReference item : listResult.getItems()) {
+                    // Delete the file
+                    item.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG, "Deleted " + item.getName());
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.e(TAG, "Error deleting " + item.getName() + ": " + e.getMessage());
+                        }
+                    });
+                }
+                uploadAdImages(ad,isNewAd);
+            }
+        });
+    }
 
+
+    private void uploadAdImages(Ad ad , boolean isNewAd) {
+        Log.d(TAG, "uploadAdImages: ");
+        if(isNewAd){
+            DocumentReference adDocRef = getAdColRef(ad).document();
+            ad.setId(adDocRef.getId());
+        }
+
+        StorageReference imageRef = storageRef.child("adImages").child(ad.getAuthorId()).child(ad.getCategory()).child(ad.getSubCategory()).child(ad.getId());
         List<String> downloadUrls = new ArrayList<>();
+        for (String uri :ad.getImagesUri()){
+            Log.e(TAG, "uploadAdImages: "+uri);
+            if (uri != null) {
+                String mainImageName = new File(Uri.parse(ad.getImagesUri().get(0)).getPath()).getName();  // extract filename from first URI
+                Uri myUri = Uri.parse(uri);
+                File file = new File(myUri.getPath());
+                UploadTask uploadTask = imageRef.child(file.getName()).putFile(myUri);
+                uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        if (taskSnapshot.getMetadata() != null) {
+                            if (taskSnapshot.getMetadata().getReference() != null) {
+                                Task<Uri> url = taskSnapshot.getStorage().getDownloadUrl();
+                                url.addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        downloadUrls.add(String.valueOf(uri));
+                                        String urlFilename = new File(uri.getPath()).getName();  // extract filename from URL
 
-        for (Uri uri :newAd.getImagesUri()){
-            File file= new File(uri.getPath());
-
-            UploadTask uploadTask = imageRef.child(file.getName()).putFile(uri);
-            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    if (taskSnapshot.getMetadata() != null) {
-                        if (taskSnapshot.getMetadata().getReference() != null) {
-                            Task<Uri> url = taskSnapshot.getStorage().getDownloadUrl();
-                            url.addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                @Override
-                                public void onSuccess(Uri uri) {
-                                    downloadUrls.add(String.valueOf(uri));
-                                    if (downloadUrls.size() == newAd.getImagesUri().size()) {
-                                        newAd.getImagesUri().clear();
-                                        newAd.setImagesUrl(downloadUrls);
-                                        uploadAd(newAd,addNewAdSuccess);
+                                        if (mainImageName.equals(urlFilename)) {
+                                            ad.setMainImage(String.valueOf(uri));
+                                        }
+                                        if (downloadUrls.size() == ad.getImagesUri().size()) {
+                                            ad.getImagesUri().clear();
+                                            ad.setImagesUrl(downloadUrls);
+                                            if (isNewAd) adNewAd(ad);
+                                            else updateExistAd(ad);
+                                        }
                                     }
-                                }
-                            });
+                                });
+                            }
                         }
                     }
-                }
-            });
+                });
+            }
         }
-        return addNewAdSuccess;
+
+
     }
-    private void uploadAd(Ad newAd , MutableLiveData<Ad>addNewAdSuccess){
+
+    private void adNewAd(Ad newAd){
+        Log.d(TAG, "uploadAd: starting transactions" );
         rootRef.runTransaction(new Transaction.Function<Object>() {
             @Nullable
             @Override
             public Object apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
 
+                Log.d(TAG, "apply: "+newAd.getId());
                 DocumentReference adDocRef = getAdColRef(newAd).document(newAd.getId());
 
                 DocumentReference userAdDocRef = getUserAdColRef(newAd.getAuthorId()).document(newAd.getId());
@@ -122,12 +180,22 @@ public class AdsRepository {
             @Override
             public void onComplete(@NonNull Task<Object> task) {
                 if(task.isSuccessful()){
-                    addNewAdSuccess.setValue(newAd);
                     Log.e(TAG, "onComplete: upload complete" );
                 }else {
-                    addNewAdSuccess.setValue(null);
+                    task.addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                                e.getMessage();
+                        }
+                    });
                     task.getException().printStackTrace();
                 }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e(TAG, "onFailure: "+e.getMessage());
+                e.printStackTrace();
             }
         });
 
@@ -136,19 +204,24 @@ public class AdsRepository {
     /**
      * update ad
      **/
-    private void updateAd(Ad ad){
-
+    public void updateExistAd(Ad ad){
+        Log.d(TAG, "updateExistAd: update exist ad");
         rootRef.runTransaction(new Transaction.Function<Object>() {
            @Nullable
            @Override
            public Object apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
                //update user in ads
 
+               Log.d(TAG, "apply: start updating");
                HashMap<String, Object> data = new HashMap<>();
                data.put("title", ad.getTitle());
                data.put("description", ad.getDescription());
                data.put("price", ad.getPrice());
                data.put("daysSchedule", ad.getDaysSchedule());
+               data.put("imagesUrl",ad.getImagesUrl());
+               data.put("mainImage",ad.getMainImage());
+               data.put("authorAddress",ad.getAuthorAddress());
+               data.put("authorLocation",ad.getAuthorLocation());
 
                DocumentReference temp0DocRef = getUserAdColRef(ad.getAuthorId()).document(ad.getId());
                DocumentReference temp1DocRef = getAdColRef(ad).document(ad.getId());
@@ -162,7 +235,21 @@ public class AdsRepository {
 
                    transaction.update(temp0DocRef,data);
                return null;
-           }});
+           }}).addOnCompleteListener(new OnCompleteListener<Object>() {
+            @Override
+            public void onComplete(@NonNull Task<Object> task) {
+                if(task.isSuccessful()){
+                    Log.d(TAG, "onComplete: update success");
+                }else {
+                    task.getException().printStackTrace();
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                e.getMessage();
+            }
+        });
     }
 
     //********************************

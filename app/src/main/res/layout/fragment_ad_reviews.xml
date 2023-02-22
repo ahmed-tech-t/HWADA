@@ -35,11 +35,10 @@
             android:elevation="0dp"
             android:numStars="5"
             android:progressTint="@color/yellow"
-            android:rating="4.4"
             android:scaleX=".7"
             android:scaleY=".7"
             android:secondaryProgressTint="@android:color/transparent"
-            android:stepSize="0.1" />
+            android:stepSize="0.5" />
     </RelativeLayout>
 
     <LinearLayout
@@ -48,6 +47,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:orientation="vertical"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout_comment_box">
 
         <com.facebook.shimmer.ShimmerFrameLayout

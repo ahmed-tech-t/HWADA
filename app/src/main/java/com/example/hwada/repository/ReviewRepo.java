@@ -1,5 +1,6 @@
 package com.example.hwada.repository;
 
+import android.app.Application;
 import android.graphics.Path;
 import android.util.Log;
 
@@ -24,6 +25,8 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Transaction;
 
+import org.checkerframework.checker.units.qual.A;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,9 +37,11 @@ public class ReviewRepo {
 
     private static final String TAG = "ReviewRepo";
 
+    Application application;
     AdsRepository adsRepo;
-    public ReviewRepo(){
-        adsRepo = new AdsRepository();
+    public ReviewRepo(Application application){
+        this.application = application;
+        adsRepo = new AdsRepository(application);
     }
 
 
@@ -57,8 +62,7 @@ public class ReviewRepo {
                     }
 
                     if(updateRating){
-                        AdsRepository adsRepository = new AdsRepository();
-                        adsRepository.updateAdRating(ad,adReviews);
+                        adsRepo.updateAdRating(ad,adReviews);
                     }
                     mutableLiveData.setValue(adReviews);
                 } else {

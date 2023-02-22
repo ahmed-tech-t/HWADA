@@ -2,6 +2,7 @@ package com.example.hwada.repository;
 
 import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
+import android.app.Application;
 import android.net.Uri;
 import android.util.Log;
 
@@ -50,11 +51,13 @@ public class UserRepository {
     FirebaseStorage storage = FirebaseStorage.getInstance();
     StorageReference storageRef = storage.getReference();
     AdsRepository adRepo;
+    Application application ;
 
-    public UserRepository (){
+    public UserRepository (Application application){
+        this.application = application;
         this.auth = FirebaseAuth.getInstance();
         userMutableLiveData = new MutableLiveData<>();
-        adRepo = new AdsRepository(this);
+        adRepo = new AdsRepository(this,application);
     }
 
 
@@ -233,6 +236,30 @@ private CollectionReference getAdReviewsColRef(CollectionReference adColRef,MyRe
     }
 
 
+    public MutableLiveData<ArrayList<Ad>> userAdsListener(String id) {
+        MutableLiveData<ArrayList<Ad>> mutableLiveData = new MutableLiveData<>();
+        userDocumentRef(id).collection(DbHandler.adCollection)
+                .orderBy("timeStamp", Query.Direction.DESCENDING)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                        if (error != null) {
+                            Log.w(TAG, "Listen failed.", error);
+                            mutableLiveData.setValue(new ArrayList<>());
+                            return;
+                        }
+                        assert value != null;
+                        ArrayList<Ad>ads = new ArrayList<>();
+                        for (QueryDocumentSnapshot document : value) {
+                            ads.add(document.toObject(Ad.class));
+                        }
+                        mutableLiveData.setValue(ads);
+                    }
+                });
+        return mutableLiveData;
+    }
+
+
     public MutableLiveData<ArrayList<Ad>> getAllUserAds(String id,boolean updateRating){
         MutableLiveData<ArrayList<Ad>> mutableLiveData = new MutableLiveData<>();
         userDocumentRef(id).collection(DbHandler.adCollection)
@@ -293,11 +320,14 @@ private CollectionReference getAdReviewsColRef(CollectionReference adColRef,MyRe
 
     private double calcUserRating(ArrayList<Ad> ads){
         double rating = 0 ;
+        int i =0;
         for (Ad ad:ads) {
             rating+=ad.getRating();
+            if (ad.getRating()==0)i++;
+
         }
-        if(rating == 0)return 0;
-        return rating/ads.size();
+        if(rating == 0 || (ads.size()-i) == 0 ) return 0;
+        return rating/(ads.size()-i);
     }
     public void updateUserRating(ArrayList<Ad> ads) {
         userDocumentRef(ads.get(0).getAuthorId()).update("rating",calcUserRating(ads));

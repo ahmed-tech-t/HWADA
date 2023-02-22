@@ -14,40 +14,54 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.hwada.Model.DaysSchedule;
 import com.example.hwada.Model.WorkingTime;
 import com.example.hwada.R;
+import com.example.hwada.databinding.WorkingTimePreviewDaysLayoutBinding;
+
+import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
 
 public class WorkingTimePreviewDaysAdapter extends RecyclerView.Adapter<WorkingTimePreviewDaysAdapter.WorkingTimePreviewDaysViewHolder> {
-    ArrayList<String> days ;
-    ArrayList<ArrayList<WorkingTime>> schedule ;
+    DaysSchedule days ;
     Context context ;
 
+    WorkingTimePreviewDaysLayoutBinding binding ;
 
     private static final String TAG = "WorkingTimePreviewDaysAdapter";
     @NonNull
     @Override
     public WorkingTimePreviewDaysViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new WorkingTimePreviewDaysViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.working_time_preview_days_layout, parent, false));
+        binding = WorkingTimePreviewDaysLayoutBinding.inflate(LayoutInflater.from(parent.getContext()),parent,false);
+        return new WorkingTimePreviewDaysViewHolder(binding.getRoot());
+
     }
 
     @Override
     public void onBindViewHolder(@NonNull WorkingTimePreviewDaysViewHolder holder, int position) {
-            holder.day.setText(days.get(position));
-            WorkingTimePreviewPeriodAdapter adapter =new WorkingTimePreviewPeriodAdapter();
-            adapter.setList( schedule.get(position),days.get(position).toLowerCase(Locale.ROOT));
+
+        WorkingTimePreviewPeriodAdapter adapter =new WorkingTimePreviewPeriodAdapter();
+
+        int i = 0;
+        for (Map.Entry<String, ArrayList<WorkingTime>> entry : days.getDays().entrySet()) {
+            if (i == position) {
+                holder.day.setText(days.getDayTitleFromDay(entry.getKey()));
+                adapter.setList(entry.getValue(),entry.getKey());
+                break;
+            }
+            i++;
+        }
+
             holder.recyclerView.setAdapter(adapter);
             holder.recyclerView.setLayoutManager(new LinearLayoutManager(context));
     }
 
     @Override
     public int getItemCount() {
-        return schedule.size();
+        return days.getDays().size();
     }
-    public void setDaysSchedule( ArrayList<ArrayList<WorkingTime>> schedule,ArrayList<String> days  ,Context context) {
-        this.schedule = schedule;
-        this.days =days;
+    public void setDaysSchedule(DaysSchedule days,Context context) {
+        this.days = days;
         this.context =context;
         notifyDataSetChanged();
     }
@@ -57,8 +71,8 @@ public class WorkingTimePreviewDaysAdapter extends RecyclerView.Adapter<WorkingT
         RecyclerView recyclerView ;
         public WorkingTimePreviewDaysViewHolder(@NonNull View v) {
             super(v);
-            day =v.findViewById(R.id.tv_title_working_time_preview_days);
-            recyclerView =v.findViewById(R.id.recycler_main_working_time_preview_days);
+            day =binding.tvTitleWorkingTimePreviewDays;
+            recyclerView =binding.recyclerMainWorkingTimePreviewDays;
         }
     }
 

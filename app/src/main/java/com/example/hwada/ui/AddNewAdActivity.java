@@ -4,9 +4,14 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelStoreOwner;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,17 +21,28 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.example.hwada.Model.Ad;
+import com.example.hwada.Model.DaysSchedule;
 import com.example.hwada.Model.LocationCustom;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
@@ -39,9 +55,17 @@ import com.example.hwada.viewmodel.UserAddressViewModel;
 import com.example.hwada.viewmodel.UserViewModel;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter.OnItemListener , View.OnClickListener  {
     User user ;
@@ -50,8 +74,8 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
     UserAddressViewModel userAddressViewModel ;
     UserViewModel userViewModel ;
     private App app;
-
-    Ad newAd;
+    String mode ;
+    Ad ad;
     private static final String TAG = "AddNewAdActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,22 +83,44 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
         binding = ActivityAddNewAdBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
-        // get user data
-        Intent intent = getIntent();
-        user = (User) intent.getParcelableExtra("user");
-         initAd(intent);
 
         app = (App) getApplication();
-
         userAddressViewModel = ViewModelProviders.of(this).get(UserAddressViewModel.class);
-        userViewModel = UserViewModel.getInstance();
-        //******************
-        setUserAddress();        
+        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+
+        getDataFromIntent();
+        setAdAddress(false);
+        if(mode.equals(getString(R.string.editModeVal))){
+            binding.tvImagesInstructions.setText(getString(R.string.loadingImagesInstruction));
+
+            binding.addNewImage.setEnabled(false);
+            binding.nextButtonAddNewAd.setEnabled(false);
+            binding.progressHorizontalAddNewAdActivity.setVisibility(View.VISIBLE);
+            binding.nextButtonAddNewAd.setBackgroundColor(ContextCompat.getColor(this, R.color.white_gray));
+
+            setRecycler();
+            setDataToView();
+        }
         setClickListener();
-        
         setUserListener();
+
     }
-    
+
+    private void getDataFromIntent(){
+        Intent intent = getIntent();
+        mode =  intent.getStringExtra(getString(R.string.modeVal));
+        user = (User) intent.getParcelableExtra(getString(R.string.userVal));
+
+        if(mode!=null){
+            if(mode.equals(getString(R.string.newModeVal))){
+                initAd(intent);
+            }else if(mode.equals(getString(R.string.editModeVal))){
+                ad = intent.getParcelableExtra(getString(R.string.adVal));
+                Log.d(TAG, "getDataFromIntent: daysSchedule "+ad.getDaysSchedule());
+            }else finish();
+        }else finish();
+    }
+
     private void setClickListener(){
         binding.addNewImage.setOnClickListener(this);
         binding.nextButtonAddNewAd.setOnClickListener(this);
@@ -83,29 +129,112 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
         binding.linearlayoutInner1AddNewItem.setOnClickListener(this);
         binding.tvUserAddressAddNewAdActivity.setOnClickListener(this);
         binding.arrowAddNewAd.setOnClickListener(this);
-
     }
     
     private void initAd(Intent intent){
-        newAd = new Ad();
-        newAd.setAuthorId(user.getUId());
-        newAd.setAuthorAddress(user.getAddress());
-        newAd.setAuthorLocation(user.getLocation());
-        newAd.setCategory(intent.getStringExtra("category"));
-        newAd.setSubCategory(intent.getStringExtra("subCategory"));
-        newAd.setSubSubCategory(intent.getStringExtra("subSubCategory"));
+        ad = new Ad();
+        ad.setAuthorId(user.getUId());
+        ad.setAuthorAddress(user.getAddress());
+        ad.setAuthorLocation(user.getLocation());
+        ad.setCategory(intent.getStringExtra(getString(R.string.categoryVal)));
+        ad.setSubCategory(intent.getStringExtra(getString(R.string.subCategoryVal)));
+        ad.setSubSubCategory(intent.getStringExtra(getString(R.string.subSubCategoryVal)));
     }
-    public void setImagesToList(List<Uri> list) {
+
+    private void showRecycler(){
+        binding.addImageBackground.setVisibility(View.GONE);
+        binding.recyclerLinearLayoutAddNewAd.setVisibility(View.VISIBLE);
+    }
+    public void setRecycler() {
+        showRecycler();
         imagesAdapter = new ImagesAdapter();
-        ItemTouchHelper itemTouchHelper =new ItemTouchHelper(simpleCallback);
         try {
+            ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+
+            if(mode.equals(getString(R.string.editModeVal))){
+                imagesAdapter.setList(new ArrayList<>(),this);
+            }else imagesAdapter.setList(ad.getImagesUri(),this);
             binding.recyclerAddNewAd.setAdapter(imagesAdapter);
-            imagesAdapter.setList(list,this);
             binding.recyclerAddNewAd.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
             itemTouchHelper.attachToRecyclerView(binding.recyclerAddNewAd);
+
         }catch (Exception e){
-            e.printStackTrace();
+            e.getMessage();
         }
+    }
+    ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT ,0) {
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            int fromPosition = viewHolder.getAdapterPosition();
+            int toPosition = target.getAdapterPosition();
+            Collections.swap(ad.getImagesUri(),fromPosition,toPosition);
+            recyclerView.getAdapter().notifyItemMoved(fromPosition,toPosition);
+            return true;
+        }
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+
+        }
+    };
+
+    private void setDataToView(){
+        downloadImages();
+        binding.adDescription.setText(ad.getDescription());
+        binding.adTitle.setText(ad.getTitle());
+        DecimalFormat decimalFormat = new DecimalFormat("#");
+        String formattedValue = decimalFormat.format(ad.getPrice());
+        binding.adPrice.setText(formattedValue);
+    }
+
+    private void  downloadImages(){
+        for (String url: ad.getImagesUrl()) {
+            Log.d(TAG, "downloadImages: "+url);
+            Glide.with(this)
+                .downloadOnly()
+                .load(url)
+                .addListener(new RequestListener<File>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<File> target, boolean isFirstResource) {
+                        e.printStackTrace();
+                        setWarningFailedToLoadImagesMessage();
+                        return true;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(File resource, Object model, Target<File> target, DataSource dataSource, boolean isFirstResource) {
+                        String uri = String.valueOf(Uri.fromFile(resource));
+                        ad.getImagesUri().add(uri);
+                        setProgressBarProgress();
+                        Log.d(TAG, "onResourceReady: loading");
+                        if(ad.getImagesUri().size()== ad.getImagesUrl().size()){
+                            AddNewAdActivity.this.runOnUiThread(new Runnable() {
+                                  @Override
+                                  public void run() {
+                                      binding.tvImagesInstructions.setText(getString(R.string.uploadUpTo10Photos));
+                                      binding.progressHorizontalAddNewAdActivity.setVisibility(View.GONE);
+                                      binding.addNewImage.setEnabled(true);
+                                      binding.nextButtonAddNewAd.setEnabled(true);
+                                      binding.nextButtonAddNewAd.setBackgroundColor(ContextCompat.getColor(getApplication(), R.color.background));
+                                   // setMainImageToFirst();
+                                      imagesAdapter.addItems(0,ad.getImagesUri());
+                                  }
+                            });
+
+                        }
+                        return true;
+                    }
+                }).submit();
+        }
+    }
+
+    private void setProgressBarProgress(){
+        AddNewAdActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                int progress = binding.progressHorizontalAddNewAdActivity.getProgress();
+                binding.progressHorizontalAddNewAdActivity.setProgress(progress+(100/ad.getImagesUrl().size()));
+            }
+        });
     }
     @Override
     public void getItemPosition(int position) {
@@ -125,7 +254,7 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
             @Override
             public void onClick(View v) {
                 imagesAdapter.removeOneItem(position);
-                if(newAd.getImagesUri().size()==0){
+                if(ad.getImagesUri().size()==0){
                     binding.recyclerLinearLayoutAddNewAd.setVisibility(View.GONE);
                     binding.addImageBackground.setVisibility(View.VISIBLE);
                 }
@@ -137,7 +266,7 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
 
     @Override
     public void onClick(View v) {
-       if(v.getId() ==binding.arrowAddNewAd.getId()) {
+       if(v.getId() == binding.arrowAddNewAd.getId()) {
             super.onBackPressed();
        } else if(v.getId() == binding.addNewImage.getId()) {
             if(app.checkStoragePermissions()){
@@ -147,25 +276,27 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
             }
         }else if (v.getId() == binding.nextButtonAddNewAd.getId()){
             setFieldsWarning();
-
             if(checkIfFieldsAreValid()){
                 String price = binding.adPrice.getText().toString().trim();
                 String title = binding.adTitle.getText().toString().trim();
                 String description =binding.adDescription.getText().toString().trim();
 
-                newAd.setPrice(Double.parseDouble(price));
-                newAd.setTitle(title);
-                newAd.setDescription(description);
+                ad.setPrice(Double.parseDouble(price));
+                ad.setTitle(title);
+                ad.setDescription(description);
                 callBottomSheet(new WorkTimePreviewFragment());
             }
-        }else if (v.getId() == binding.linearLayout.getId() || v.getId() == binding.scrollViewAddNewAdd.getId()
+        }else if (v.getId() == binding.linearLayout.getId()
+                || v.getId() == binding.scrollViewAddNewAdd.getId()
                 ||v.getId() == binding.linearlayoutInner1AddNewItem.getId()){
             hideKeyboard();
         }else if (v.getId()==binding.tvUserAddressAddNewAdActivity.getId()){
            if(app.isGooglePlayServicesAvailable(this)){
                callBottomSheet(new MapsFragment());
-           }else showToast(getString(R.string.googleServicesWarning));        }
+           }else showToast(getString(R.string.googleServicesWarning));
+       }
     }
+
     private void hideKeyboard(){
         View view = this.getCurrentFocus();
         if (view != null) {
@@ -174,13 +305,12 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
         }
     }
     private boolean checkIfFieldsAreValid(){
-        return binding.adPrice.getError()==null && binding.adTitle.getError()==null &&  binding.adDescription.getError()==null && newAd.getImagesUri().size()>0;
+        return binding.adPrice.getError()==null && binding.adTitle.getError()==null &&  binding.adDescription.getError()==null && ad.getImagesUri().size()>0;
     }
     private void setFieldsWarning(){
         String price = binding.adPrice.getText().toString().trim();
         String title = binding.adTitle.getText().toString().trim();
         String description =binding.adDescription.getText().toString().trim();
-
         if(price.length()>4){
             binding.adPrice.setError(getString(R.string.toLong));
         }else if(title.length() ==0){
@@ -189,7 +319,7 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
             if (description.length() ==0){
                 binding.adDescription.setError(getString(R.string.emptyFieldWarning));
             }else  binding.adDescription.setError(getString(R.string.toShortWarning));
-        }else if(newAd.getImagesUri().size()==0){
+        }else if(ad.getImagesUri().size()==0){
             showDialog(getString(R.string.invalidData),getString(R.string.imagesListEmptyWarning));
         }else if (price.length() == 0){
             binding.adPrice.setText("0");
@@ -207,53 +337,36 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
                 .show();
     }
     //Pick Images From Gallery
-    ActivityResultLauncher<PickVisualMediaRequest> pickMultipleMedia = registerForActivityResult(new ActivityResultContracts.PickMultipleVisualMedia(10), uris -> {
+   private ActivityResultLauncher<PickVisualMediaRequest> pickMultipleMedia = registerForActivityResult(new ActivityResultContracts.PickMultipleVisualMedia(10), uris -> {
 
         if (!uris.isEmpty()) {
+            ArrayList<String> urisList = (ArrayList<String>) uris.stream().map(Uri::toString).collect(Collectors.toList());
             binding.addImageBackground.setVisibility(View.GONE);
             binding.recyclerLinearLayoutAddNewAd.setVisibility(View.VISIBLE);
 
-            if(newAd.getImagesUri().size()==0 && newAd.getImagesUri().size()+ uris.size()<=10){
+            if(ad.getImagesUri().size() == 0 && ad.getImagesUri().size()+ urisList.size()<=10){
 
-                newAd.getImagesUri().addAll(uris);
-                setImagesToList(newAd.getImagesUri());
+                ad.getImagesUri().addAll(urisList);
+                setRecycler();
 
-            } else if(newAd.getImagesUri().size()+ uris.size()<=10){
+            } else if(ad.getImagesUri().size()+ urisList.size()<=10){
 
-                imagesAdapter.addItems(newAd.getImagesUri().size(),uris);
+                imagesAdapter.addItems(ad.getImagesUri().size(),urisList);
 
-            }else if(newAd.getImagesUri().size()<10){
-                int length = 10 - newAd.getImagesUri().size();
-                    if(length > uris.size()) length = uris.size();
+            }else if(ad.getImagesUri().size()<10){
+                int length = 10 - ad.getImagesUri().size();
+                    if(length > urisList.size()) length = urisList.size();
 
-                imagesAdapter.addItems(newAd.getImagesUri().size(),uris.subList(0,length));
+                imagesAdapter.addItems(ad.getImagesUri().size(),urisList.subList(0,length));
             }
         } else {
             Log.d("PhotoPicker", "No media selected");
         }
-    });
+   });
 
-
-    //move items in recycler view
-    ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT ,0) {
-        @Override
-        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-           int fromPosition = viewHolder.getAdapterPosition();
-           int toPosition =target.getAdapterPosition();
-
-            Collections.swap(newAd.getImagesUri(),fromPosition,toPosition);
-            recyclerView.getAdapter().notifyItemMoved(fromPosition,toPosition);
-            return true;
-        }
-
-        @Override
-        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-
-        }
-    };
 
     private void pickImagesHandler(){
-        if (newAd.getImagesUri().size() >= 10) {
+        if (ad.getImagesUri().size() >= 10) {
             showDialog(getString(R.string.limitReached),getString(R.string.alertLimitReached));
         }else{
             ActivityResultContracts.PickVisualMedia.VisualMediaType mediaType = (ActivityResultContracts.PickVisualMedia.VisualMediaType) ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE;
@@ -263,7 +376,6 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
             pickMultipleMedia.launch(request);
         }
     }
-
 
 
     @Override
@@ -278,8 +390,9 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
 
     public void callBottomSheet(BottomSheetDialogFragment fragment){
         Bundle bundle = new Bundle();
-        bundle.putParcelable("ad", newAd);
-        bundle.putParcelable("user",user);
+        bundle.putParcelable(getString(R.string.adVal), ad);
+        bundle.putParcelable(getString(R.string.userVal),user);
+        bundle.putString(getString(R.string.modeVal),mode);
         fragment.setArguments(bundle);
         fragment.show(getSupportFragmentManager(),fragment.getTag());
     }
@@ -290,29 +403,56 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
                 @Override
                 public void onChanged(User updatedUser) {
                     user.updateUser(updatedUser);
-                    if(user.getLocation()!=null) setUserAddress();
+                    if(user.getLocation()!=null) setAdAddress(true);
                 }
             });
         }
         
-        private void setUserAddress(){
-            binding.tvUserAddressAddNewAdActivity.setText(user.getAddress());
-            newAd.setAuthorLocation(user.getLocation());
-            newAd.setAuthorAddress(user.getAddress());
-            
+        private void setAdAddress(boolean isNewLocation){
+            if(mode.equals(getString(R.string.newModeVal))||isNewLocation){
+                binding.tvUserAddressAddNewAdActivity.setText(user.getAddress());
+                ad.setAuthorLocation(user.getLocation());
+                ad.setAuthorAddress(user.getAddress());
+            }else if(mode.equals(getString(R.string.editModeVal))){
+                binding.tvUserAddressAddNewAdActivity.setText(ad.getAuthorAddress());
+            }
         }
     @Override
     protected void onResume() {
         super.onResume();
-        app.setUserOnline(user.getUId());
+        app.setUserOnline(user.getUId(),this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        app.setUserOffline(user.getUId());
+        app.setUserOffline(user.getUId(),this);
     }
-
+    private void setWarningFailedToLoadImagesMessage(){
+        AddNewAdActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                binding.imWarningImage.setVisibility(View.VISIBLE);
+                binding.tvImagesInstructions.setText(getString(R.string.failedToLoadImages));
+                binding.progressHorizontalAddNewAdActivity.setVisibility(View.GONE);
+            }
+        });
+    }
+//
+//    private void setMainImageToFirst(){
+//        String mainImageName = new File(Uri.parse(ad.getMainImage()).getPath()).getName();
+//        for (int i = 0; i < ad.getImagesUri().size(); i++) {
+//            String imageName = new File(Uri.parse(ad.getImagesUri().get(i)).getPath()).getName();
+//            if(mainImageName.equals(imageName) && i==0) return;
+//            else{
+//                if(mainImageName.equals(imageName)){
+//                    ad.getImagesUri().remove(i);
+//                    ad.getImagesUri().add(0,ad.getMainImage());
+//                    return;
+//                }
+//            }
+//        }
+//    }
     private Toast mCurrentToast;
     public void showToast(String message) {
         if (mCurrentToast == null) {

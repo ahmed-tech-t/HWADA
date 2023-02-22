@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.text.TextUtils;
@@ -37,6 +38,7 @@ import com.example.hwada.Model.User;
 import com.example.hwada.R;
 import com.example.hwada.application.App;
 import com.example.hwada.databinding.FragmentEditUserBinding;
+import com.example.hwada.viewmodel.AdsViewModel;
 import com.example.hwada.viewmodel.UserViewModel;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -132,7 +134,7 @@ public class EditUserFragment extends BottomSheetDialogFragment implements View.
         user = getArguments().getParcelable("user");
         setDataToFields();
         spinnerListener();
-        userViewModel = UserViewModel.getInstance();
+        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
     }
     private void setDataToFields(){
         binding.userNameEditUserFragment.setText(user.getUsername());

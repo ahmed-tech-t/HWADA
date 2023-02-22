@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.os.Handler;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,9 +46,7 @@ public class WorkTimeEditFragment extends BottomSheetDialogFragment implements W
     BottomSheetDialog dialog ;
     ArrayList<String> applyTo ;
     GettingPassedData mListener;
-    String SATURDAY = "saturday" ,SUNDAY ="sunday" ,MONDAY ="monday",TUESDAY ="tuesday"
-            ,WEDNESDAY="wednesday",THURSDAY="thursday",FRIDAY="friday";
-    String TAG ="WorkTimeEditFragment";
+    private static final String TAG = "WorkTimeEditFragment";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -126,8 +125,8 @@ public class WorkTimeEditFragment extends BottomSheetDialogFragment implements W
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        workingTimeList = getArguments().getParcelableArrayList("workingTimes");
-        tag = getArguments().getString("tag");
+        workingTimeList = getArguments().getParcelableArrayList(getString(R.string.workingTimesVal));
+        tag = getArguments().getString(getString(R.string.tagVal));
         applyTo = new ArrayList<>();
         setWorkTimeToAdapter();
         setTitle();
@@ -154,12 +153,12 @@ public class WorkTimeEditFragment extends BottomSheetDialogFragment implements W
 
     @Override
     public void fromTimeListener(int pos,  Button button) {
-        getTimeFromPickerAndSetItToButton(pos , button,"from");
+        getTimeFromPickerAndSetItToButton(pos , button,getString(R.string.fromVal));
     }
 
     @Override
     public void toTimeListener(int pos, Button button) {
-        getTimeFromPickerAndSetItToButton(pos , button,"to");
+        getTimeFromPickerAndSetItToButton(pos , button,getString(R.string.toVal));
     }
 
     @Override
@@ -177,7 +176,7 @@ public class WorkTimeEditFragment extends BottomSheetDialogFragment implements W
             }
         }, 1000); // Re-enable the button after 1 second
 
-        fireTimePickupDialog(getString(R.string.from),pos,button,tag);
+        fireTimePickupDialog(tag,pos,button,tag);
     }
 
     @Override
@@ -213,34 +212,34 @@ public class WorkTimeEditFragment extends BottomSheetDialogFragment implements W
     }
     private void setTitle(){
 
-        if(tag.equals(SATURDAY)) {
+        if(tag.equals(getString(R.string.saturdayVal))) {
             binding.tvDayWorkTimeEdit.setText(getString(R.string.saturday));
             binding.checkboxSaturday.setChecked(true);
-            applyTo.add(SATURDAY);
-        }else if(tag.equals(SUNDAY)) {
+            applyTo.add(getString(R.string.saturdayVal));
+        }else if(tag.equals(getString(R.string.sundayVal))) {
             binding.tvDayWorkTimeEdit.setText(getString(R.string.sunday));
             binding.checkboxSunday.setChecked(true);
-            applyTo.add(SUNDAY);
-        }else if(tag.equals(MONDAY)) {
+            applyTo.add(getString(R.string.sundayVal));
+        }else if(tag.equals(getString(R.string.mondayVal))) {
             binding.tvDayWorkTimeEdit.setText(getString(R.string.monday));
             binding.checkboxMonday.setChecked(true);
-            applyTo.add(MONDAY);
-        }else if(tag.equals(TUESDAY)) {
+            applyTo.add(getString(R.string.mondayVal));
+        }else if(tag.equals(getString(R.string.tuesdayVal))) {
             binding.tvDayWorkTimeEdit.setText(getString(R.string.tuesday));
             binding.checkboxTuesday.setChecked(true);
-            applyTo.add(TUESDAY);
-        }else if(tag.equals(WEDNESDAY)) {
+            applyTo.add(getString(R.string.tuesdayVal));
+        }else if(tag.equals(getString(R.string.wednesdayVal))) {
             binding.tvDayWorkTimeEdit.setText(getString(R.string.wednesday));
             binding.checkboxWednesday.setChecked(true);
-            applyTo.add(WEDNESDAY);
-        }else if(tag.equals(THURSDAY)) {
+            applyTo.add(getString(R.string.wednesdayVal));
+        }else if(tag.equals(getString(R.string.thursdayVal))) {
             binding.tvDayWorkTimeEdit.setText(getString(R.string.thursday));
             binding.checkboxThursday.setChecked(true);
-            applyTo.add(THURSDAY);
-        }else if(tag.equals(FRIDAY)) {
+            applyTo.add(getString(R.string.thursdayVal));
+        }else if(tag.equals(getString(R.string.fridayVal))) {
             binding.tvDayWorkTimeEdit.setText(getString(R.string.friday));
             binding.checkboxFriday.setChecked(true);
-            applyTo.add(FRIDAY);
+            applyTo.add(getString(R.string.fridayVal));
         }
     }
 
@@ -256,8 +255,11 @@ public class WorkTimeEditFragment extends BottomSheetDialogFragment implements W
                 SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
                 String formattedTime = sdf.format(calendar.getTime());
 
-                if(tag.equals("from")) workingTimeList.get(pos).setFrom(formattedTime);
-                else if(tag.equals("to")) workingTimeList.get(pos).setTo(formattedTime);
+
+                if(tag.equals(getString(R.string.fromVal))){
+                    workingTimeList.get(pos).setFrom(formattedTime);
+                }
+                else if(tag.equals(getString(R.string.toVal))) workingTimeList.get(pos).setTo(formattedTime);
                 button.setText(formattedTime);
 
             }
@@ -274,9 +276,9 @@ public class WorkTimeEditFragment extends BottomSheetDialogFragment implements W
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
-                    applyTo.add(SATURDAY);
+                    applyTo.add(getString(R.string.saturdayVal));
                 }else {
-                    applyTo.remove(SATURDAY);
+                    applyTo.remove(getString(R.string.saturdayVal));
                 }
             }
         });
@@ -284,9 +286,9 @@ public class WorkTimeEditFragment extends BottomSheetDialogFragment implements W
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
-                    applyTo.add(SUNDAY);
+                    applyTo.add(getString(R.string.sundayVal));
                 }else {
-                    applyTo.remove(SUNDAY);
+                    applyTo.remove(getString(R.string.sundayVal));
                 }
             }
         });
@@ -295,9 +297,9 @@ public class WorkTimeEditFragment extends BottomSheetDialogFragment implements W
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
-                    applyTo.add(MONDAY);
+                    applyTo.add(getString(R.string.mondayVal));
                 }else {
-                    applyTo.remove(MONDAY);
+                    applyTo.remove(getString(R.string.mondayVal));
                 }
             }
         });
@@ -306,9 +308,9 @@ public class WorkTimeEditFragment extends BottomSheetDialogFragment implements W
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
-                    applyTo.add(TUESDAY);
+                    applyTo.add(getString(R.string.tuesdayVal));
                 }else {
-                    applyTo.remove(TUESDAY);
+                    applyTo.remove(getString(R.string.tuesdayVal));
                 }
             }
         });
@@ -317,9 +319,9 @@ public class WorkTimeEditFragment extends BottomSheetDialogFragment implements W
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
-                    applyTo.add(WEDNESDAY);
+                    applyTo.add(getString(R.string.wednesdayVal));
                 }else {
-                    applyTo.remove(WEDNESDAY);
+                    applyTo.remove(getString(R.string.wednesdayVal));
                 }
             }
         });
@@ -328,9 +330,9 @@ public class WorkTimeEditFragment extends BottomSheetDialogFragment implements W
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
-                    applyTo.add(THURSDAY);
+                    applyTo.add(getString(R.string.thursdayVal));
                 }else {
-                    applyTo.remove(THURSDAY);
+                    applyTo.remove(getString(R.string.thursdayVal));
                 }
             }
         });
@@ -339,9 +341,9 @@ public class WorkTimeEditFragment extends BottomSheetDialogFragment implements W
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
-                    applyTo.add(FRIDAY);
+                    applyTo.add(getString(R.string.fridayVal));
                 }else {
-                    applyTo.remove(FRIDAY);
+                    applyTo.remove(getString(R.string.fridayVal));
                 }
             }
         });

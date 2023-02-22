@@ -100,19 +100,26 @@
 
         </LinearLayout>
         </com.facebook.shimmer.ShimmerFrameLayout>
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_refresh_ads_activity"
+            android:visibility="gone"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="5dp"
+            android:layout_margin="10dp">
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_ads_activity"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"
-            android:layout_marginTop="5dp"
-            android:layout_margin="10dp"
             android:background="@drawable/empty_page"
+            android:orientation="vertical"
+            android:layout_marginBottom="5dp"
             android:paddingBottom="8dp"
-            android:clipToPadding="false"
-            android:orientation="vertical">
+            android:clipToPadding="false"/>
 
-        </androidx.recyclerview.widget.RecyclerView>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     </LinearLayout>
 

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -74,7 +75,7 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
         ad = getArguments().getParcelable("ad");
         user =getArguments().getParcelable("user");
 
-        userViewModel = UserViewModel.getInstance();
+        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
         binding.shimmerReviews.startShimmer();
 
         reportViewModel = ViewModelProviders.of(this).get(ReportViewModel.class);

@@ -64,15 +64,43 @@
                     android:orientation="vertical"
                     android:padding="10dp">
 
-                    <TextView
+                 <LinearLayout
+                     android:layout_width="match_parent"
+                     android:layout_height="wrap_content"
+                     android:orientation="horizontal">
+                    <ImageView
+                        android:id="@+id/im_warning_image"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:visibility="gone"
+                        android:layout_gravity="center"
+                        android:src="@drawable/warning_icon" />
+
+                     <TextView
+                         android:id="@+id/tv_images_instructions"
+                         android:layout_width="match_parent"
+                         android:layout_height="wrap_content"
+                         android:layout_gravity="center_horizontal"
+                         android:background="?android:attr/selectableItemBackground"
+                         android:drawableEnd="@drawable/arrow_right"
+                         android:padding="10dp"
+                         android:text="@string/uploadUpTo10Photos" />
+
+
+
+                 </LinearLayout>
+
+                    <ProgressBar
+                        android:id="@+id/progress_horizontal_add_new_ad_activity"
+                        style="?android:attr/progressBarStyleHorizontal"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:background="?android:attr/selectableItemBackground"
-                        android:drawableEnd="@drawable/arrow_right"
-                        android:padding="10dp"
-                        android:text="@string/uploadUpTo10Photos" />
-
+                        android:visibility="gone"
+                        android:progress="0"
+                        android:paddingBottom="5dp"
+                        android:paddingStart="15dp"
+                        android:paddingEnd="15dp"
+                        />
                     <LinearLayout
                         android:id="@+id/add_image_background"
                         android:layout_width="wrap_content"

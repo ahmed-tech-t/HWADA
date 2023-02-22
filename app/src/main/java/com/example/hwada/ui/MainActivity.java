@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.Manifest;
@@ -48,6 +49,7 @@ import com.example.hwada.ui.view.main.AccountFragment;
 import com.example.hwada.ui.view.main.ChatFragment;
 import com.example.hwada.ui.view.main.FavoritesFragment;
 import com.example.hwada.ui.view.main.HomeFragment;
+import com.example.hwada.viewmodel.AdsViewModel;
 import com.example.hwada.viewmodel.DebugViewModel;
 import com.example.hwada.viewmodel.UserAddressViewModel;
 import com.example.hwada.viewmodel.UserViewModel;
@@ -101,8 +103,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
           //****************
           callFragment(new HomeFragment(), "home");
           navBarOnSelected();
-          userViewModel = UserViewModel.getInstance();
-          debugViewModel = ViewModelProviders.of(this).get(DebugViewModel.class);
+          userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
           userAddressViewModel = ViewModelProviders.of(this).get(UserAddressViewModel.class);
 
           app = (App) getApplication();
@@ -160,7 +161,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onResume() {
         super.onResume();
-        app.setUserOnline(user.getUId());
+        Log.e(TAG, "onResume: "+user.getUId() );
+        app.setUserOnline(user.getUId(),this);
         try {
            if(user.getLocation()==null){
                if(app.isLocationEnabled()){
@@ -255,16 +257,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             try {
                 switch (item.getItemId()){
                     case R.id.home:
-                        callFragment(new HomeFragment(),"home");
+                        callFragment(new HomeFragment(),getString(R.string.homeVal));
                         break;
                     case R.id.chat:
-                      callFragment(new ChatFragment(),"chat");
+                      callFragment(new ChatFragment(),getString(R.string.chatVal));
                         break;
                     case R.id.favorites:
-                     callFragment(new FavoritesFragment(),"fav");
+                     callFragment(new FavoritesFragment(),getString(R.string.favVal));
                         break;
                     case R.id.account:
-                      callFragment(new AccountFragment(),"account");
+                      callFragment(new AccountFragment(),getString(R.string.accountVal));
                         break;
                 }
             }catch (Exception e){
@@ -280,7 +282,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
           try {
               if(getSupportFragmentManager().findFragmentByTag(tag) == null) {
                   Bundle bundle = new Bundle();
-                  bundle.putParcelable("user", user);
+                  bundle.putParcelable(getString(R.string.userVal), user);
                   fragment.setArguments(bundle);
                   fragmentManager = getSupportFragmentManager();
                   fragmentTransaction = fragmentManager.beginTransaction();
@@ -294,10 +296,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void callAddNewAdActivity(String category ,String subCategory , String subSubCategory){
        try {
            Intent intent = new Intent(this, AddNewAdActivity.class);
-           intent.putExtra("user",user);
-           intent.putExtra("category",category);
-           intent.putExtra("subCategory",subCategory);
-           intent.putExtra("subSubCategory",subSubCategory);
+           intent.putExtra(getString(R.string.userVal),user);
+           intent.putExtra(getString(R.string.modeVal),getString(R.string.newModeVal));
+           intent.putExtra(getString(R.string.categoryVal),category);
+           intent.putExtra(getString(R.string.subCategoryVal),subCategory);
+           intent.putExtra(getString(R.string.subSubCategoryVal),subSubCategory);
            startActivity(intent);
        }catch (Exception e){
            app.reportError(e,this);
@@ -327,7 +330,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void callBottomSheet(BottomSheetDialogFragment fragment){
        try {
                Bundle bundle = new Bundle();
-               bundle.putParcelable("user", user);
+               bundle.putParcelable(getString(R.string.userVal), user);
                fragment.setArguments(bundle);
                fragment.show(getSupportFragmentManager(),fragment.getTag());
 
@@ -338,9 +341,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void callCategoryActivity(String tag,String target){
        try {
            Intent intent = new Intent(this, CategoryActivity.class);
-           intent.putExtra("user",user);
-           intent.putExtra("tag",tag);
-           intent.putExtra("target",target);
+           intent.putExtra(getString(R.string.userVal),user);
+           intent.putExtra(getString(R.string.tagVal),tag);
+           intent.putExtra(getString(R.string.targetVal),target);
            startActivity(intent);
        }catch (Exception e){
            app.reportError(e,this);
@@ -349,10 +352,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void callAdsActivity(String category,String subCategory,String subSubCategory){
        try {
            Intent intent = new Intent(this, AdsActivity.class);
-           intent.putExtra("user",user);
-           intent.putExtra("category",category);
-           intent.putExtra("subCategory",subCategory);
-           intent.putExtra("subSubCategory",subSubCategory);
+           intent.putExtra(getString(R.string.userVal),user);
+           intent.putExtra(getString(R.string.categoryVal),category);
+           intent.putExtra(getString(R.string.subCategoryVal),subCategory);
+           intent.putExtra(getString(R.string.subSubCategoryVal),subSubCategory);
            startActivity(intent);
        }catch (Exception e){
            app.reportError(e,this);
@@ -399,7 +402,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onPause() {
         super.onPause();
-        app.setUserOffline(user.getUId());
+        app.setUserOffline(user.getUId(),this);
     }
 
         @Override

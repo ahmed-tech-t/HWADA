@@ -19,7 +19,6 @@ tools:context=".ui.MyAdsActivity">
         android:elevation="10dp"
         android:background="@drawable/white_background"
         android:orientation="vertical">
-
         <ImageView
             android:id="@+id/arrow_home_food_category"
             android:layout_width="match_parent"
@@ -112,7 +111,7 @@ tools:context=".ui.MyAdsActivity">
             android:layout_marginTop="5dp"
             android:layout_margin="10dp"
             android:visibility="gone"
-            android:background="@drawable/recycle_view_background"
+            android:background="@drawable/empty_page"
 
             android:paddingBottom="8dp"
             android:clipToPadding="false"

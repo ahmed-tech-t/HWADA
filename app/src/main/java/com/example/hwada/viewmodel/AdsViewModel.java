@@ -16,28 +16,20 @@ import com.example.hwada.repository.AdsRepository;
 
 import java.util.ArrayList;
 
-public class AdsViewModel extends ViewModel {
+public class AdsViewModel extends AndroidViewModel {
     AdsRepository repository ;
-    public static AdsViewModel adsViewModel = new AdsViewModel();
 
     public LiveData<Ad> newAdLiveData = new MutableLiveData<>();
 
     private static final String TAG = "AdsViewModel";
 
-
-    private AdsViewModel (){
-       repository = new AdsRepository();
-    }
-    public static AdsViewModel getInstance(){
-       return adsViewModel;
+    public AdsViewModel(@NonNull Application application) {
+        super(application);
+        repository = new AdsRepository(application);
     }
 
-    public void addNewAd(Ad newAd ){
-        newAdLiveData = repository.addNewAd(newAd);
-    }
-
-    public void updateImages(Ad newAd){
-        //liveDataUpdateImagesSuccess = repository.updateImages(newAd);
+    public void addOrUpdateAd(Ad ad , boolean isNewAd){
+        repository.addOrUpdateAd(ad,isNewAd);
     }
     public LiveData<ArrayList<Ad>> getAllAds(String category ,String subCategory){
        return repository.getAllAds(category,subCategory);

@@ -22,7 +22,7 @@ public class ReviewViewModel extends AndroidViewModel {
 
     public ReviewViewModel(@NonNull Application application) {
         super(application);
-        repo = new ReviewRepo();
+        repo = new ReviewRepo(application);
     }
 
 

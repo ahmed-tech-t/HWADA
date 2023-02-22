@@ -20,7 +20,9 @@ import android.view.inputmethod.InputMethodManager;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelStoreOwner;
 
 import com.example.hwada.Model.DebugModel;
 import com.example.hwada.database.DbHandler;
@@ -55,10 +57,11 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        userViewModel = UserViewModel.getInstance();
+
     }
 
-    public void setUserOnline(String userId) {
+    public void setUserOnline(String userId,ViewModelStoreOwner owner) {
+        userViewModel = new ViewModelProvider(owner).get(UserViewModel.class);
         if (resumeCounter == 0) {
             // update the user's last seen time
             userViewModel.setUserStatus(DbHandler.ONLINE,userId);
@@ -66,7 +69,8 @@ public class App extends Application {
         resumeCounter++;
     }
 
-    public void setUserOffline(String userId) {
+    public void setUserOffline(String userId,ViewModelStoreOwner owner) {
+        userViewModel = new ViewModelProvider(owner).get(UserViewModel.class);
         resumeCounter--;
         if (resumeCounter == 0) {
             userViewModel.setUserStatus(DbHandler.OFFLINE,userId);

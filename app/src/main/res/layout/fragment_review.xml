@@ -40,8 +40,7 @@
             android:scaleX=".8"
             android:layout_marginTop="10dp"
             android:secondaryProgressTint="@android:color/transparent"
-            android:stepSize="0.1"
-            />
+            android:stepSize="0.5" />
 
 
         <androidx.constraintlayout.widget.ConstraintLayout

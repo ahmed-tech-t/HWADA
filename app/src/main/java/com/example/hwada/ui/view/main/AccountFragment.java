@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.util.Log;
@@ -23,9 +24,11 @@ import com.example.hwada.ui.MyAdsActivity;
 import com.example.hwada.ui.auth.SplashActivity;
 import com.example.hwada.ui.view.EditUserFragment;
 import com.example.hwada.ui.view.images.ImageMiniDialogFragment;
+import com.example.hwada.viewmodel.AdsViewModel;
 import com.example.hwada.viewmodel.AuthViewModel;
 import com.example.hwada.viewmodel.UserViewModel;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.Locale;
@@ -72,7 +75,8 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
         super.onActivityCreated(savedInstanceState);
         user = getArguments().getParcelable("user");
         authViewModel = ViewModelProviders.of(getActivity()).get(AuthViewModel.class);
-        userViewModel = UserViewModel.getInstance();
+        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+
         setDataToFields();
         setUserListener();
     }
@@ -83,7 +87,17 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
         if (user.getImage() != null) {
             Picasso.get()
                     .load(user.getImage())
-                    .into(binding.userImageAccountFragment);
+                    .into(binding.userImageAccountFragment, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            binding.progressBarUserImageFragmentAccount.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+
+                        }
+                    });
         }
     }
 

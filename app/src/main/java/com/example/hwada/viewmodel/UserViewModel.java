@@ -22,15 +22,14 @@ import com.google.firebase.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserViewModel extends ViewModel {
+public class UserViewModel extends AndroidViewModel {
 
-    private static UserViewModel userViewModel = new UserViewModel();
-    public static UserViewModel getInstance(){
-        return  userViewModel;
+
+    public UserViewModel(@NonNull Application application) {
+        super(application);
+        userRepository = new UserRepository(application);
     }
-    private UserViewModel(){
-        userRepository = new UserRepository();
-    }
+
 
 
     private static final String TAG = "UserViewModel";
@@ -64,5 +63,8 @@ public class UserViewModel extends ViewModel {
 
     public LiveData<User> getUserById(String id){
         return userRepository.getUserById(id);
+    }
+    public LiveData<ArrayList<Ad>> setUserAdsListener(String id){
+        return userRepository.userAdsListener(id);
     }
 }

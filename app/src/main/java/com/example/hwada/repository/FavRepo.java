@@ -113,6 +113,7 @@ public class FavRepo {
                     return;
                 }
                 ArrayList<Ad> favAds = new ArrayList<>();
+                assert value != null;
                 for (QueryDocumentSnapshot document : value) {
                     String adId = document.getString("adId");
                     String category = document.getString("category");

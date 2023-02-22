@@ -53,7 +53,7 @@ public class AdsGridAdapter extends RecyclerView.Adapter<AdsGridAdapter.HomeView
 
         if (list!= null) {
 
-        String url = list.get(position).getImagesUrl().get(0);
+        String url = list.get(position).getMainImage();
         RequestOptions options = new RequestOptions()
                 .priority(Priority.HIGH);
         new GlideImageLoader(holder.userImage, new ProgressBar(mContext)).load(url, options);

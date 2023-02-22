@@ -3,6 +3,7 @@ package com.example.hwada.Model;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -11,40 +12,100 @@ import com.example.hwada.R;
 import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import kotlin.jvm.internal.SerializedIr;
 
 public class DaysSchedule implements Parcelable {
+    private  String saturday ="saturday";
+    private  String sunday ="sunday";
+    private  String monday ="monday";
+    private  String tuesday ="tuesday";
+    private  String wednesday ="wednesday";
+    private  String thursday ="thursday";
+    private  String friday ="friday";
 
-    ArrayList<WorkingTime>saturday ;
-    ArrayList<WorkingTime> sunday ;
-    ArrayList<WorkingTime> monday ;
-    ArrayList<WorkingTime>tuesday ;
-    ArrayList<WorkingTime> wednesday ;
-    ArrayList<WorkingTime> thursday ;
-    ArrayList<WorkingTime> friday ;
+    private  String saturday_cap ="Saturday";
+    private  String sunday_cap ="Sunday";
+    private  String monday_cap ="Monday";
+    private  String tuesday_cap ="Tuesday";
+    private  String wednesday_cap ="Wednesday";
+    private  String thursday_cap ="Thursday";
+    private  String friday_cap ="Friday";
 
+
+    Map<String ,ArrayList<WorkingTime>> days ;
+    private static  String TAG = "DaysSchedule";
     public DaysSchedule() {
-        saturday =new ArrayList<>();
-        sunday =new ArrayList<>();
-        monday =new ArrayList<>();
-        tuesday =new ArrayList<>();
-        wednesday =new ArrayList<>();
-        thursday =new ArrayList<>();
-        friday =new ArrayList<>();
+        days = new HashMap();
+        days.put(saturday,new ArrayList<>());
+        days.put(sunday,new ArrayList<>());
+        days.put(monday,new ArrayList<>());
+        days.put(tuesday,new ArrayList<>());
+        days.put(wednesday,new ArrayList<>());
+        days.put(thursday,new ArrayList<>());
+        days.put(friday,new ArrayList<>());
     }
+
 
     protected DaysSchedule(Parcel in) {
-        saturday = in.createTypedArrayList(WorkingTime.CREATOR);
-        sunday = in.createTypedArrayList(WorkingTime.CREATOR);
-        monday = in.createTypedArrayList(WorkingTime.CREATOR);
-        tuesday = in.createTypedArrayList(WorkingTime.CREATOR);
-        wednesday = in.createTypedArrayList(WorkingTime.CREATOR);
-        thursday = in.createTypedArrayList(WorkingTime.CREATOR);
-        friday = in.createTypedArrayList(WorkingTime.CREATOR);
+        saturday = in.readString();
+        sunday = in.readString();
+        monday = in.readString();
+        tuesday = in.readString();
+        wednesday = in.readString();
+        thursday = in.readString();
+        friday = in.readString();
+        saturday_cap = in.readString();
+        sunday_cap = in.readString();
+        monday_cap = in.readString();
+        tuesday_cap = in.readString();
+        wednesday_cap = in.readString();
+        thursday_cap = in.readString();
+        friday_cap = in.readString();
+
+        days = new HashMap<>();
+        int size = in.readInt();
+        for (int i = 0; i < size; i++) {
+            String key = in.readString();
+            ArrayList<WorkingTime> value = in.createTypedArrayList(WorkingTime.CREATOR);
+            days.put(key, value);
+        }
     }
 
-    public static final Creator<DaysSchedule> CREATOR = new Creator<DaysSchedule>() {
+
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(saturday);
+        dest.writeString(sunday);
+        dest.writeString(monday);
+        dest.writeString(tuesday);
+        dest.writeString(wednesday);
+        dest.writeString(thursday);
+        dest.writeString(friday);
+        dest.writeString(saturday_cap);
+        dest.writeString(sunday_cap);
+        dest.writeString(monday_cap);
+        dest.writeString(tuesday_cap);
+        dest.writeString(wednesday_cap);
+        dest.writeString(thursday_cap);
+        dest.writeString(friday_cap);
+
+        dest.writeInt(days.size());
+        for (Map.Entry<String, ArrayList<WorkingTime>> entry : days.entrySet()) {
+            dest.writeString(entry.getKey());
+            dest.writeTypedList(entry.getValue());
+        }
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static  Creator<DaysSchedule> CREATOR = new Creator<DaysSchedule>() {
         @Override
         public DaysSchedule createFromParcel(Parcel in) {
             return new DaysSchedule(in);
@@ -56,213 +117,81 @@ public class DaysSchedule implements Parcelable {
         }
     };
 
-    public ArrayList<WorkingTime> getSaturday() {
-        return saturday;
-    }
-
-    public void setSaturday(ArrayList<WorkingTime> saturday) {
-        this.saturday = saturday;
-    }
-
-    public ArrayList<WorkingTime> getSunday() {
-        return sunday;
-    }
-
-    public void setSunday(ArrayList<WorkingTime> sunday) {
-        this.sunday = sunday;
-    }
-
-    public ArrayList<WorkingTime> getMonday() {
-        return monday;
-    }
-
-    public void setMonday(ArrayList<WorkingTime> monday) {
-        this.monday = monday;
-    }
-
-    public ArrayList<WorkingTime> getTuesday() {
-        return tuesday;
-    }
-
-    public void setTuesday(ArrayList<WorkingTime> tuesday) {
-        this.tuesday = tuesday;
-    }
-
-    public ArrayList<WorkingTime> getWednesday() {
-        return wednesday;
-    }
-
-    public void setWednesday(ArrayList<WorkingTime> wednesday) {
-        this.wednesday = wednesday;
-    }
-
-    public ArrayList<WorkingTime> getThursday() {
-        return thursday;
-    }
-
-    public void setThursday(ArrayList<WorkingTime> thursday) {
-        this.thursday = thursday;
-    }
-
-    public ArrayList<WorkingTime> getFriday() {
-        return friday;
-    }
-
-    public void setFriday(ArrayList<WorkingTime> friday) {
-        this.friday = friday;
-    }
-    public void addOneToSaturday(WorkingTime w){
-        saturday.add(w);
-    }
-    public void addOneToSunday(WorkingTime w){
-        sunday.add(w);
-    }public void addOneToMonday(WorkingTime w){
-        monday.add(w);
-    }
-    public void addOneToTuesday(WorkingTime w){
-        tuesday.add(w);
-    }
-    public void addOneToWednesday(WorkingTime w){
-        wednesday.add(w);
-    }
-    public void addOneToThursday(WorkingTime w){
-        thursday.add(w);
-    }
-    public void addOneToFriday(WorkingTime w){
-        friday.add(w);
-    }
-
-    public void removeOneFromSaturday(int pos){
-        saturday.remove(pos);
-    }
-    public void removeOneFromSunday(int pos){
-        sunday.remove(pos);
-    }
-    public void removeOneFromMonday(int pos){
-        monday.remove(pos);
-    }
-    public void removeOneFromTuesday(int pos){
-        tuesday.remove(pos);
-    }
-    public void removeOneFromWednesday(int pos){
-        wednesday.remove(pos);
-    }
-    public void removeOneFromThursday(int pos){
-        thursday.remove(pos);
-    }
-    public void removeOneFromFriday(int pos){
-        friday.remove(pos);
-    }
-    public ArrayList<WorkingTime> get(int pos){
+    public String getDayValFromPosition(int pos){
         switch (pos){
-            case 0:
+            case 0 :
                 return saturday;
-            case 1:
+            case 1 :
                 return sunday;
-            case 2:
+            case 2 :
                 return monday;
-            case 3:
+            case 3 :
                 return tuesday;
-            case 4:
+            case 4 :
                 return wednesday;
-            case 5:
+            case 5 :
                 return thursday;
-            case 6:
+            case 6 :
                 return friday;
-            default:
-                return null;
         }
+        return "";
     }
-    public int size(){
-        int length = 0 ;
-        if(saturday.size()>0) length +=1;
-        if(sunday.size()>0) length +=1;
-        if(monday.size()>0) length +=1;
-        if(tuesday.size()>0) length +=1;
-        if(wednesday.size()>0) length +=1;
-        if(thursday.size()>0) length +=1;
-        if(friday.size()>0) length +=1;
-
-        return length;
-    }
-    public void set(int pos,ArrayList<WorkingTime> list){
+    public String getDayTitleFromPosition(int pos){
         switch (pos){
-            case 0:
-                 saturday = list;
-                 break;
-            case 1:
-                sunday =list;
-                break;
-            case 2:
-                monday =list;
-                break;
-            case 3:
-                tuesday =list;
-                break;
-            case 4:
-                wednesday =list;
-                break;
-            case 5:
-                thursday =list;
-                break;
-            case 6:
-                friday =list;
-                break;
+            case 0 :
+                return saturday_cap;
+            case 1 :
+                return sunday_cap;
+            case 2 :
+                return monday_cap;
+            case 3 :
+                return tuesday_cap;
+            case 4 :
+                return wednesday_cap;
+            case 5 :
+                return thursday_cap;
+            case 6 :
+                return friday_cap;
         }
-    }
-    public void remove(int pos){
-        switch (pos){
-            case 0:
-                saturday = new ArrayList<>();
-                break;
-            case 1:
-                sunday =new ArrayList<>();
-                break;
-            case 2:
-                monday =new ArrayList<>();
-                break;
-            case 3:
-                tuesday =new ArrayList<>();
-                break;
-            case 4:
-                wednesday =new ArrayList<>();
-                break;
-            case 5:
-                thursday =new ArrayList<>();
-                break;
-            case 6:
-                friday =new ArrayList<>();
-                break;
-        }
+        return "";
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public int getPosFromDay(String day){
+       if(day.equals(saturday))return 0;
+       else if(day.equals(sunday))return 1;
+       else if(day.equals(monday))return 2;
+       else if(day.equals(tuesday))return 3;
+       else if(day.equals(wednesday))return 4;
+       else if(day.equals(thursday))return 5;
+       else if(day.equals(friday))return 6;
+        return -1;
+    }
+    public String getDayTitleFromDay(String day){
+        if(day.equals(saturday))return saturday_cap;
+        else if(day.equals(sunday))return sunday_cap;
+        else if(day.equals(monday))return monday_cap;
+        else if(day.equals(tuesday))return tuesday_cap;
+        else if(day.equals(wednesday))return wednesday_cap;
+        else if(day.equals(thursday))return thursday_cap;
+        else if(day.equals(friday))return friday_cap;
+        return "";
     }
 
-    @Override
-    public void writeToParcel(@NonNull Parcel dest, int flags) {
-        dest.writeTypedList(saturday);
-        dest.writeTypedList(sunday);
-        dest.writeTypedList(monday);
-        dest.writeTypedList(tuesday);
-        dest.writeTypedList(wednesday);
-        dest.writeTypedList(thursday);
-        dest.writeTypedList(friday);
+    public Map<String, ArrayList<WorkingTime>> getDays() {
+        return days;
     }
 
+    public void setDays(Map<String, ArrayList<WorkingTime>> days) {
+        this.days = days;
+    }
+
+   
 
     @Override
     public String toString() {
         return "DaysSchedule{" +
-                "saturday=" + saturday +
-                ", sunday=" + sunday +
-                ", monday=" + monday +
-                ", tuesday=" + tuesday +
-                ", wednesday=" + wednesday +
-                ", thursday=" + thursday +
-                ", friday=" + friday +
-                '}';
+                "days=" + days ;
     }
+
+ 
 }

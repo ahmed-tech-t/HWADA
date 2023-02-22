@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -52,6 +53,7 @@ import com.example.hwada.databinding.ActivityMainBinding;
 import com.example.hwada.ui.view.ad.AdvertiserFragment;
 import com.example.hwada.ui.view.chat.SendImagesMessageFragment;
 import com.example.hwada.ui.view.images.ImagesFullDialogFragment;
+import com.example.hwada.viewmodel.AdsViewModel;
 import com.example.hwada.viewmodel.ChatViewModel;
 import com.example.hwada.viewmodel.MessageViewModel;
 import com.example.hwada.viewmodel.UserViewModel;
@@ -106,7 +108,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
         advertiserFragment = new AdvertiserFragment();
 
-        userViewModel =  UserViewModel.getInstance();
+        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
         messageViewModel = ViewModelProviders.of(this).get(MessageViewModel.class);
         chatViewModel = ViewModelProviders.of(this).get(ChatViewModel.class);
 
@@ -210,13 +212,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onResume() {
         super.onResume();
-        app.setUserOnline(user.getUId());
+        app.setUserOnline(user.getUId(),this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        app.setUserOffline(user.getUId());
+        app.setUserOffline(user.getUId(),this);
     }
 
     private void setRecycler(){
@@ -227,7 +229,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         binding.recyclerChatActivity.setItemAnimator(new DefaultItemAnimator());
         binding.recyclerChatActivity.setNestedScrollingEnabled(false);
         binding.recyclerChatActivity.setHasFixedSize(true);
-        scrollRecycleViewToBottom();
+       // scrollRecycleViewToBottom();
         messagesObserver();
     }
 

@@ -148,17 +148,17 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
 
             if (inputDate.get(Calendar.YEAR) == today.get(Calendar.YEAR)
                     && inputDate.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR)) {
-                return mContext.getString(R.string.today)+"  " + dateString.split(",")[1] ;
+                return mContext.getString(R.string.today)+"  " + dateString.split(",")[1]+dateString.split(",")[3] ;
             }
             else if (inputDate.get(Calendar.YEAR) == today.get(Calendar.YEAR)
                     && inputDate.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR) - 1) {
-                return mContext.getString(R.string.yesterday)+" "+ dateString.split(",")[1];
+                return mContext.getString(R.string.yesterday)+" "+ dateString.split(",")[1]+dateString.split(",")[3];
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return dateString;
+        return dateString.split(",")[0]+dateString.split(",")[3];
     }
 
 }
