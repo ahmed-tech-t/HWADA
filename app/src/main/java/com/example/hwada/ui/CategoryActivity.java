@@ -135,13 +135,19 @@ public class CategoryActivity extends AppCompatActivity {
     }
 
     public void callAddNewAdActivity(String category ,String subCategory , String subSubCategory){
-        Intent intent = new Intent(this, AddNewAdActivity.class);
-        intent.putExtra("user",user);
-        intent.putExtra("category",category);
-        intent.putExtra("subCategory",subCategory);
-        intent.putExtra("subSubCategory",subSubCategory);
-        startActivity(intent);
+        try {
+            Intent intent = new Intent(this, AddNewAdActivity.class);
+            intent.putExtra(getString(R.string.userVal),user);
+            intent.putExtra(getString(R.string.modeVal),getString(R.string.newModeVal));
+            intent.putExtra(getString(R.string.categoryVal),category);
+            intent.putExtra(getString(R.string.subCategoryVal),subCategory);
+            intent.putExtra(getString(R.string.subSubCategoryVal),subSubCategory);
+            startActivity(intent);
+        }catch (Exception e){
+            app.reportError(e,this);
+        }
     }
+
     @Override
     protected void onResume() {
         super.onResume();

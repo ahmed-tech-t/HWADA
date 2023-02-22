@@ -3,9 +3,11 @@ package com.example.hwada.ui.view.ad.addNewAdd;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -19,11 +21,11 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.hwada.Model.Ad;
-import com.example.hwada.Model.DaysSchedule;
 import com.example.hwada.Model.User;
 import com.example.hwada.Model.WorkingTime;
 import com.example.hwada.R;
@@ -33,14 +35,16 @@ import com.example.hwada.databinding.FragmentWorkTimePreviewBinding;
 import com.example.hwada.ui.MainActivity;
 import com.example.hwada.ui.MyAdsActivity;
 import com.example.hwada.viewmodel.AdsViewModel;
-import com.example.hwada.viewmodel.UserViewModel;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class WorkTimePreviewFragment extends BottomSheetDialogFragment implements View.OnClickListener , WorkTimeEditFragment.GettingPassedData , WorkingTimeEditDaysAdapter.OnItemListener  {
 
@@ -153,7 +157,6 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
             String day = ad.getDaysSchedule().getDayValFromPosition(i);
             if(!Objects.requireNonNull(ad.getDaysSchedule().getDays().get(day)).isEmpty()) switches.set(i,true);
         }
-
     }
     @Override
     public void onClick(View v) {
@@ -164,16 +167,81 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
                if(mode.equals(getString(R.string.newModeVal))){
                    ad.setTimeStamp(app.getCurrentDate());
                    ad.setActive(true);
-                   adsViewModel.addOrUpdateAd(ad,true);
+                   String mainImageName  = getImageNameFromUri(ad.getImagesUri().get(0))+"."+getFileExtension(Uri.parse(ad.getImagesUri().get(0)));
+                   adsViewModel.addNewAd(ad,mainImageName);
                    goToMainActivity();
-               }else if(mode.equals(getString(R.string.editModeVal))){
-                   adsViewModel.addOrUpdateAd(ad,false);
+               }else if(mode.equals(getString(R.string.editModeVal))) {
+                    handelAdUpdate();
                    Toast.makeText(app, getString(R.string.updateAdMessage), Toast.LENGTH_LONG).show();
                    goToMyAdsActivity();
                }
            }
         }
     }
+
+    private void handelAdUpdate(){
+        if(imagesNotChanging()){
+            String mainImageName = getImageNameFromUri(ad.getImagesUri().get(0));
+            adsViewModel.updateExistAd(ad,mainImageName);
+        }else {
+            String mainImageName = "";
+            if(isValidUrl(ad.getImagesUri().get(0))){
+                mainImageName = getImageNameFromUri(ad.getImagesUri().get(0));
+            }else mainImageName = getImageNameFromUri(ad.getImagesUri().get(0))+"."+getFileExtension(Uri.parse(ad.getImagesUri().get(0)));
+            ArrayList<String> deletedImages = getDeletedImages();
+            ArrayList<String> newImages = getNewImages();
+            ArrayList<String> urlForNotDeletedImages = getUrlForNotDeletedImages();
+
+            ad.setImagesUrl(urlForNotDeletedImages);
+            ad.setImagesUri(newImages);
+            adsViewModel.updateExistAd(ad,mainImageName,deletedImages);
+        }
+    }
+
+    private String getFileExtension(Uri uri)
+    {
+        String extension;
+        ContentResolver contentResolver = getContext().getContentResolver();
+        MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
+        extension= mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri));
+        return extension;
+    }
+    /**
+     *
+     * functions related with update ad
+     * **/
+
+    private String getImageNameFromUri(String uri){
+        Uri myUri = Uri.parse(uri);
+        File file = new File(myUri.getPath());
+        return file.getName();
+    }
+
+    private ArrayList<String> getNewImages() {
+        return ad.getImagesUri().stream().filter(s -> !isValidUrl(s)).collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    private ArrayList<String> getDeletedImages(){
+        return  ad.getImagesUrl().stream().filter(s -> !ad.getImagesUri().contains(s)).collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    private ArrayList<String> getUrlForNotDeletedImages(){
+        return ad.getImagesUrl().stream().filter(s -> ad.getImagesUri().contains(s)).collect(Collectors.toCollection(ArrayList::new));
+    }
+    private boolean imagesNotChanging() {
+
+        return ad.getImagesUri().size() == ad.getImagesUrl().size() && ad.getImagesUri().stream().allMatch(this::isValidUrl);
+    }
+
+    public boolean isValidUrl(String text) {
+        Pattern pattern = Pattern.compile("^https://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
+        return pattern.matcher(text).find();
+    }
+
+    /**
+     *
+     *
+     * **/
 
     public void callBottomSheet(BottomSheetDialogFragment fragment , ArrayList<WorkingTime> workingTimes, String tag){
         Bundle bundle = new Bundle();
@@ -195,8 +263,6 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
             e.printStackTrace();
         }
     }
-
-
 
     @Override
     public void passedData(ArrayList<WorkingTime> list, ArrayList<String> applyToList) {
@@ -246,8 +312,6 @@ public class WorkTimePreviewFragment extends BottomSheetDialogFragment implement
         showDialog(getString(R.string.failed),getString(R.string.workingTimePreviewSwitchesOfError));
         return false;
     }
-
-
 
     private void showDialog(String title ,String body){
         new AlertDialog.Builder(getContext())

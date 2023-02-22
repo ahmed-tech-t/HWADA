@@ -1,14 +1,14 @@
 package com.example.hwada.repository;
 
-import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
-
 import android.app.Application;
+import android.content.ContentResolver;
+import android.database.Cursor;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.FileProvider;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.hwada.Model.Ad;
@@ -30,13 +30,10 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Transaction;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
-import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
-import java.net.PortUnreachableException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -68,42 +65,63 @@ public class AdsRepository {
      * add new add
      **/
 
-
-    public void addOrUpdateAd(Ad ad , boolean isNewAd){
-        if(isNewAd){
-           uploadAdImages(ad, true);
-        }else {
-            deleteAdImages(ad,false);
-        }
+    public void updateExistAd(Ad ad,String mainImageName,ArrayList<String> imagesToDelete){
+      if(!imagesToDelete.isEmpty()){
+          deleteAdImages(ad,mainImageName,imagesToDelete);
+      }else if(!ad.getImagesUri().isEmpty()){
+          uploadAdImages(ad,mainImageName,false);
+      }else {
+          updateExistAd(ad,mainImageName);
+      }
     }
-
-    private void deleteAdImages(Ad ad, boolean isNewAd) {
+    public void addNewAd(Ad ad ,String mainImageName){
+        uploadAdImages(ad, mainImageName,true);
+    }
+/**
+ * delete Images
+ * **/
+    private void deleteAdImages(Ad ad ,String mainImageName,ArrayList<String> imagesToDelete) {
         StorageReference imageRef = storageRef.child("adImages").child(ad.getAuthorId()).child(ad.getCategory()).child(ad.getSubCategory()).child(ad.getId());
         imageRef.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
             @Override
             public void onSuccess(ListResult listResult) {
                 for (StorageReference item : listResult.getItems()) {
                     // Delete the file
-                    item.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Log.d(TAG, "Deleted " + item.getName());
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.e(TAG, "Error deleting " + item.getName() + ": " + e.getMessage());
-                        }
-                    });
+                    if(!imagesToDelete.isEmpty()){
+                        item.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                String imageUrl = uri.toString();
+                                if (imagesToDelete.contains(imageUrl)) {
+                                    deleteItem(item);
+                                }
+                            }
+                        });
+                    }else{
+                        deleteItem(item);
+                    }
                 }
-                uploadAdImages(ad,isNewAd);
+                uploadAdImages(ad,mainImageName,false);
+            }
+        });
+    }
+
+    private void deleteItem(StorageReference item){
+        item.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "Deleted  onClick " + item.getName());
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e(TAG, "Error deleting onClick  " + item.getName() + ": " + e.getMessage());
             }
         });
     }
 
 
-    private void uploadAdImages(Ad ad , boolean isNewAd) {
-        Log.d(TAG, "uploadAdImages: ");
+    private void uploadAdImages(Ad ad ,String mainImageName, boolean isNewAd) {
         if(isNewAd){
             DocumentReference adDocRef = getAdColRef(ad).document();
             ad.setId(adDocRef.getId());
@@ -111,52 +129,73 @@ public class AdsRepository {
 
         StorageReference imageRef = storageRef.child("adImages").child(ad.getAuthorId()).child(ad.getCategory()).child(ad.getSubCategory()).child(ad.getId());
         List<String> downloadUrls = new ArrayList<>();
-        for (String uri :ad.getImagesUri()){
-            Log.e(TAG, "uploadAdImages: "+uri);
-            if (uri != null) {
-                String mainImageName = new File(Uri.parse(ad.getImagesUri().get(0)).getPath()).getName();  // extract filename from first URI
-                Uri myUri = Uri.parse(uri);
-                File file = new File(myUri.getPath());
-                UploadTask uploadTask = imageRef.child(file.getName()).putFile(myUri);
-                uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        if (taskSnapshot.getMetadata() != null) {
-                            if (taskSnapshot.getMetadata().getReference() != null) {
-                                Task<Uri> url = taskSnapshot.getStorage().getDownloadUrl();
-                                url.addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                    @Override
-                                    public void onSuccess(Uri uri) {
-                                        downloadUrls.add(String.valueOf(uri));
-                                        String urlFilename = new File(uri.getPath()).getName();  // extract filename from URL
 
-                                        if (mainImageName.equals(urlFilename)) {
-                                            ad.setMainImage(String.valueOf(uri));
+        if(ad.getImagesUri().isEmpty() && !isNewAd) updateExistAd(ad,mainImageName);
+        for (String uri :ad.getImagesUri()){
+            if (uri != null) {
+                Uri myUri = Uri.parse(uri);
+
+                    UploadTask uploadTask = imageRef.child(getFileName(myUri)).putFile(myUri);
+                    uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            if (taskSnapshot.getMetadata() != null) {
+                                if (taskSnapshot.getMetadata().getReference() != null) {
+                                    Task<Uri> url = taskSnapshot.getStorage().getDownloadUrl();
+                                    url.addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                        @Override
+                                        public void onSuccess(Uri uri) {
+                                            downloadUrls.add(String.valueOf(uri));
+                                            if (downloadUrls.size() == ad.getImagesUri().size()) {
+                                                ad.getImagesUri().clear();
+                                                if (isNewAd) {
+                                                    ad.setImagesUrl(downloadUrls);
+                                                    adNewAd(ad, mainImageName);
+                                                } else {
+                                                    ad.getImagesUrl().addAll(downloadUrls);
+                                                    updateExistAd(ad, mainImageName);
+                                                }
+                                            }
                                         }
-                                        if (downloadUrls.size() == ad.getImagesUri().size()) {
-                                            ad.getImagesUri().clear();
-                                            ad.setImagesUrl(downloadUrls);
-                                            if (isNewAd) adNewAd(ad);
-                                            else updateExistAd(ad);
-                                        }
-                                    }
-                                });
+                                    });
+                                }
                             }
                         }
-                    }
-                });
+                    });
+                }
+                else Log.e(TAG, "uploadAdImages: un valid schema");
             }
         }
 
 
+    private String getFileName(Uri myUri) {
+        String scheme = myUri.getScheme();
+        if (scheme != null && scheme.equals(ContentResolver.SCHEME_CONTENT)) {
+            String[] projection = {MediaStore.Images.Media.DATA};
+            Cursor cursor = application.getContentResolver().query(myUri, projection, null, null, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                String filePath = cursor.getString(columnIndex);
+                cursor.close();
+                File file = new File(filePath);
+                if(file.exists()) return file.getName();
+                else {
+                    Log.e(TAG, "getFileName: file not exist " );
+                    return "";
+                }
+            }
+        }
+        return "";
     }
 
-    private void adNewAd(Ad newAd){
+    private void adNewAd(Ad newAd,String mainImageName){
         Log.d(TAG, "uploadAd: starting transactions" );
         rootRef.runTransaction(new Transaction.Function<Object>() {
             @Nullable
             @Override
             public Object apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+
+               newAd.setMainImage(setMainImage(newAd,mainImageName));
 
                 Log.d(TAG, "apply: "+newAd.getId());
                 DocumentReference adDocRef = getAdColRef(newAd).document(newAd.getId());
@@ -204,13 +243,16 @@ public class AdsRepository {
     /**
      * update ad
      **/
-    public void updateExistAd(Ad ad){
+    public void updateExistAd(Ad ad,String mainImageName){
         Log.d(TAG, "updateExistAd: update exist ad");
         rootRef.runTransaction(new Transaction.Function<Object>() {
            @Nullable
            @Override
            public Object apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
                //update user in ads
+
+               ad.setMainImage(setMainImage(ad,mainImageName));
+
 
                Log.d(TAG, "apply: start updating");
                HashMap<String, Object> data = new HashMap<>();
@@ -250,6 +292,22 @@ public class AdsRepository {
                 e.getMessage();
             }
         });
+    }
+
+    private String setMainImage(Ad ad,String mainImageName) {
+        for (String url: ad.getImagesUrl()) {
+            String urlFilename = getImageNameFromUri(url);
+            if(urlFilename.equals(mainImageName)){
+                Log.d(TAG, "handelAdUpdate: setMainImage "+mainImageName);
+                return url;
+            }
+        }
+        return "";
+    }
+    private String getImageNameFromUri(String url){
+        Uri myUri = Uri.parse(url);
+        File file = new File(myUri.getPath());
+        return file.getName();
     }
 
     //********************************
@@ -414,4 +472,5 @@ public class AdsRepository {
             }
         });
     }
+
 }

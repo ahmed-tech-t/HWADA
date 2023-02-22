@@ -7,11 +7,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.lifecycle.ViewModelStoreOwner;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -21,17 +19,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.URLUtil;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,8 +36,6 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.example.hwada.Model.Ad;
-import com.example.hwada.Model.DaysSchedule;
-import com.example.hwada.Model.LocationCustom;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
 import com.example.hwada.adapter.ImagesAdapter;
@@ -55,16 +47,11 @@ import com.example.hwada.viewmodel.UserAddressViewModel;
 import com.example.hwada.viewmodel.UserViewModel;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter.OnItemListener , View.OnClickListener  {
@@ -90,14 +77,10 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
 
         getDataFromIntent();
         setAdAddress(false);
+
+
         if(mode.equals(getString(R.string.editModeVal))){
-            binding.tvImagesInstructions.setText(getString(R.string.loadingImagesInstruction));
-
-            binding.addNewImage.setEnabled(false);
-            binding.nextButtonAddNewAd.setEnabled(false);
-            binding.progressHorizontalAddNewAdActivity.setVisibility(View.VISIBLE);
-            binding.nextButtonAddNewAd.setBackgroundColor(ContextCompat.getColor(this, R.color.white_gray));
-
+            ad.setImagesUri(new ArrayList<>(ad.getImagesUrl()));
             setRecycler();
             setDataToView();
         }
@@ -105,6 +88,8 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
         setUserListener();
 
     }
+
+
 
     private void getDataFromIntent(){
         Intent intent = getIntent();
@@ -151,9 +136,7 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
         try {
             ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
 
-            if(mode.equals(getString(R.string.editModeVal))){
-                imagesAdapter.setList(new ArrayList<>(),this);
-            }else imagesAdapter.setList(ad.getImagesUri(),this);
+            imagesAdapter.setList(ad.getImagesUri(),this);
             binding.recyclerAddNewAd.setAdapter(imagesAdapter);
             binding.recyclerAddNewAd.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
             itemTouchHelper.attachToRecyclerView(binding.recyclerAddNewAd);
@@ -178,7 +161,6 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
     };
 
     private void setDataToView(){
-        downloadImages();
         binding.adDescription.setText(ad.getDescription());
         binding.adTitle.setText(ad.getTitle());
         DecimalFormat decimalFormat = new DecimalFormat("#");
@@ -186,56 +168,7 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
         binding.adPrice.setText(formattedValue);
     }
 
-    private void  downloadImages(){
-        for (String url: ad.getImagesUrl()) {
-            Log.d(TAG, "downloadImages: "+url);
-            Glide.with(this)
-                .downloadOnly()
-                .load(url)
-                .addListener(new RequestListener<File>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<File> target, boolean isFirstResource) {
-                        e.printStackTrace();
-                        setWarningFailedToLoadImagesMessage();
-                        return true;
-                    }
 
-                    @Override
-                    public boolean onResourceReady(File resource, Object model, Target<File> target, DataSource dataSource, boolean isFirstResource) {
-                        String uri = String.valueOf(Uri.fromFile(resource));
-                        ad.getImagesUri().add(uri);
-                        setProgressBarProgress();
-                        Log.d(TAG, "onResourceReady: loading");
-                        if(ad.getImagesUri().size()== ad.getImagesUrl().size()){
-                            AddNewAdActivity.this.runOnUiThread(new Runnable() {
-                                  @Override
-                                  public void run() {
-                                      binding.tvImagesInstructions.setText(getString(R.string.uploadUpTo10Photos));
-                                      binding.progressHorizontalAddNewAdActivity.setVisibility(View.GONE);
-                                      binding.addNewImage.setEnabled(true);
-                                      binding.nextButtonAddNewAd.setEnabled(true);
-                                      binding.nextButtonAddNewAd.setBackgroundColor(ContextCompat.getColor(getApplication(), R.color.background));
-                                   // setMainImageToFirst();
-                                      imagesAdapter.addItems(0,ad.getImagesUri());
-                                  }
-                            });
-
-                        }
-                        return true;
-                    }
-                }).submit();
-        }
-    }
-
-    private void setProgressBarProgress(){
-        AddNewAdActivity.this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                int progress = binding.progressHorizontalAddNewAdActivity.getProgress();
-                binding.progressHorizontalAddNewAdActivity.setProgress(progress+(100/ad.getImagesUrl().size()));
-            }
-        });
-    }
     @Override
     public void getItemPosition(int position) {
         final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this,R.style.CustomBottomSheetDialogTheme);
@@ -428,31 +361,7 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
         super.onPause();
         app.setUserOffline(user.getUId(),this);
     }
-    private void setWarningFailedToLoadImagesMessage(){
-        AddNewAdActivity.this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                binding.imWarningImage.setVisibility(View.VISIBLE);
-                binding.tvImagesInstructions.setText(getString(R.string.failedToLoadImages));
-                binding.progressHorizontalAddNewAdActivity.setVisibility(View.GONE);
-            }
-        });
-    }
-//
-//    private void setMainImageToFirst(){
-//        String mainImageName = new File(Uri.parse(ad.getMainImage()).getPath()).getName();
-//        for (int i = 0; i < ad.getImagesUri().size(); i++) {
-//            String imageName = new File(Uri.parse(ad.getImagesUri().get(i)).getPath()).getName();
-//            if(mainImageName.equals(imageName) && i==0) return;
-//            else{
-//                if(mainImageName.equals(imageName)){
-//                    ad.getImagesUri().remove(i);
-//                    ad.getImagesUri().add(0,ad.getMainImage());
-//                    return;
-//                }
-//            }
-//        }
-//    }
+
     private Toast mCurrentToast;
     public void showToast(String message) {
         if (mCurrentToast == null) {

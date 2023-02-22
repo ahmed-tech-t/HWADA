@@ -65,6 +65,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
 
         Message lastMessage = list.get(position).getLastMessage();
 
+        //TODO bug java.lang.NullPointerException: Attempt to invoke virtual method 'java.util.List com.example.hwada.Model.Ad.getImagesUrl()' on a null object reference
        //add title and image
         Glide.with(mContext).load(list.get(position).getAd().getImagesUrl().get(0)).into(holder.adImage);
         holder.title.setText(list.get(position).getAd().getTitle());
