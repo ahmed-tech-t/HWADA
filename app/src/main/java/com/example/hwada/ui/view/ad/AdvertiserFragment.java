@@ -146,6 +146,31 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         super.onViewCreated(view, savedInstanceState);
         setBottomSheet(view);
 
+        assert getArguments() != null;
+        user = getArguments().getParcelable("user");
+        ad = getArguments().getParcelable("ad");
+
+        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        adsViewModel =   new ViewModelProvider(this).get(AdsViewModel.class);
+        favViewModel = FavViewModel.getInstance();
+        chatViewModel = ViewModelProviders.of(this).get(ChatViewModel.class);
+        userAddressViewModel = ViewModelProviders.of(this).get(UserAddressViewModel.class);
+
+        binding.buttonCallAdvertiserFragment.setOnClickListener(this);
+
+        binding.shimmerAdvertiser.startShimmer();
+        setAdDataToView();
+        debugViewModel = ViewModelProviders.of(getActivity()).get(DebugViewModel.class);
+
+        if(user.getUId().equals(ad.getAuthorId())){
+            binding.llContactAdvertiserFragment.setVisibility(View.GONE);
+        }
+
+        updateViews();
+        setToSlider();
+        setMenuTapLayoutListener();
+        getSimilarAds();
+
     }
 
     private void setBottomSheet(View view){
@@ -164,38 +189,12 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
 
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        user = getArguments().getParcelable("user");
-        ad = getArguments().getParcelable("ad");
-
-        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
-        adsViewModel =   new ViewModelProvider(this).get(AdsViewModel.class);
-        favViewModel = FavViewModel.getInstance();
-        chatViewModel = ViewModelProviders.of(this).get(ChatViewModel.class);
-        userAddressViewModel = ViewModelProviders.of(this).get(UserAddressViewModel.class);
-
-        binding.buttonCallAdvertiserFragment.setOnClickListener(this);
-
-        binding.shimmerAdvertiser.startShimmer();
-       setAdDataToView();
-        debugViewModel = ViewModelProviders.of(getActivity()).get(DebugViewModel.class);
-
-        if(user.getUId().equals(ad.getAuthorId())){
-            binding.llContactAdvertiserFragment.setVisibility(View.GONE);
-        }
-
-        updateViews();
-        setToSlider();
-        setMenuTapLayoutListener();
-        getSimilarAds();
-    }
 
     private void closeShimmer(){
         binding.shimmerAdvertiser.setVisibility(View.GONE);
         binding.shimmerAdvertiser.stopShimmer();
     }
+    @SuppressLint("SetTextI18n")
     private void setAdDataToView(){
         binding.tvDateAdvertiserFragment.setText(handleTime(ad.getTimeStamp()));
         binding.tvAdDistanceAdvertiserFragment.setText(ad.getDistance()+"");

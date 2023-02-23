@@ -243,6 +243,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public void onLocationResult(LocationResult locationResult) {
            try {
                Location location = locationResult.getLastLocation();
+               assert location != null;
                LocationCustom locationCustom = new LocationCustom(location.getLatitude(),location.getLongitude());
                //save to database
                getUserAddress(locationCustom);
@@ -252,6 +253,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
        }
     };
 
+    @SuppressLint("NonConstantResourceId")
     private void navBarOnSelected(){
         binding.bottomNavView.setOnItemSelectedListener(item -> {
             try {
@@ -305,11 +307,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
        }catch (Exception e){
            app.reportError(e,this);
        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
     }
 
 
@@ -449,5 +446,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 
 }

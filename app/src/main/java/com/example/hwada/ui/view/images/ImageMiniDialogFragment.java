@@ -3,8 +3,10 @@ package com.example.hwada.ui.view.images;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
@@ -14,54 +16,53 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ProgressBar;
 
-import com.bumptech.glide.Priority;
-import com.bumptech.glide.request.RequestOptions;
-import com.example.hwada.R;
-import com.example.hwada.databinding.FragmentImageBinding;
-import com.example.hwada.util.GlideImageLoader;
-import com.example.hwada.util.ProgressDrawable;
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
+import com.example.hwada.databinding.FragmentImageMiniDialogBinding;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+
+import java.util.Objects;
 
 
 public class ImageMiniDialogFragment extends DialogFragment implements View.OnClickListener  {
 
-    FragmentImageBinding binding ;
+    FragmentImageMiniDialogBinding binding ;
     String imagePath;
     private static final String TAG = "ImageFragment";
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        binding = FragmentImageBinding.inflate(inflater, container, false);
+        binding = FragmentImageMiniDialogBinding.inflate(inflater, container, false);
 
         return binding.getRoot();
     }
 
 
-
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         setCancelable(true);
-        getDialog().setCanceledOnTouchOutside(true);
+        Objects.requireNonNull(getDialog()).setCanceledOnTouchOutside(true);
+        assert getArguments() != null;
         imagePath = getArguments().getString("image");
-        /*Picasso.get()
-                .load(imagePath)
-                .placeholder(new ProgressDrawable(getContext()))
-                .into(binding.userImageFragment);
+        Glide.with(getActivity()).load(imagePath).listener(new RequestListener<Drawable>() {
+            @Override
+            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                return false;
+            }
 
-        */
-
-        RequestOptions options = new RequestOptions()
-                .priority(Priority.HIGH);
-
-        new GlideImageLoader(binding.userImageFragment,new ProgressBar(getContext())).load(imagePath,options);
+            @Override
+            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                binding.progressBarImageMiniDialogFragment.setVisibility(View.GONE);
+                return false;
+            }
+        }).into(binding.userImageMiniDialogFragment);
     }
-
 
     @Override
     public void onStart() {
@@ -74,7 +75,7 @@ public class ImageMiniDialogFragment extends DialogFragment implements View.OnCl
     }
 
     @Override
-    public void onCancel(DialogInterface dialog) {
+    public void onCancel(@NonNull DialogInterface dialog) {
         super.onCancel(dialog);
         dismiss();
     }

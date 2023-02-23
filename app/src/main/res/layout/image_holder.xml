@@ -9,9 +9,23 @@
     android:elevation="5dp"
     android:layout_margin="5dp"
     app:cardCornerRadius="10dp">
-    <ImageView
-        android:id="@+id/ad_image_holder"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:scaleType="fitCenter" />
+  <RelativeLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      >
+      <ImageView
+          android:id="@+id/ad_image_holder"
+          android:layout_width="100dp"
+          android:layout_height="100dp"
+          android:layout_centerInParent="true"
+          android:scaleType="fitCenter" />
+
+      <ProgressBar
+          android:id="@+id/progress_bar_image_holder"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_centerInParent="true"/>
+
+
+  </RelativeLayout>
 </androidx.cardview.widget.CardView>

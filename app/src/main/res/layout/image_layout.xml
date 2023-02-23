@@ -6,15 +6,28 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.github.chrisbanes.photoview.PhotoView
-        android:id="@+id/im_image_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:adjustViewBounds="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+   <RelativeLayout
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"
+       app:layout_constraintBottom_toBottomOf="parent"
+       app:layout_constraintEnd_toEndOf="parent"
+       app:layout_constraintStart_toStartOf="parent"
+       app:layout_constraintTop_toTopOf="parent">
+
+       <com.github.chrisbanes.photoview.PhotoView
+           android:id="@+id/im_image_layout"
+           android:layout_width="match_parent"
+           android:layout_height="match_parent"
+           android:adjustViewBounds="true"
+           android:layout_centerInParent="true" />
+
+       <ProgressBar
+           android:id="@+id/progress_bar_image_layout"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_centerInParent="true"/>
+
+   </RelativeLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,12 +4,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
 
     <ImageView
         android:id="@+id/image_view_image_slider_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="fitCenter"
+        android:layout_centerInParent="true"
         android:adjustViewBounds="true" />
+    <ProgressBar
+        android:id="@+id/progress_bar_image_slider_layout"
+        android:layout_width="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_height="wrap_content"/>
 
+
+</RelativeLayout>
 </LinearLayout>

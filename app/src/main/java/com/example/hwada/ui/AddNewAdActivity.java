@@ -89,8 +89,6 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
 
     }
 
-
-
     private void getDataFromIntent(){
         Intent intent = getIntent();
         mode =  intent.getStringExtra(getString(R.string.modeVal));
@@ -152,6 +150,7 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
             int toPosition = target.getAdapterPosition();
             Collections.swap(ad.getImagesUri(),fromPosition,toPosition);
             recyclerView.getAdapter().notifyItemMoved(fromPosition,toPosition);
+            Log.d(TAG, "onMove: "+ad.getImagesUri());
             return true;
         }
         @Override

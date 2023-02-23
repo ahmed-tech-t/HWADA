@@ -6,12 +6,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.hwada.Model.Chat;
 import com.example.hwada.R;
+import com.example.hwada.databinding.ImageHolderBinding;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -21,16 +24,28 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.ImagesView
     private List<String> list = new ArrayList();
     OnItemListener pOnItemListener;
 
+    ImageHolderBinding binding ;
     String TAG ="ImagesAdapter";
     @NonNull
     @Override
     public ImagesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ImagesViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.image_holder, parent, false), pOnItemListener);
+        binding = ImageHolderBinding.inflate(LayoutInflater.from(parent.getContext()),parent,false);
+        return  new ImagesViewHolder(binding.getRoot(),pOnItemListener);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ImagesViewHolder holder, int position) {
-        Picasso.get().load(list.get(position)).into(holder.imageView);
+        Picasso.get().load(list.get(position)).into(holder.imageView, new Callback() {
+            @Override
+            public void onSuccess() {
+                holder.progressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onError(Exception e) {
+
+            }
+        });
     }
 
     @Override
@@ -48,9 +63,11 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.ImagesView
 
         OnItemListener onItemListener;
         ImageView imageView;
+        ProgressBar progressBar ;
         public ImagesViewHolder(@NonNull View v, OnItemListener onItemListener) {
             super(v);
-            imageView =v.findViewById(R.id.ad_image_holder);
+            imageView = binding.adImageHolder;
+            progressBar = binding.progressBarImageHolder;
             this.onItemListener = onItemListener;
             v.setOnClickListener(this);
         }
