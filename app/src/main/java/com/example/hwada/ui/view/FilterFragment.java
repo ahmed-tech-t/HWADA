@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.CompoundButton;
 
+import com.example.hwada.Model.FilterModel;
 import com.example.hwada.R;
 import com.example.hwada.databinding.FragmentFilterBinding;
 import com.example.hwada.viewmodel.FilterViewModel;
@@ -27,7 +28,8 @@ public class FilterFragment extends DialogFragment implements View.OnClickListen
 
 
     FragmentFilterBinding binding ;
-    String filter ;
+
+    FilterModel filter ;
     FilterViewModel filterViewModel ;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -35,8 +37,9 @@ public class FilterFragment extends DialogFragment implements View.OnClickListen
         // Inflate the layout for this fragment
         binding = FragmentFilterBinding.inflate(inflater,container,false);
         binding.buApplyFilterFragment.setOnClickListener(this);
-        filter = getString(R.string.updateDateVal);
+        filter = new FilterModel(getString(R.string.updateDateVal));
         setRadioButtonListener();
+        setCheckBosListener();
         return binding.getRoot();
 
     }
@@ -70,7 +73,7 @@ public class FilterFragment extends DialogFragment implements View.OnClickListen
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
-                    filter = getString(R.string.ratingVal);
+                    filter.setSort(getString(R.string.ratingVal));
                    if(binding.rbUpdateDateFilterFragment.isChecked()) binding.rbUpdateDateFilterFragment.setChecked(false);
                    else if(binding.rbTheClosestFilterFragment.isChecked()) binding.rbTheClosestFilterFragment.setChecked(false);
                    else if(binding.rbTheClosestFilterFragment.isChecked()) binding.rbTheCheapestFilterFragment.setChecked(false);
@@ -83,7 +86,7 @@ public class FilterFragment extends DialogFragment implements View.OnClickListen
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked) {
-                    filter = getString(R.string.theClosestVal);
+                    filter.setSort(getString(R.string.theClosestVal));
                     if(binding.rbRatingFilterFragment.isChecked()) binding.rbRatingFilterFragment.setChecked(false);
                     else if(binding.rbUpdateDateFilterFragment.isChecked()) binding.rbUpdateDateFilterFragment.setChecked(false);
                     else if(binding.rbTheClosestFilterFragment.isChecked()) binding.rbTheCheapestFilterFragment.setChecked(false);
@@ -96,7 +99,7 @@ public class FilterFragment extends DialogFragment implements View.OnClickListen
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked) {
-                    filter = getString(R.string.updateDateVal);
+                    filter.setSort(getString(R.string.updateDateVal));
                     if(binding.rbRatingFilterFragment.isChecked()) binding.rbRatingFilterFragment.setChecked(false);
                     else if(binding.rbTheClosestFilterFragment.isChecked())binding.rbTheClosestFilterFragment.setChecked(false);
                     else if(binding.rbTheClosestFilterFragment.isChecked()) binding.rbTheCheapestFilterFragment.setChecked(false);
@@ -108,7 +111,7 @@ public class FilterFragment extends DialogFragment implements View.OnClickListen
         binding.rbTheCheapestFilterFragment.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                filter = getString(R.string.theCheapestVal);
+                filter.setSort(getString(R.string.theCheapestVal));
                 if(binding.rbRatingFilterFragment.isChecked()) binding.rbRatingFilterFragment.setChecked(false);
                 else if(binding.rbUpdateDateFilterFragment.isChecked()) binding.rbUpdateDateFilterFragment.setChecked(false);
                 else if(binding.rbTheClosestFilterFragment.isChecked())binding.rbTheClosestFilterFragment.setChecked(false);
@@ -119,7 +122,7 @@ public class FilterFragment extends DialogFragment implements View.OnClickListen
         binding.rbTheExpensiveFilterFragment.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                filter = getString(R.string.theExpensiveVal);
+                filter.setSort(getString(R.string.theExpensiveVal));
                 if(binding.rbRatingFilterFragment.isChecked()) binding.rbRatingFilterFragment.setChecked(false);
                 else if(binding.rbUpdateDateFilterFragment.isChecked()) binding.rbUpdateDateFilterFragment.setChecked(false);
                 else if(binding.rbTheClosestFilterFragment.isChecked())binding.rbTheClosestFilterFragment.setChecked(false);
@@ -127,7 +130,13 @@ public class FilterFragment extends DialogFragment implements View.OnClickListen
             }
         });
     }
-
-
+    public void setCheckBosListener(){
+        binding.cbAdStatusFilterFragment.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                filter.setOpen(isChecked);
+            }
+        });
+    }
 
 }

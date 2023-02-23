@@ -426,7 +426,6 @@ public class AdsRepository {
         });
     }
 
-
     /**
      * UPDATE AD RATING
      **/

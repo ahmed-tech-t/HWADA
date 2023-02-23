@@ -5,6 +5,12 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class WorkingTime implements Parcelable {
 
 
@@ -18,6 +24,24 @@ public class WorkingTime implements Parcelable {
     protected WorkingTime(Parcel in) {
         from = in.readString();
         to = in.readString();
+    }
+
+    public boolean isWithinPeriod(String time) {
+        try {
+            // Convert from and to strings to Date objects
+            DateFormat df = new SimpleDateFormat("h:mm a", Locale.ENGLISH);
+            Date fromDate = df.parse(this.from);
+            Date toDate = df.parse(this.to);
+
+            // Get current time
+            Date currentTime = df.parse(time);
+
+            // Check if current time is within the period
+            return currentTime.after(fromDate) && currentTime.before(toDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public static final Creator<WorkingTime> CREATOR = new Creator<WorkingTime>() {

@@ -32,6 +32,18 @@
     <string name="theExpensiveVal" translatable="false">The Expensive</string>
 
     <string name="filterViewModel" translatable="false">filterViewModel</string>
+    <string name="statusVal" translatable="false">Status :</string>
+    <string name="openVal" translatable="false"> Open</string>
+
+    <string-array name="daysVal" translatable="false">
+        <item>saturday</item>
+        <item>sunday</item>
+        <item>monday</item>
+        <item>tuesday</item>
+        <item>wednesday</item>
+        <item>thursday</item>
+        <item>friday</item>
+    </string-array>
     <!--
 
 

@@ -81,6 +81,31 @@
             android:textColor="@color/black"
             android:textSize="15dp"/>
 
+     </LinearLayout>
+       <TextView
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:paddingTop="10dp"
+           android:paddingStart="10dp"
+           android:textColor="@color/black"
+           android:textSize="15dp"
+           android:text="@string/statusVal"/>
+         <LinearLayout
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:padding="10dp"
+             android:layout_marginStart="10dp"
+             android:orientation="vertical">
+
+             <CheckBox
+                 android:id="@+id/cb_ad_status_filter_fragment"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:text="@string/openVal"
+                 android:textColor="@color/black"
+                 android:textSize="15dp"/>
+
+         </LinearLayout>
 
          <Button
              android:id="@+id/bu_apply_filter_fragment"
@@ -101,9 +126,5 @@
              android:text="@string/apply"/>
 
      </LinearLayout>
-
-
-   </LinearLayout>
-
 
 </FrameLayout>
