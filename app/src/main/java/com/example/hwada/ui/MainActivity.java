@@ -44,6 +44,7 @@ import com.example.hwada.R;
 import com.example.hwada.application.App;
 import com.example.hwada.databinding.ActivityMainBinding;
 import com.example.hwada.ui.view.EditUserFragment;
+import com.example.hwada.ui.view.FilterFragment;
 import com.example.hwada.ui.view.category.CategoryFragment;
 import com.example.hwada.ui.view.main.AccountFragment;
 import com.example.hwada.ui.view.main.ChatFragment;
@@ -70,7 +71,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener  {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     ActivityMainBinding binding;
     Dialog locationDialog;
@@ -450,5 +451,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onBackPressed() {
         super.onBackPressed();
     }
+
 
 }

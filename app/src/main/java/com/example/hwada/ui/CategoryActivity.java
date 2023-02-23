@@ -159,4 +159,6 @@ public class CategoryActivity extends AppCompatActivity {
         super.onPause();
         app.setUserOffline(user.getUId(),this);
     }
+
+
 }

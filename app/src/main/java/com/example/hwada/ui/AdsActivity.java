@@ -23,12 +23,16 @@ import com.example.hwada.adapter.AdsAdapter;
 import com.example.hwada.application.App;
 import com.example.hwada.database.DbHandler;
 import com.example.hwada.databinding.ActivityAdsBinding;
+import com.example.hwada.ui.view.FilterFragment;
 import com.example.hwada.ui.view.ad.AdvertiserFragment;
 import com.example.hwada.viewmodel.AdsViewModel;
 import com.example.hwada.viewmodel.FavViewModel;
+import com.example.hwada.viewmodel.FilterViewModel;
 import com.example.hwada.viewmodel.UserViewModel;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.stream.Collectors;
 
 public class AdsActivity extends AppCompatActivity implements View.OnClickListener , AdsAdapter.OnItemListener , SwipeRefreshLayout.OnRefreshListener {
 
@@ -39,6 +43,7 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
     FavViewModel favViewModel ;
     UserViewModel userViewModel ;
     AdsViewModel adsViewModel;
+    FilterViewModel filterViewModel ;
 
     User user;
     String category;
@@ -64,7 +69,7 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
 
         setContentView(view);
         Intent intent = getIntent();
-        user = intent.getParcelableExtra("user");
+        user = intent.getParcelableExtra(getString(R.string.userVal));
 
         app = (App) getApplication();
 
@@ -72,12 +77,15 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
 
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
         adsViewModel =   new ViewModelProvider(this).get(AdsViewModel.class);
+        filterViewModel = new ViewModelProvider(this).get(FilterViewModel.class);
+
         favViewModel = FavViewModel.getInstance() ;
 
-        category = intent.getStringExtra("category");
-        subCategory = intent.getStringExtra("subCategory");
-        subSubCategory = intent.getStringExtra("subSubCategory");
+        category = intent.getStringExtra(getString(R.string.categoryVal));
+        subCategory = intent.getStringExtra(getString(R.string.subCategoryVal));
+        subSubCategory = intent.getStringExtra(getString(R.string.subSubCategoryVal));
 
+        binding.imFilter.setOnClickListener(this);
         binding.swipeRefreshAdsActivity.setOnRefreshListener(this);
 
         advertiserFragment = new AdvertiserFragment();
@@ -85,6 +93,8 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
 
         setUserFavListener();
         getAllAds();
+
+        getFilter();
 
     }
 
@@ -115,7 +125,9 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
 
     @Override
     public void onClick(View v) {
-
+        if(v.getId() == binding.imFilter.getId()){
+            callFilterDialog();
+        }
     }
 
     @Override
@@ -218,6 +230,57 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
     @Override
     public void onRefresh() {
         getAllAds();
+    }
 
+    public void callFilterDialog() {
+        FilterFragment fragment = new FilterFragment();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragment.show(fragmentManager, fragment.getTag());
+    }
+
+    public void getFilter(){
+        filterViewModel.getFilter().observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                if(s.equals(getString(R.string.ratingVal))){
+                    adsList = new ArrayList<>(sortAdsByRating());
+                }else if(s.equals(getString(R.string.theClosestVal))){
+                    adsList = new ArrayList<>(sortAdsByTheClosest());
+                }else if(s.equals(getString(R.string.updateDateVal))){
+                    adsList = new ArrayList<>(sortAdsByDate());
+                }else if(s.equals(getString(R.string.theCheapestVal))){
+                    adsList = new ArrayList<>(sortAdsByTheCheapest());
+                }else if(s.equals(getString(R.string.theExpensiveVal))){
+                    adsList = new ArrayList<>(sortAdsByTheExpensive());
+                }
+                setRecycler();
+            }
+
+
+        });
+    }
+
+    private ArrayList<Ad> sortAdsByTheCheapest() {
+        ArrayList <Ad> temp = new ArrayList<>(adapter.getList());
+        return temp.stream().sorted(Comparator.comparing(Ad::getPrice)).collect(Collectors.toCollection(ArrayList::new));
+    }
+    private ArrayList<Ad> sortAdsByTheExpensive() {
+        ArrayList <Ad> temp = new ArrayList<>(adapter.getList());
+        return temp.stream().sorted(Comparator.comparing(Ad::getPrice).reversed()).collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    private ArrayList<Ad> sortAdsByDate() {
+        ArrayList <Ad> temp = new ArrayList<>(adapter.getList());
+        return temp.stream().sorted(Comparator.comparing(Ad::getTimeStamp).reversed()).collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    private ArrayList<Ad> sortAdsByTheClosest() {
+        ArrayList <Ad> temp = new ArrayList<>(adapter.getList());
+        return temp.stream().sorted(Comparator.comparing(Ad::getDistance)).collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    private ArrayList<Ad> sortAdsByRating() {
+        ArrayList <Ad> temp = new ArrayList<>(adapter.getList());
+        return temp.stream().sorted(Comparator.comparing(Ad::getRating).reversed()).collect(Collectors.toCollection(ArrayList::new));
     }
 }

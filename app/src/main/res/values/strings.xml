@@ -25,6 +25,13 @@
     <string name="accountVal" translatable="false">account</string>
     <string name="targetVal" translatable="false">target</string>
 
+    <string name="theClosestVal" translatable="false">The closest</string>
+    <string name="ratingVal" translatable="false">Rating</string>
+    <string name="updateDateVal" translatable="false">Date</string>
+    <string name ="theCheapestVal" translatable="false">The cheapest</string>
+    <string name="theExpensiveVal" translatable="false">The Expensive</string>
+
+    <string name="filterViewModel" translatable="false">filterViewModel</string>
     <!--
 
 
@@ -185,5 +192,15 @@
     <string name="loadingImagesInstruction">Loading your Images ...</string>
     <string name="failedToLoadImages">Failed to load Images .. Please check your connection and try again</string>
     <string name="updateAdMessage">your ads list will be updated automatically once update is complete</string>
+
+    <string name="sortBy">Sort by :</string>
+
+
+    <string name="theClosest">The closest</string>
+    <string name="rating">Rating</string>
+    <string name="updateDate">Date</string>
+    <string name="apply">Apply</string>
+    <string name ="theCheapest">The cheapest</string>
+    <string name="theExpensive">The Expensive</string>
 
 </resources>

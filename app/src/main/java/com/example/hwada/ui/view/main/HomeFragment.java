@@ -1,23 +1,17 @@
 package com.example.hwada.ui.view.main;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Context;
 import android.content.res.Resources;
-import android.location.Address;
-import android.location.Geocoder;
-import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Handler;
@@ -25,14 +19,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.hwada.Model.Ad;
-import com.example.hwada.Model.DebugModel;
-import com.example.hwada.Model.LocationCustom;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
 import com.example.hwada.adapter.AdsAdapter;
@@ -41,39 +31,25 @@ import com.example.hwada.database.DbHandler;
 import com.example.hwada.databinding.FragmentHomeBinding;
 import com.example.hwada.ui.MainActivity;
 import com.example.hwada.ui.view.FilterFragment;
-import com.example.hwada.ui.view.images.ImageMiniDialogFragment;
 import com.example.hwada.ui.view.map.MapsFragment;
 import com.example.hwada.ui.view.ad.AdvertiserFragment;
 import com.example.hwada.viewmodel.AdsViewModel;
-import com.example.hwada.viewmodel.DebugViewModel;
 import com.example.hwada.viewmodel.FavViewModel;
+import com.example.hwada.viewmodel.FilterViewModel;
 import com.example.hwada.viewmodel.UserAddressViewModel;
 import com.example.hwada.viewmodel.UserViewModel;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.Comparator;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 public class HomeFragment extends Fragment implements View.OnClickListener , AdsAdapter.OnItemListener , SwipeRefreshLayout.OnRefreshListener {
     AdsViewModel adsViewModel;
     FavViewModel favViewModel ;
     UserAddressViewModel userAddressViewModel ;
+    FilterViewModel filterViewModel;
     AdsAdapter adapter;
 
     UserViewModel userViewModel;
@@ -212,30 +188,25 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        //get user from Main activity
-      try {
-          user = getArguments().getParcelable("user");
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-          userAddressViewModel = ViewModelProviders.of(this).get(UserAddressViewModel.class);
+        user = getArguments().getParcelable(getString(R.string.userVal));
+        userAddressViewModel = new ViewModelProvider(this).get(UserAddressViewModel.class);
+        filterViewModel = new ViewModelProvider(this).get(FilterViewModel.class);
+        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        adsViewModel =  new ViewModelProvider(this).get(AdsViewModel.class);
 
-          userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
-          adsViewModel =  new ViewModelProvider(this).get(AdsViewModel.class);
-          favViewModel = FavViewModel.getInstance() ;
+        favViewModel = FavViewModel.getInstance() ;
 
-          app =(App) getContext().getApplicationContext();
-          binding.swipeRefreshHomeFragment.setOnRefreshListener(this);
+        app =(App) getContext().getApplicationContext();
+        binding.swipeRefreshHomeFragment.setOnRefreshListener(this);
 
-          getAllAds();
-          setUserListener();
-          userFavAdsListener();
-      }catch (Exception e){
-          app.reportError(e,getContext());
-      }
+        getAllAds();
+        setUserListener();
+        userFavAdsListener();
+        getFilter();
     }
-
-
 
     @Override
     public void getItemPosition(int position) {
@@ -287,7 +258,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
 
     public void callBottomSheet(BottomSheetDialogFragment fragment) {
         Bundle bundle = new Bundle();
-        bundle.putParcelable("user", user);
+        bundle.putParcelable(getString(R.string.userVal), user);
         fragment.setArguments(bundle);
         FragmentManager fragmentManager = getChildFragmentManager();
         fragment.show(fragmentManager, fragment.getTag());
@@ -307,8 +278,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
     private void callAdvertiserFragment(int pos){
         if(!advertiserFragment.isAdded()){
             Bundle bundle = new Bundle();
-            bundle.putParcelable("user", user);
-            bundle.putParcelable("ad",adsList.get(pos));
+            bundle.putParcelable(getString(R.string.userVal), user);
+            bundle.putParcelable(getString(R.string.adVal),adsList.get(pos));
             advertiserFragment.setArguments(bundle);
             advertiserFragment.show(getChildFragmentManager(),advertiserFragment.getTag());
         }
@@ -331,4 +302,52 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
     public void onRefresh() {
         getAllAds();
     }
+
+
+    public void getFilter(){
+        filterViewModel.getFilter().observe(getActivity(), new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                if(s.equals(getString(R.string.ratingVal))){
+                   adsList = new ArrayList<>(sortAdsByRating());
+                }else if(s.equals(getString(R.string.theClosestVal))){
+                    adsList = new ArrayList<>(sortAdsByTheClosest());
+                }else if(s.equals(getString(R.string.updateDateVal))){
+                    adsList = new ArrayList<>(sortAdsByDate());
+                }else if(s.equals(getString(R.string.theCheapestVal))){
+                    adsList = new ArrayList<>(sortAdsByTheCheapest());
+                }else if(s.equals(getString(R.string.theExpensiveVal))){
+                    adsList = new ArrayList<>(sortAdsByTheExpensive());
+                }
+                setRecycler();
+            }
+
+
+        });
+    }
+
+    private ArrayList<Ad> sortAdsByTheCheapest() {
+        ArrayList <Ad> temp = new ArrayList<>(adapter.getList());
+        return temp.stream().sorted(Comparator.comparing(Ad::getPrice)).collect(Collectors.toCollection(ArrayList::new));
+    }
+    private ArrayList<Ad> sortAdsByTheExpensive() {
+        ArrayList <Ad> temp = new ArrayList<>(adapter.getList());
+        return temp.stream().sorted(Comparator.comparing(Ad::getPrice).reversed()).collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    private ArrayList<Ad> sortAdsByDate() {
+        ArrayList <Ad> temp = new ArrayList<>(adapter.getList());
+       return temp.stream().sorted(Comparator.comparing(Ad::getTimeStamp).reversed()).collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    private ArrayList<Ad> sortAdsByTheClosest() {
+       ArrayList <Ad> temp = new ArrayList<>(adapter.getList());
+       return temp.stream().sorted(Comparator.comparing(Ad::getDistance)).collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    private ArrayList<Ad> sortAdsByRating() {
+        ArrayList <Ad> temp = new ArrayList<>(adapter.getList());
+        return temp.stream().sorted(Comparator.comparing(Ad::getRating).reversed()).collect(Collectors.toCollection(ArrayList::new));
+    }
+
 }

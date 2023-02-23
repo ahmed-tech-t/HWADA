@@ -197,6 +197,11 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
         return dateString.split(",")[0];
     }
 
+    public ArrayList<Ad> getList(){
+        return list;
+    }
+
+
     public String getDistance(int pos){
         Location location1 = new Location("user");
         if(user.getLocation()!=null){
