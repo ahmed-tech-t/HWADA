@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -62,7 +63,48 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull HomeViewHolder holder, int position) {
 
-        //post image
+        //card view
+        setAdCardView(holder,position);
+
+        //main image
+        setAdMainImage(holder,position);
+
+        //fav image
+       setAdFavImage(holder,position);
+
+       //title
+        holder.title.setText(list.get(position).getTitle());
+
+        //description
+        holder.description.setText(list.get(position).getDescription());
+
+        //rating
+        holder.rating.setText(list.get(position).getRating()+"");
+
+        //distance
+        holder.distance.setText(list.get(position).getDistance()+"");
+
+        //date
+        holder.date.setText(handleTime(list.get(position).getTimeStamp()));
+
+        //price
+       setAdPrice(holder,position);
+    }
+
+    private void setAdCardView(HomeViewHolder holder, int position) {
+        Ad ad =list.get(position);
+        String[] days = mContext.getResources().getStringArray(R.array.daysVal);
+        if(!ad.isOpen(app.getTime(),days,app.getDayIndex())){
+            holder.adImage.setAlpha(0.4F);
+            holder.closed.setVisibility(View.VISIBLE);
+        }else{
+            holder.adImage.setAlpha(1F);
+            holder.closed.setVisibility(View.GONE);
+        }
+    }
+
+
+    private void setAdMainImage(HomeViewHolder holder , int position ){
         String url = list.get(position).getMainImage();
         Glide.with(mContext).load(url)
                 .listener(new RequestListener<Drawable>() {
@@ -77,34 +119,20 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
                         return false;
                     }
                 })
-                .into(holder.userImage);
-
-
-        //fav image
+                .into(holder.adImage);
+    }
+    private void setAdFavImage( HomeViewHolder holder , int position){
         if(adIsInFavList(list.get(position).getId())){
             holder.favImage.setImageResource(R.drawable.fav_checked_icon);
         }else holder.favImage.setImageResource(R.drawable.fav_uncheck_icon);
 
-        //title
-        holder.title.setText(list.get(position).getTitle());
-
-        //description
-
-        holder.description.setText(list.get(position).getDescription());
-
-        //rating
-        holder.rating.setText(list.get(position).getRating()+"");
-
-        holder.distance.setText(list.get(position).getDistance()+"");
-
-        holder.date.setText(handleTime(list.get(position).getTimeStamp()));
-
-        //price
+    }
+    @SuppressLint("SetTextI18n")
+    private void setAdPrice(HomeViewHolder holder , int position){
         DecimalFormat decimalFormat = new DecimalFormat("#");
         String formattedValue = decimalFormat.format(list.get(position).getPrice());
         holder.price.setText(mContext.getString(R.string.from) + "  " + formattedValue);
     }
-
     @Override
     public int getItemCount() {
         return list.size();
@@ -130,15 +158,17 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
 
 
     public class HomeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        ShapeableImageView userImage ;
+        ShapeableImageView adImage ;
         ImageView favImage ;
-        TextView title , description , date , distance , price , rating;
+        TextView title , description , date , distance , price , rating , closed;
         ProgressBar progressBar;
         OnItemListener onItemListener;
+        CardView cardView;
         public HomeViewHolder(@NonNull View v,OnItemListener onItemListener) {
             super(v);
+           cardView = binding.cardViewItemView ;
             favImage = binding.itemFav;
-            userImage = binding.itemUserImage;
+            adImage = binding.adMainImageItemView;
             title = binding.itemJopTitle;
             description = binding.itemDescription;
             date = binding.itemDate;
@@ -146,6 +176,7 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
             rating = binding.itemUserRating;
             distance = binding.itemUserDistance;
             progressBar = binding.progressBarItemView;
+            closed = binding.tvClosed;
             this.onItemListener = onItemListener;
             v.setOnClickListener(this);
             favImage.setOnClickListener(this);

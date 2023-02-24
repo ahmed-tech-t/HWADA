@@ -7,6 +7,7 @@
     android:layout_marginStart="7dp"
     android:layout_marginEnd="7dp"
     app:cardElevation="0dp"
+    android:id="@+id/card_view_item_view_grid_layout"
     app:cardCornerRadius="20dp"
     android:background="@color/white"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -30,17 +31,26 @@
                 android:src="@drawable/fav_uncheck_icon"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"/>
+
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/item_user_image_design_grid_layout"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
+                android:layout_centerInParent="true"
                 android:adjustViewBounds="true"
+                android:background="@color/white_blue"
                 android:scaleType="centerCrop"
                 app:shapeAppearanceOverlay="@style/RoundedSquare"
-                android:src="@drawable/img"
-                app:strokeColor="@null"
+                app:strokeColor="@null" />
+
+            <ProgressBar
+                android:id="@+id/progress_bar_item_view_grid_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                />
+                android:indeterminate="true"
+                android:indeterminateTint="@color/white"
+                android:indeterminateTintMode="src_atop"/>
 
         </RelativeLayout>
 

@@ -22,12 +22,33 @@
             android:padding="5dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/tv_closed_advertiser_fragment"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/closed"
+            android:padding="10dp"
+            android:visibility="gone"
+            android:elevation="1dp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:gravity="center"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/closed_background"/>
+
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="5dp"
+            android:layout_centerInParent="true"
             android:fillViewport="true" >
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -255,8 +276,8 @@
                     android:orientation="vertical"/>
             </LinearLayout>
 
-
         </androidx.core.widget.NestedScrollView>
+    </RelativeLayout>
 
 </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

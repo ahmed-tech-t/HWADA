@@ -218,4 +218,12 @@ public class App extends Application {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
+    public String getTime(){
+        DateFormat df = new SimpleDateFormat("h:mm a", Locale.ENGLISH);
+        return df.format(Calendar.getInstance().getTime());
+    }
+    public int getDayIndex(){
+        Calendar calendar = Calendar.getInstance();
+        return calendar.get(Calendar.DAY_OF_WEEK);
+    }
 }

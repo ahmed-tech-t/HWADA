@@ -1,7 +1,6 @@
 package com.example.hwada.Model;
 
 import android.location.Location;
-import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -10,8 +9,11 @@ import androidx.annotation.NonNull;
 import com.google.firebase.Timestamp;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Ad implements Parcelable {
 
@@ -308,6 +310,13 @@ public class Ad implements Parcelable {
 
         this.distance = Float.parseFloat(String.format(Locale.US, "%.2f", distanceInMeters));
     }
+
+    public boolean isOpen(String time , String []days , int dayIndex){
+        ArrayList<WorkingTime> day = this.getDaysSchedule().getDays().get(days[dayIndex]);
+        if(day==null) return false;
+        return day.stream().anyMatch(w -> w.isWithinPeriod(time));
+    }
+
     @Override
     public String toString() {
         return "Ad{" +

@@ -1,5 +1,6 @@
 package com.example.hwada.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.location.Location;
 import android.view.LayoutInflater;
@@ -33,7 +34,7 @@ import java.util.Date;
 import java.util.Locale;
 
 public class MyAdsAdapter extends RecyclerView.Adapter<MyAdsAdapter.MyAdsViewHolder> {
-    private ArrayList<Ad> list = new ArrayList();
+    private ArrayList<Ad> list;
     private User user ;
 
     ItemViewMyAdsBinding binding;
@@ -44,6 +45,7 @@ public class MyAdsAdapter extends RecyclerView.Adapter<MyAdsAdapter.MyAdsViewHol
     App app ;
     public MyAdsAdapter(Context context){
         this.mContext =context;
+        list = new ArrayList<>();
       app = (App) mContext.getApplicationContext();
     }
     @NonNull
@@ -53,6 +55,7 @@ public class MyAdsAdapter extends RecyclerView.Adapter<MyAdsAdapter.MyAdsViewHol
        return new MyAdsViewHolder(binding.getRoot(),pOnItemListener);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull MyAdsAdapter.MyAdsViewHolder holder, int position) {
 
@@ -67,10 +70,12 @@ public class MyAdsAdapter extends RecyclerView.Adapter<MyAdsAdapter.MyAdsViewHol
         holder.rating.setText(list.get(position).getRating()+"");
 
         holder.views.setText(list.get(position).getViews()+"");
+
         holder.date.setText(handleTime(list.get(position).getTimeStamp()));
+
+        //price
         DecimalFormat decimalFormat = new DecimalFormat("#");
         String formattedValue = decimalFormat.format(list.get(position).getPrice());
-
         holder.price.setText(mContext.getString(R.string.from) + "  " + formattedValue);
 
     }
@@ -80,6 +85,7 @@ public class MyAdsAdapter extends RecyclerView.Adapter<MyAdsAdapter.MyAdsViewHol
         return list.size();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void setList(User user, OnItemListener onItemListener) {
         this.user = user;
         this.list = user.getAds();

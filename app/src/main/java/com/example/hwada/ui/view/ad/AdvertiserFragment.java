@@ -19,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import androidx.fragment.app.FragmentManager;
@@ -95,7 +96,6 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
     ArrayList<Ad> adsList;
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
-    DebugViewModel debugViewModel ;
     AdvertiserFragment advertiserFragment;
 
     ChatViewModel chatViewModel ;
@@ -105,6 +105,7 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
     User user;
     Ad ad;
     App app;
+    boolean adIsOpen;
     private static final String TAG = "AdvertiserFragment";
 
     FragmentAdvertiserBinding binding;
@@ -116,9 +117,10 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
     private Runnable debounceRunnable;
     private Handler debounceHandler;
 
+
     @SuppressLint("MissingInflatedId")
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentAdvertiserBinding.inflate(inflater, container, false);
@@ -147,29 +149,48 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         setBottomSheet(view);
 
         assert getArguments() != null;
-        user = getArguments().getParcelable("user");
-        ad = getArguments().getParcelable("ad");
+        user = getArguments().getParcelable(getString(R.string.userVal));
+        ad = getArguments().getParcelable(getString(R.string.adVal));
 
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
         adsViewModel =   new ViewModelProvider(this).get(AdsViewModel.class);
         favViewModel = FavViewModel.getInstance();
-        chatViewModel = ViewModelProviders.of(this).get(ChatViewModel.class);
-        userAddressViewModel = ViewModelProviders.of(this).get(UserAddressViewModel.class);
+        chatViewModel = new ViewModelProvider(this).get(ChatViewModel.class);
+        userAddressViewModel = new ViewModelProvider(this).get(UserAddressViewModel.class);
 
         binding.buttonCallAdvertiserFragment.setOnClickListener(this);
 
         binding.shimmerAdvertiser.startShimmer();
         setAdDataToView();
-        debugViewModel = ViewModelProviders.of(getActivity()).get(DebugViewModel.class);
 
         if(user.getUId().equals(ad.getAuthorId())){
             binding.llContactAdvertiserFragment.setVisibility(View.GONE);
         }
 
+        setViewIfAdIsOpen();
         updateViews();
         setToSlider();
         setMenuTapLayoutListener();
         getSimilarAds();
+
+    }
+    @SuppressLint("UseCompatLoadingForColorStateLists")
+    private void setViewIfAdIsOpen(){
+        String[] days = getResources().getStringArray(R.array.daysVal);
+        adIsOpen = ad.isOpen(app.getTime(),days,app.getDayIndex());
+        if(!adIsOpen){
+            binding.tvClosedAdvertiserFragment.setVisibility(View.VISIBLE);
+            binding.buttonCallAdvertiserFragment.setEnabled(false);
+            binding.buttonChatAdvertiserFragment.setEnabled(false);
+            binding.buttonChatAdvertiserFragment.setBackgroundTintList(getActivity().getResources().getColorStateList(R.color.white_gray));
+            binding.buttonCallAdvertiserFragment.setBackgroundTintList(getActivity().getResources().getColorStateList(R.color.white_gray));
+        }else {
+            binding.tvClosedAdvertiserFragment.setVisibility(View.GONE);
+            binding.buttonCallAdvertiserFragment.setEnabled(true);
+            binding.buttonChatAdvertiserFragment.setEnabled(true);
+            binding.buttonChatAdvertiserFragment.setBackgroundTintList(getActivity().getResources().getColorStateList(R.color.background));
+            binding.buttonCallAdvertiserFragment.setBackgroundTintList(getActivity().getResources().getColorStateList(R.color.background));
+        }
 
     }
 
@@ -206,13 +227,10 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
     }
 
     private void setUserFavAdListener(){
-        favViewModel.userFavAdsListener(user.getUId()).observe(getActivity(), new Observer<ArrayList<Ad>>() {
-            @Override
-            public void onChanged(ArrayList<Ad> ads) {
-                user.setFavAds(ads);
-                if(advertiserFragment.isAdded()){
-                    setRecycler();
-                }
+        favViewModel.userFavAdsListener(user.getUId()).observe(getActivity(), ads -> {
+            user.setFavAds(ads);
+            if(advertiserFragment.isAdded()){
+                setRecycler();
             }
         });
     }
@@ -254,8 +272,10 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         adsViewModel.getAllAds(user,category,subCategory).observe(this, ads -> {
             adsList = ads;
             adsList.removeIf(o -> o.getId().equals(ad.getId()) );
-            setRecycler();
-            setUserFavAdListener();
+            if(getActivity()!=null){
+                setRecycler();
+                setUserFavAdListener();
+            }
         });
     }
 
@@ -263,8 +283,10 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         adsViewModel.getAllAds(user,category,subCategory,subSubCategory).observe(this, ads -> {
             adsList = ads;
             adsList.removeIf(o -> o.getId().equals(ad.getId()) );
-            setRecycler();
-            setUserFavAdListener();
+            if(getActivity()!=null){
+                setRecycler();
+                setUserFavAdListener();
+            }
         });
     }
 

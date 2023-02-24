@@ -1,6 +1,8 @@
 package com.example.hwada.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,15 +12,22 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
 import com.example.hwada.application.App;
+import com.example.hwada.databinding.ItemViewGridLayoutBinding;
 import com.example.hwada.util.GlideImageLoader;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.Timestamp;
@@ -32,87 +41,123 @@ import java.util.Date;
 import java.util.Locale;
 
 public class AdsGridAdapter extends RecyclerView.Adapter<AdsGridAdapter.HomeViewHolder> {
-    private ArrayList<Ad> list = new ArrayList();
+    private ArrayList<Ad> list ;
     private User user ;
     OnItemListener pOnItemListener;
     Context mContext;
     private static final String TAG = "AdsGridAdapter";
     App app;
+    ItemViewGridLayoutBinding binding ;
     public AdsGridAdapter (Context context){
         this.mContext = context;
+        list =new ArrayList<>();
         if(mContext!=null) app = (App) mContext.getApplicationContext();
     }
     @NonNull
     @Override
     public HomeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new HomeViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_view_grid_layout, parent, false),pOnItemListener);
+        binding = ItemViewGridLayoutBinding.inflate(LayoutInflater.from(parent.getContext()),parent,false);
+        return new HomeViewHolder(binding.getRoot(),pOnItemListener);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull HomeViewHolder holder, int position) {
 
         if (list!= null) {
 
-        String url = list.get(position).getMainImage();
-        RequestOptions options = new RequestOptions()
-                .priority(Priority.HIGH);
-        new GlideImageLoader(holder.userImage, new ProgressBar(mContext)).load(url, options);
+            //card view
+            setAdCardView(holder,position);
+
+                //main image
+            setAdMainImage(holder,position);
+
+                //fav image
+            setAdFavImage(holder,position);
 
 
-        holder.title.setText(list.get(position).getTitle());
-
-        //fav image
-        if (adIsInFavList(list.get(position).getId())) {
-            holder.favImage.setImageResource(R.drawable.fav_checked_icon);
-        } else holder.favImage.setImageResource(R.drawable.fav_uncheck_icon);
+            holder.title.setText(list.get(position).getTitle());
 
 
-        holder.rating.setText(list.get(position).getRating() + "");
+            holder.rating.setText(list.get(position).getRating() + "");
 
-        list.get(position).setDistance(Float.valueOf(getDistance(position)));
-        holder.distance.setText(list.get(position).getDistance() + "");
-        holder.date.setText(handleTime(list.get(position).getTimeStamp()));
-        DecimalFormat decimalFormat = new DecimalFormat("#");
-        String formattedValue = decimalFormat.format(list.get(position).getPrice());
+            holder.distance.setText(list.get(position).getDistance() + "");
+            holder.date.setText(handleTime(list.get(position).getTimeStamp()));
 
-        holder.price.setText(mContext.getString(R.string.from) + "  " + formattedValue);
-        if (user != null) {
-            //TODO list.get(position).getId();
-            String adId = String.valueOf(position);
-            if (adIsInFavList(adId)) {
-                holder.favImage.setImageResource(R.drawable.fav_checked_icon);
-            }
+            //price
+            setAdPrice(holder,position);
         }
     }
-    }
 
+    private void setAdCardView(HomeViewHolder holder, int position) {
+        Ad ad =list.get(position);
+        String[] days = mContext.getResources().getStringArray(R.array.daysVal);
+        if(!ad.isOpen(app.getTime(),days,app.getDayIndex())){
+            holder.adMainImage.setAlpha(0.4F);
+        }else{
+            holder.adMainImage.setAlpha(1F);
+        }
+    }
+    private void setAdMainImage(HomeViewHolder holder , int position ){
+        String url = list.get(position).getMainImage();
+        Glide.with(mContext).load(url)
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        holder.progressBar.setVisibility(View.GONE);
+                        return false;
+                    }
+                })
+                .into(holder.adMainImage);
+    }
+    private void setAdFavImage(HomeViewHolder holder , int position){
+        if(adIsInFavList(list.get(position).getId())){
+            holder.favImage.setImageResource(R.drawable.fav_checked_icon);
+        }else holder.favImage.setImageResource(R.drawable.fav_uncheck_icon);
+
+    }
+    @SuppressLint("SetTextI18n")
+    private void setAdPrice(HomeViewHolder holder , int position){
+        DecimalFormat decimalFormat = new DecimalFormat("#");
+        String formattedValue = decimalFormat.format(list.get(position).getPrice());
+        holder.price.setText(mContext.getString(R.string.from) + "  " + formattedValue);
+    }
     @Override
     public int getItemCount() {
         return list.size();
     }
 
-    public void setList(User user,ArrayList<Ad> list,OnItemListener onItemListener) {
+    @SuppressLint("NotifyDataSetChanged")
+    public void setList(User user, ArrayList<Ad> list, OnItemListener onItemListener) {
         this.user = user;
         this.list = list;
-        this.mContext =mContext ;
         this.pOnItemListener = onItemListener;
         notifyDataSetChanged();
     }
 
     public class HomeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        ShapeableImageView userImage ;
+        ShapeableImageView adMainImage ;
         ImageView favImage ;
         TextView title  , date , distance , price , rating;
         OnItemListener onItemListener;
+        CardView cardView;
+        ProgressBar progressBar;
         public HomeViewHolder(@NonNull View v,OnItemListener onItemListener) {
             super(v);
-            favImage = v.findViewById(R.id.item_fav_grid_layout);
-            userImage = v.findViewById(R.id.item_user_image_design_grid_layout);
-            title = v.findViewById(R.id.item_title_design_grid_layout);
-            date = v.findViewById(R.id.item_date_grid_layout);
-            price =v.findViewById(R.id.item_price_grid_layout);
-            rating = v.findViewById(R.id.item_user_rating_grid_layout);
-            distance = v.findViewById(R.id.item_user_distance_grid_layout);
+            cardView = binding.cardViewItemViewGridLayout;
+            favImage =binding.itemFavGridLayout;
+            adMainImage = binding.itemUserImageDesignGridLayout;
+            title = binding.itemTitleDesignGridLayout;
+            date = binding.itemDateGridLayout;
+            price = binding.itemPriceGridLayout;
+            rating = binding.itemUserRatingGridLayout;
+            distance = binding.itemUserDistanceGridLayout;
+            progressBar = binding.progressBarItemViewGridLayout;
             this.onItemListener = onItemListener;
             v.setOnClickListener(this);
             favImage.setOnClickListener(this);
@@ -121,9 +166,9 @@ public class AdsGridAdapter extends RecyclerView.Adapter<AdsGridAdapter.HomeView
         @Override
         public void onClick(View v) {
             if(v.getId()==favImage.getId()){
-                onItemListener.getFavItemPosition(getAdapterPosition(), favImage);
+                onItemListener.getFavItemPosition(getBindingAdapterPosition(), favImage);
             }
-            else onItemListener.getItemPosition(getAdapterPosition());
+            else onItemListener.getItemPosition(getBindingAdapterPosition());
         }
     }
 
@@ -162,19 +207,7 @@ public class AdsGridAdapter extends RecyclerView.Adapter<AdsGridAdapter.HomeView
         return dateString.split(",")[0];
     }
 
-    public String getDistance(int pos){
-        Location location1 = new Location("user");
-        location1.setLatitude(user.getLocation().getLatitude());
-        location1.setLongitude(user.getLocation().getLongitude());
 
-        Location location2 = new Location("ad");
-        location2.setLatitude(list.get(pos).getAuthorLocation().getLatitude());
-        location2.setLongitude(list.get(pos).getAuthorLocation().getLongitude());
-
-        float distanceInMeters = location1.distanceTo(location2)/1000;
-        return String.format(Locale.US, "%.2f", distanceInMeters);
-
-    }
     public void removeOneItem(int position){
         list.remove(position);
         notifyItemRemoved(position);

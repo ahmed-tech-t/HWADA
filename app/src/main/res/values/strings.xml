@@ -215,5 +215,6 @@
     <string name="apply">Apply</string>
     <string name ="theCheapest">The cheapest</string>
     <string name="theExpensive">The Expensive</string>
+    <string name="closed">Closed</string>
 
 </resources>

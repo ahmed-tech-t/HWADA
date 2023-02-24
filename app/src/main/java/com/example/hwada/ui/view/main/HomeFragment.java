@@ -326,7 +326,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
         if(filterModel!=null){
             FilterFunctions filterFunctions = new FilterFunctions(adsList,getContext());
             if(filterModel.isOpen()){
-                adsList = new ArrayList<>(filterFunctions.removeClosedAds());
+                String[] days = getResources().getStringArray(R.array.daysVal);
+                adsList = new ArrayList<>(filterFunctions.removeClosedAds(app.getTime(),days,app.getDayIndex()));
             }
             if(filterModel.getSort().equals(getString(R.string.ratingVal))){
                 adsList = new ArrayList<>(filterFunctions.sortAdsByRating());
