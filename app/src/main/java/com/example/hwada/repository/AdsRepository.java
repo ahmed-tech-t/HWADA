@@ -374,27 +374,24 @@ public class AdsRepository {
     private MutableLiveData<ArrayList<Ad>> getAllAds(User user,CollectionReference adColRef){
         MutableLiveData<ArrayList<Ad>> mutableLiveData =new MutableLiveData<>();
         adColRef
-                .orderBy("timeStamp", Query.Direction.DESCENDING)
+                .whereEqualTo("active",true)
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    ArrayList<Ad> ads = new ArrayList<>();
-                    QuerySnapshot adQuerySnapshot = task.getResult();
-                    for (QueryDocumentSnapshot adSnapshot : adQuerySnapshot) {
-                        Ad ad = adSnapshot.toObject(Ad.class);
-                        ad.setDistance_(user.getLocation());
-                        ads.add(ad);
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        ArrayList<Ad> ads = new ArrayList<>();
+                        QuerySnapshot adQuerySnapshot = task.getResult();
+                        for (QueryDocumentSnapshot adSnapshot : adQuerySnapshot) {
+                            Ad ad = adSnapshot.toObject(Ad.class);
+                            ad.setDistance_(user.getLocation());
+                            ads.add(ad);
+                        }
+                        mutableLiveData.setValue(ads);
+                    }else {
+                        Log.e(TAG, "onComplete: error loading ads " );
+                        mutableLiveData.setValue(new ArrayList<>());
+                        return;
                     }
-                    mutableLiveData.setValue(ads);
-                }else {
-                    Log.e(TAG, "onComplete: error loading ads " );
-                    mutableLiveData.setValue(new ArrayList<>());
-                    return;
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
+                }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 e.printStackTrace();
@@ -403,6 +400,30 @@ public class AdsRepository {
         return  mutableLiveData;
     }
     //**************************************
+
+
+    /**
+     * update ad status
+     * **/
+
+    public void updateAdStatus(Ad ad){
+        rootRef.runTransaction(new Transaction.Function<Object>() {
+            @Nullable
+            @Override
+            public Object apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+                DocumentReference adDocRef = getAdColRef(ad).document(ad.getId());
+                DocumentReference userAdDocRef = getUserAdColRef(ad.getAuthorId()).document(ad.getId());
+                DocumentReference adHomeDocRef = getAdColHomePageRef().document(ad.getId());
+
+                transaction.update(adDocRef, "active", ad.isActive());
+                transaction.update(userAdDocRef, "active", ad.isActive());
+                transaction.update(adHomeDocRef, "active", ad.isActive());
+
+                return null;
+            }
+        });
+
+    }
 
     /**
      * update views

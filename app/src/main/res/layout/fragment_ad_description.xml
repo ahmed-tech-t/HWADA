@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:id="@+id/linearLayout_ad_description_fragment"
     tools:context=".ui.view.ad.menu.AdDescriptionFragment">
         <TextView
         android:id="@+id/item_description_ad_description_fragment"

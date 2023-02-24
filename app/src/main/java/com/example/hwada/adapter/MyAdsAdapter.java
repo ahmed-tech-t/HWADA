@@ -2,6 +2,7 @@ package com.example.hwada.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,11 +12,17 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
@@ -50,34 +57,73 @@ public class MyAdsAdapter extends RecyclerView.Adapter<MyAdsAdapter.MyAdsViewHol
     }
     @NonNull
     @Override
-    public MyAdsAdapter.MyAdsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public MyAdsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         binding = ItemViewMyAdsBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
        return new MyAdsViewHolder(binding.getRoot(),pOnItemListener);
     }
 
     @SuppressLint("SetTextI18n")
     @Override
-    public void onBindViewHolder(@NonNull MyAdsAdapter.MyAdsViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull MyAdsViewHolder holder, int position) {
 
-        String url = list.get(position).getMainImage();
-        RequestOptions options = new RequestOptions()
-                .priority(Priority.HIGH);
-        new GlideImageLoader(holder.userImage,new ProgressBar(mContext)).load(url,options);
+        setAdMainImage(holder,position);
 
-
+        setAdCardView(holder,position);
         holder.title.setText(list.get(position).getTitle());
         holder.description.setText(list.get(position).getDescription());
         holder.rating.setText(list.get(position).getRating()+"");
-
         holder.views.setText(list.get(position).getViews()+"");
-
         holder.date.setText(handleTime(list.get(position).getTimeStamp()));
 
-        //price
+        setAdStatus(holder,position);
+       //price
+       setAdPrice(holder,position);
+
+    }
+
+    private void setAdStatus(MyAdsViewHolder holder, int position) {
+        Ad ad = list.get(position);
+        if(ad.isActive()){
+            holder.status.setText(mContext.getString(R.string.active));
+            holder.status.setBackgroundResource(R.drawable.activated_background_item);
+        }else {
+            holder.status.setText(mContext.getString(R.string.inactive));
+            holder.status.setBackgroundResource(R.drawable.closed_background_item);
+        }
+    }
+
+    private void setAdCardView(MyAdsViewHolder holder, int position) {
+        Ad ad = list.get(position);
+        if(!ad.isActive()){
+            holder.adImage.setAlpha(0.4F);
+        }else{
+            holder.adImage.setAlpha(1F);
+        }
+    }
+
+    private void setAdMainImage(MyAdsViewHolder holder , int position ){
+        String url = list.get(position).getMainImage();
+        Glide.with(mContext).load(url)
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        holder.progressBar.setVisibility(View.GONE);
+                        return false;
+                    }
+                })
+                .into(holder.adImage);
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void setAdPrice(MyAdsViewHolder holder , int position){
         DecimalFormat decimalFormat = new DecimalFormat("#");
         String formattedValue = decimalFormat.format(list.get(position).getPrice());
         holder.price.setText(mContext.getString(R.string.from) + "  " + formattedValue);
-
     }
 
     @Override
@@ -94,19 +140,24 @@ public class MyAdsAdapter extends RecyclerView.Adapter<MyAdsAdapter.MyAdsViewHol
     }
 
     public class MyAdsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        ImageView userImage ,menu ;
-        TextView title , description , date , views , price , rating;
+        ImageView adImage ,menu ;
+        TextView title , description , date , views , price , rating ,status;
         OnItemListener onItemListener;
+        CardView cardView;
+        ProgressBar progressBar ;
         public MyAdsViewHolder(@NonNull View v, OnItemListener onItemListener) {
             super(v);
+            cardView = binding.cardViewMyAdsItemView;
             menu = binding.menuItem ;
-            userImage = binding.itemUserImage;
+            adImage = binding.itemUserImage;
             title = binding.itemJopTitle;
             description = binding.itemDescription;
             date = binding.itemDate;
             price = binding.priceItem;
             rating = binding.itemUserRating;
             views = binding.tvViewItemViewMyAds;
+            progressBar = binding.progressBarMyAdsItemView;
+            status = binding.tvStatusMyAdsItemView;
             this.onItemListener = onItemListener;
             v.setOnClickListener(this);
             menu.setOnClickListener(this);
@@ -115,9 +166,9 @@ public class MyAdsAdapter extends RecyclerView.Adapter<MyAdsAdapter.MyAdsViewHol
         @Override
         public void onClick(View v) {
             if(v.getId() == binding.menuItem.getId()){
-                onItemListener.getClickedItemMenu(getAdapterPosition(),menu);
+                onItemListener.getClickedItemMenu(getBindingAdapterPosition(),menu);
             }else{
-                onItemListener.getItemPosition(getAdapterPosition());
+                onItemListener.getItemPosition(getBindingAdapterPosition());
             }
         }
     }

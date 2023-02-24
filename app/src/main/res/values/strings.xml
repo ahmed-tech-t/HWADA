@@ -45,6 +45,7 @@
         <item>thursday</item>
         <item>friday</item>
     </string-array>
+
     <!--
 
 
@@ -216,5 +217,13 @@
     <string name ="theCheapest">The cheapest</string>
     <string name="theExpensive">The Expensive</string>
     <string name="closed">Closed</string>
+
+
+    <string name="activate" >Activate</string>
+    <string name="deactivate" >Deactivate</string>
+    <string name="active">Active</string>
+    <string name="inactive">Inactive</string>
+    <string name="adNotActiveAnyMoreMaessage">this ad has been deactivated by the owner</string>
+
 
 </resources>

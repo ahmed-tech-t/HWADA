@@ -32,6 +32,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"/>
 
+
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/item_user_image_design_grid_layout"
                 android:layout_width="150dp"

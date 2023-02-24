@@ -70,7 +70,7 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
         setAdMainImage(holder,position);
 
         //fav image
-       setAdFavImage(holder,position);
+        setAdFavImage(holder,position);
 
        //title
         holder.title.setText(list.get(position).getTitle());
@@ -102,8 +102,6 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
             holder.closed.setVisibility(View.GONE);
         }
     }
-
-
     private void setAdMainImage(HomeViewHolder holder , int position ){
         String url = list.get(position).getMainImage();
         Glide.with(mContext).load(url)
@@ -127,6 +125,7 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
         }else holder.favImage.setImageResource(R.drawable.fav_uncheck_icon);
 
     }
+
     @SuppressLint("SetTextI18n")
     private void setAdPrice(HomeViewHolder holder , int position){
         DecimalFormat decimalFormat = new DecimalFormat("#");

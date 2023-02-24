@@ -143,6 +143,19 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
 
     }
 
+    private void scrollViewListener(){
+        binding.nestedScrollViewAdvertiserFragment.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                if(!adIsOpen || !ad.isActive()){
+                    if(scrollY>binding.fragmentsContainerMenuAdvertiserFragment.getBottom()-200){
+                        binding.tvClosedAdvertiserFragment.setVisibility(View.GONE);
+                    }else binding.tvClosedAdvertiserFragment.setVisibility(View.VISIBLE);
+
+                }
+            }
+        });
+    }
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -172,19 +185,22 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         setToSlider();
         setMenuTapLayoutListener();
         getSimilarAds();
-
+        scrollViewListener();
     }
     @SuppressLint("UseCompatLoadingForColorStateLists")
     private void setViewIfAdIsOpen(){
         String[] days = getResources().getStringArray(R.array.daysVal);
         adIsOpen = ad.isOpen(app.getTime(),days,app.getDayIndex());
-        if(!adIsOpen){
+        if(!adIsOpen || !ad.isActive()){
+            binding.linearLayoutAdSectionAdvertiserFragment.setAlpha(.5f);
             binding.tvClosedAdvertiserFragment.setVisibility(View.VISIBLE);
+            if(!ad.isActive()) binding.tvClosedAdvertiserFragment.setText(getString(R.string.adNotActiveAnyMoreMaessage));
             binding.buttonCallAdvertiserFragment.setEnabled(false);
             binding.buttonChatAdvertiserFragment.setEnabled(false);
             binding.buttonChatAdvertiserFragment.setBackgroundTintList(getActivity().getResources().getColorStateList(R.color.white_gray));
             binding.buttonCallAdvertiserFragment.setBackgroundTintList(getActivity().getResources().getColorStateList(R.color.white_gray));
         }else {
+            binding.linearLayoutAdSectionAdvertiserFragment.setAlpha(1f);
             binding.tvClosedAdvertiserFragment.setVisibility(View.GONE);
             binding.buttonCallAdvertiserFragment.setEnabled(true);
             binding.buttonChatAdvertiserFragment.setEnabled(true);

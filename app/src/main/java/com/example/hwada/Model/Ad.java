@@ -3,6 +3,7 @@ package com.example.hwada.Model;
 import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -37,7 +38,7 @@ public class Ad implements Parcelable {
     private List<String> imagesUrl;
     private int views ;
    private boolean isActive ;
-
+    private static final String TAG = "Ad";
     public Ad(){
         daysSchedule = new DaysSchedule();
         this.adReviews = new ArrayList<>();
@@ -312,6 +313,7 @@ public class Ad implements Parcelable {
     }
 
     public boolean isOpen(String time , String []days , int dayIndex){
+        if(dayIndex==7) dayIndex = 0 ;
         ArrayList<WorkingTime> day = this.getDaysSchedule().getDays().get(days[dayIndex]);
         if(day==null) return false;
         return day.stream().anyMatch(w -> w.isWithinPeriod(time));

@@ -2,7 +2,7 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_view_my_ads_item_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="10dp"
@@ -40,6 +40,15 @@
 
                     app:strokeColor="@null"
                     app:shapeAppearanceOverlay="@style/RoundedSquare" />
+
+                <ProgressBar
+                    android:id="@+id/progress_bar_my_ads_item_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:indeterminate="true"
+                    android:indeterminateTint="@color/white"
+                    android:indeterminateTintMode="src_atop" />
 
 
             </RelativeLayout>
@@ -114,20 +123,6 @@
             android:textColor="@color/gray"
             android:textSize="15dp" />
 
-        <TextView
-            android:id="@+id/item_user_rating"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawableStart="@drawable/star_icon"
-            android:drawablePadding="5dp"
-            android:gravity="bottom"
-            android:layout_marginStart="15dp"
-            android:text="3.5"
-            android:layout_marginTop="10dp"
-            android:textColor="@color/gray"
-            android:textSize="12dp"
-            android:textStyle="bold" />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -138,9 +133,27 @@
             android:padding="5dp"
             android:orientation="vertical">
 
+        <TextView
+            android:id="@+id/item_user_rating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableStart="@drawable/star_icon"
+            android:drawablePadding="5dp"
+            android:gravity="bottom"
+            android:text="3.5"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/gray"
+            android:textSize="12dp"
+            android:textStyle="bold" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@id/tv_status_my_ads_item_view"
                 android:orientation="horizontal">
 
                 <TextView
@@ -166,6 +179,26 @@
                     android:textColor="@color/black"
                     />
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_status_my_ads_item_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/active"
+                android:textSize="15dp"
+                android:textStyle="bold"
+                android:paddingStart="15dp"
+                android:paddingEnd="15dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:textColor="@color/white"
+                android:background="@drawable/activated_background_item"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
+                />
+
+        </RelativeLayout>
         </LinearLayout>
+
     </LinearLayout>
 </androidx.cardview.widget.CardView>

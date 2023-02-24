@@ -2,6 +2,7 @@ package com.example.hwada.ui.view.ad.menu;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -16,6 +17,7 @@ import com.example.hwada.Model.WorkingTime;
 import com.example.hwada.R;
 import com.example.hwada.adapter.ReviewAdapter;
 import com.example.hwada.adapter.WorkingTimePreviewDaysAdapter;
+import com.example.hwada.application.App;
 import com.example.hwada.databinding.FragmentAdWorkingTimeBinding;
 
 import java.util.ArrayList;
@@ -28,6 +30,8 @@ public class AdWorkingTimeFragment extends Fragment {
 
     WorkingTimePreviewDaysAdapter adapter ;
     Ad ad ;
+    App app ;
+
     FragmentAdWorkingTimeBinding binding ;
     private static final String TAG = "AdWorkingTimeFragment";
     @Override
@@ -38,11 +42,24 @@ public class AdWorkingTimeFragment extends Fragment {
         return binding.getRoot();
     }
 
+
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         ad = getArguments().getParcelable("ad");
+        app = (App) getContext().getApplicationContext();
+
         setRecycler();
+        setViewIfAdIsOpen();
+    }
+
+    private void setViewIfAdIsOpen() {
+        String[] days = getResources().getStringArray(R.array.daysVal);
+        boolean adIsOpen = ad.isOpen(app.getTime(),days,app.getDayIndex());
+
+        if(!adIsOpen||!ad.isActive()){
+            binding.constraintLayoutAdWorkingTimeFragment.setAlpha(.5f);
+        }else binding.constraintLayoutAdWorkingTimeFragment.setAlpha(1f);
     }
     private void setRecycler(){
         ad.getDaysSchedule().getDays().entrySet().removeIf(entry -> entry.getValue() == null || entry.getValue().isEmpty());

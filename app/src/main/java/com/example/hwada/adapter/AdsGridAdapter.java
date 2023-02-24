@@ -92,7 +92,7 @@ public class AdsGridAdapter extends RecyclerView.Adapter<AdsGridAdapter.HomeView
     private void setAdCardView(HomeViewHolder holder, int position) {
         Ad ad =list.get(position);
         String[] days = mContext.getResources().getStringArray(R.array.daysVal);
-        if(!ad.isOpen(app.getTime(),days,app.getDayIndex())){
+        if(!ad.isOpen(app.getTime(),days,app.getDayIndex())||!ad.isActive()){
             holder.adMainImage.setAlpha(0.4F);
         }else{
             holder.adMainImage.setAlpha(1F);

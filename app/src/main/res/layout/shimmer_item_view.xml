@@ -17,14 +17,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="5dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
-
                 <com.google.android.material.imageview.ShapeableImageView
                     android:layout_width="110dp"
                     android:layout_height="110dp"
@@ -33,7 +31,6 @@
                     android:padding="5dp"
                     android:scaleType="matrix"
                     android:layout_centerHorizontal="true"
-
                     app:strokeColor="@null"
                     app:shapeAppearanceOverlay="@style/RoundedSquare" />
 
@@ -43,13 +40,10 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:orientation="vertical">
-
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp">
-
-
                     <TextView
                         android:layout_width="150dp"
                         android:layout_height="wrap_content"
@@ -70,13 +64,8 @@
                     android:background="@drawable/curved_background_white_blue"
                     android:padding="5dp"
                     android:layout_marginTop="10dp"/>
-
-
             </LinearLayout>
-
-
         </LinearLayout>
-
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -87,9 +76,6 @@
             android:maxLength="240"
             android:textColor="@color/gray"
             android:textSize="15dp" />
-
-
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -115,9 +101,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:background="@drawable/curved_background_white_blue"
-                    android:backgroundTint="@color/shimmer"/>                 android:textSize="12dp"/>
-
-
+                    android:backgroundTint="@color/shimmer"/>
             </LinearLayout>
 
             <LinearLayout
@@ -156,20 +140,7 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/curved_background_white_blue"
                     android:backgroundTint="@color/shimmer"/>
-
-
-
-
             </LinearLayout>
-
-
-
-
         </LinearLayout>
-
     </LinearLayout>
-
-
-
-
 </androidx.cardview.widget.CardView>

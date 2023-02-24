@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -34,6 +35,7 @@ public class MyAdsActivity extends AppCompatActivity implements MyAdsAdapter.OnI
     UserViewModel userViewModel ;
     ActivityMyAdsBinding binding ;
     User user;
+    AdsViewModel adsViewModel ;
     private App app;
     private static final String TAG = "MyAdsActivity";
 
@@ -51,6 +53,7 @@ public class MyAdsActivity extends AppCompatActivity implements MyAdsAdapter.OnI
         setContentView(view);
         Intent intent = getIntent();
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        adsViewModel = new ViewModelProvider(this).get(AdsViewModel.class);
         user = intent.getParcelableExtra(getString(R.string.userVal));
         debounceHandler = new Handler();
         app = (App) getApplication();
@@ -91,17 +94,25 @@ public class MyAdsActivity extends AppCompatActivity implements MyAdsAdapter.OnI
     }
 
     private void callPopupMenu(int position,ImageView imageView) {
+        Ad ad = user.getAds().get(position);
         PopupMenu popup = new PopupMenu(this,imageView);
         popup.getMenuInflater().inflate(R.menu.my_ads_menu, popup.getMenu());
-        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            public boolean onMenuItemClick(MenuItem item) {
-                if (item.getItemId()==R.id.edit_my_ads_menu){
-                    callAddNewAdActivity(position);
-                }else if((item.getItemId()==R.id.ad_status_my_ads_menu)){
-                    //TODO
-                }
-                return true;
+        Menu menu = popup.getMenu();
+        MenuItem statusMenuItem = menu.findItem(R.id.ad_status_my_ads_menu);
+
+        if(ad.isActive()){
+            statusMenuItem.setTitle(getString(R.string.deactivate));
+        }else statusMenuItem.setTitle(getString(R.string.activate));
+
+        popup.setOnMenuItemClickListener(item -> {
+            if (item.getItemId()==R.id.edit_my_ads_menu){
+                callAddNewAdActivity(position);
+            }else if((item.getItemId()==R.id.ad_status_my_ads_menu)){
+                if(ad.isActive()) ad.setActive(false);
+                else ad.setActive(true);
+                adsViewModel.updateAdStatus(ad);
             }
+            return true;
         });
 
         popup.show();//showing popup menu
@@ -129,15 +140,6 @@ public class MyAdsActivity extends AppCompatActivity implements MyAdsAdapter.OnI
         app.setUserOffline(user.getUId(),this);
     }
 
-    private void getAlUserAds(){
-        userViewModel.getAllUserAds(user.getUId()).observe(this, new Observer<ArrayList<Ad>>() {
-            @Override
-            public void onChanged(ArrayList<Ad> ads) {
-                user.setAds(ads);
-                setRecycler();
-            }
-        });
-    }
 
 
 

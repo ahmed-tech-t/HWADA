@@ -6,6 +6,6 @@
         android:title="@string/edit"/>
     <item
         android:id="@+id/ad_status_my_ads_menu"
-        android:title="@string/stop"/>
+        android:title="@string/deactivate"/>
 
 </menu>

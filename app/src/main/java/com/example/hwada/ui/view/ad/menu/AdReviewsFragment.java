@@ -31,6 +31,7 @@ import com.example.hwada.Model.User;
 import com.example.hwada.R;
 import com.example.hwada.adapter.AdsGridAdapter;
 import com.example.hwada.adapter.ReviewAdapter;
+import com.example.hwada.application.App;
 import com.example.hwada.database.DbHandler;
 import com.example.hwada.databinding.FragmentAdReviewsBinding;
 import com.example.hwada.ui.UserProfileActivity;
@@ -50,6 +51,7 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
     ReviewAdapter adapter;
     Ad ad ;
     User user ;
+    App app ;
 
     UserViewModel userViewModel ;
     ReportViewModel reportViewModel ;
@@ -79,6 +81,7 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
         assert getArguments() != null;
         ad = getArguments().getParcelable("ad");
         user =getArguments().getParcelable("user");
+        app = (App) getContext().getApplicationContext();
 
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
         binding.shimmerReviews.startShimmer();
@@ -86,9 +89,17 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
         reportViewModel = ViewModelProviders.of(this).get(ReportViewModel.class);
         reviewViewModel =ViewModelProviders.of(this).get(ReviewViewModel.class);
         getALlReviews();
+        setViewIfAdIsOpen();
     }
 
+    private void setViewIfAdIsOpen() {
+        String[] days = getResources().getStringArray(R.array.daysVal);
+        boolean adIsOpen = ad.isOpen(app.getTime(),days,app.getDayIndex());
 
+        if(!adIsOpen ||!ad.isActive()){
+            binding.constraintLayoutAdReviewsFragment.setAlpha(0.5f);
+        }else binding.constraintLayoutAdReviewsFragment.setAlpha(1f);
+    }
     @Override
     public void onResume() {
         super.onResume();

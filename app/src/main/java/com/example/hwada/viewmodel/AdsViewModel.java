@@ -50,4 +50,8 @@ public class AdsViewModel extends AndroidViewModel {
         repository.updateViews(ad);
     }
 
+    public void updateAdStatus(Ad ad){
+        repository.updateAdStatus(ad);
+    }
+
 }
