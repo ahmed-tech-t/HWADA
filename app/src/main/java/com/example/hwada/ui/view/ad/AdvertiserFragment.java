@@ -251,7 +251,7 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
         }else getSimilarAds(ad.getCategory(),ad.getSubCategory());
     }
     private void getSimilarAds(String category ,String subCategory){
-        adsViewModel.getAllAds(category,subCategory).observe(this, ads -> {
+        adsViewModel.getAllAds(user,category,subCategory).observe(this, ads -> {
             adsList = ads;
             adsList.removeIf(o -> o.getId().equals(ad.getId()) );
             setRecycler();
@@ -260,7 +260,7 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
     }
 
     private void getSimilarAds(String category ,String subCategory, String subSubCategory){
-        adsViewModel.getAllAds(category,subCategory,subSubCategory).observe(this, ads -> {
+        adsViewModel.getAllAds(user,category,subCategory,subSubCategory).observe(this, ads -> {
             adsList = ads;
             adsList.removeIf(o -> o.getId().equals(ad.getId()) );
             setRecycler();
@@ -328,14 +328,15 @@ public class AdvertiserFragment extends BottomSheetDialogFragment implements Vie
 
     public void callFragment(Fragment fragment){
         Bundle bundle = new Bundle();
-        bundle.putParcelable("ad", ad);
-        bundle.putParcelable("user",user);
+        bundle.putParcelable(getString(R.string.userVal), user);
+        bundle.putParcelable(getString(R.string.adVal), ad);
         fragment.setArguments(bundle);
         fragmentManager = getChildFragmentManager();
         fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragments_container_menu_advertiser_fragment, fragment);
         fragmentTransaction.commit();
     }
+
 
     public void callBottomSheet(BottomSheetDialogFragment fragment) {
         Bundle bundle = new Bundle();

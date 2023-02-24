@@ -61,6 +61,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
 
     String target = "toAdsActivity";
 
+    FilterModel filterModel ;
     private User user;
     ArrayList<Ad> adsList;
 
@@ -78,7 +79,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
     private static final String TAG = "HomeFragment";
     @SuppressLint("MissingInflatedId")
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
        binding = FragmentHomeBinding.inflate(inflater, container, false);
@@ -114,9 +115,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
     }
 
     private void getAllAds(){
-        adsViewModel.getAllAds().observe(getActivity(), ads -> {
+        adsViewModel.getAllAds(user).observe(getActivity(), ads -> {
             adsList = ads;
-            setRecycler();
+            if(filterModel!=null){
+                setFilter();
+            }else setRecycler();
             if(binding.swipeRefreshHomeFragment.isRefreshing()){
                 binding.swipeRefreshHomeFragment.setRefreshing(false);
             }
@@ -129,15 +132,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
     }
 
     private void userFavAdsListener(){
-        favViewModel.userFavAdsListener(user.getUId()).observe(getActivity(), new Observer<ArrayList<Ad>>() {
-            @Override
-            public void onChanged(ArrayList<Ad> ads) {
-                user.setFavAds(ads);
-                if(advertiserFragment.isAdded()) setRecycler();
-            }
+        favViewModel.userFavAdsListener(user.getUId()).observe(getActivity(), ads -> {
+            user.setFavAds(ads);
+            if(advertiserFragment.isAdded()) setRecycler();
         });
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onResume() {
         super.onResume();
@@ -185,7 +186,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
            } else if (v.getId() == binding.handcraftCategory.getId()) {
                ((MainActivity) getActivity()).callAdsActivity(DbHandler.HANDCRAFT, DbHandler.HANDCRAFT,"");
            }else if(v.getId() == binding.imFilterHomeFragment.getId()){
-               callFilterDialog();
+               if(filterModel==null) filterModel = new FilterModel(getString(R.string.updateDateVal),false);
+               callFilterDialog(filterModel);
            }
        }catch (Exception e){
            app.reportError(e,getContext());
@@ -196,6 +198,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        assert getArguments() != null;
         user = getArguments().getParcelable(getString(R.string.userVal));
         userAddressViewModel = new ViewModelProvider(this).get(UserAddressViewModel.class);
         filterViewModel = new ViewModelProvider(this).get(FilterViewModel.class);
@@ -210,7 +213,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
         getAllAds();
         setUserListener();
         userFavAdsListener();
-        getFilter();
+        setFilterObserver();
     }
 
     @Override
@@ -297,8 +300,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
       }
   }
 
-    public void callFilterDialog() {
+    public void callFilterDialog(FilterModel filterModel) {
         FilterFragment fragment = new FilterFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(getString(R.string.filterVal),filterModel);
+        fragment.setArguments(bundle);
         FragmentManager fragmentManager = getChildFragmentManager();
         fragment.show(fragmentManager, fragment.getTag());
     }
@@ -309,29 +315,32 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
     }
 
 
-    public void getFilter(){
-        filterViewModel.getFilter().observe(getActivity(), new Observer<FilterModel>() {
-            @Override
-            public void onChanged(FilterModel filterModel) {
-                FilterFunctions filterFunctions = new FilterFunctions(adapter.getList(),getContext());
-
-                if(filterModel.isOpen()){
-                    adsList = new ArrayList<>(filterFunctions.removeClosedAds());
-                }
-                if(filterModel.getSort().equals(getString(R.string.ratingVal))){
-                    adsList = new ArrayList<>(filterFunctions.sortAdsByRating());
-                }else if(filterModel.getSort().equals(getString(R.string.theClosestVal))){
-                    adsList = new ArrayList<>(filterFunctions.sortAdsByTheClosest());
-                }else if(filterModel.getSort().equals(getString(R.string.updateDateVal))){
-                    adsList = new ArrayList<>(filterFunctions.sortAdsByDate());
-                }else if(filterModel.getSort().equals(getString(R.string.theCheapestVal))){
-                    adsList = new ArrayList<>(filterFunctions.sortAdsByTheCheapest());
-                }else if(filterModel.getSort().equals(getString(R.string.theExpensiveVal))){
-                    adsList = new ArrayList<>(filterFunctions.sortAdsByTheExpensive());
-                }
-                setRecycler();
-            }
+    public void setFilterObserver(){
+        filterViewModel.getFilter().observe(getActivity(), filter -> {
+            filterModel = filter;
+            getAllAds();
         });
     }
+
+    private void setFilter(){
+        if(filterModel!=null){
+            FilterFunctions filterFunctions = new FilterFunctions(adsList,getContext());
+            if(filterModel.isOpen()){
+                adsList = new ArrayList<>(filterFunctions.removeClosedAds());
+            }
+            if(filterModel.getSort().equals(getString(R.string.ratingVal))){
+                adsList = new ArrayList<>(filterFunctions.sortAdsByRating());
+            }else if(filterModel.getSort().equals(getString(R.string.theClosestVal))){
+                adsList = new ArrayList<>(filterFunctions.sortAdsByTheClosest());
+            }else if(filterModel.getSort().equals(getString(R.string.updateDateVal))){
+                adsList = new ArrayList<>(filterFunctions.sortAdsByDate());
+            }else if(filterModel.getSort().equals(getString(R.string.theCheapestVal))){
+                adsList = new ArrayList<>(filterFunctions.sortAdsByTheCheapest());
+            }else if(filterModel.getSort().equals(getString(R.string.theExpensiveVal))){
+                adsList = new ArrayList<>(filterFunctions.sortAdsByTheExpensive());
+            }
+            setRecycler();
+        }
+   }
 
 }

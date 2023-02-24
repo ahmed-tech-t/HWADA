@@ -95,10 +95,8 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
         //rating
         holder.rating.setText(list.get(position).getRating()+"");
 
-
-        list.get(position).setDistance(Float.parseFloat(getDistance(position)));
-
         holder.distance.setText(list.get(position).getDistance()+"");
+
         holder.date.setText(handleTime(list.get(position).getTimeStamp()));
 
         //price
@@ -199,25 +197,6 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
 
     public ArrayList<Ad> getList(){
         return list;
-    }
-
-
-    public String getDistance(int pos){
-        Location location1 = new Location("user");
-        if(user.getLocation()!=null){
-            location1.setLatitude(user.getLocation().getLatitude());
-            location1.setLongitude(user.getLocation().getLongitude());
-
-            Location location2 = new Location("ad");
-            location2.setLatitude(list.get(pos).getAuthorLocation().getLatitude());
-            location2.setLongitude(list.get(pos).getAuthorLocation().getLongitude());
-
-
-            float distanceInMeters = location1.distanceTo(location2)/1000;
-
-            return String.format(Locale.US, "%.2f", distanceInMeters);
-        }
-        return "-1";
     }
 
     @SuppressLint("NotifyDataSetChanged")

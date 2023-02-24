@@ -34,6 +34,7 @@
     <string name="filterViewModel" translatable="false">filterViewModel</string>
     <string name="statusVal" translatable="false">Status :</string>
     <string name="openVal" translatable="false"> Open</string>
+    <string name="filterVal" translatable="false">filter</string>
 
     <string-array name="daysVal" translatable="false">
         <item>saturday</item>
@@ -164,16 +165,16 @@
     <string name="deleteAcoountWarning">Are you sure you want to delete this account</string>
     <string name="deleteAccountConfirmation">Yes , delete this account</string>
     <string name="delete">delete</string>
-    <string name="savingData">Saving data...</string>
-    <string name="savingError">Failed to Update ... please try again</string>
-    <string name="addingNewAd">Adding new add...</string>
+    <string name="savingData">Saving data…</string>
+    <string name="savingError">Failed to Update … please try again</string>
+    <string name="addingNewAd">Adding new add…</string>
     <string name="today">today</string>
     <string name="yesterday">yesterday</string>
     <string name="description"><b>Description</b></string>
     <string name="reviews"><b>Reviews</b></string>
     <string name="workingTimeTitle"><b>Working time</b></string>
     <string name="reviewNote">You must at least add rating to add comment * </string>
-    <string name="addingNewReview">Adding new review...</string>
+    <string name="addingNewReview">Adding new review…</string>
     <string name="report">report</string>
     <string name="similarAds"><b>Similar Ads</b></string>
     <string name="toLong">to long</string>

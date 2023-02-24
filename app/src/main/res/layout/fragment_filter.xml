@@ -38,7 +38,6 @@
                  android:layout_height="wrap_content"
                  android:text="@string/updateDate"
                  android:textColor="@color/black"
-                 android:checked="true"
                  android:textSize="15dp"/>
 
              <RadioButton

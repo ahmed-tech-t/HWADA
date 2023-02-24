@@ -1,8 +1,11 @@
 package com.example.hwada.ui.view.ad.menu;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -38,6 +41,7 @@ import com.example.hwada.viewmodel.ReviewViewModel;
 import com.example.hwada.viewmodel.UserViewModel;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemListener, View.OnClickListener,ReviewFragment.GettingPassedData  {
@@ -70,8 +74,9 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        assert getArguments() != null;
         ad = getArguments().getParcelable("ad");
         user =getArguments().getParcelable("user");
 
@@ -83,6 +88,7 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
         getALlReviews();
     }
 
+
     @Override
     public void onResume() {
         super.onResume();
@@ -93,7 +99,7 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
         closeShimmer();
         binding.adRatingAdReviewsFragment.setRating(ad.getRating());
 
-        adapter = new ReviewAdapter(getContext());
+        adapter = new ReviewAdapter(getActivity());
         try {
             binding.reviewRecyclerAdReviewFragment.setAdapter(adapter);
             if (ad.getAdReviews()==null) ad.initAdReviewsList();
@@ -107,18 +113,23 @@ public class AdReviewsFragment extends Fragment implements ReviewAdapter.OnItemL
     }
 
     private void getALlReviews(){
+        if (getActivity()==null) Log.d(TAG, "getALlReviews: null");
         reviewViewModel.getAdReviews(ad).observe(getActivity(), new Observer<ArrayList<AdReview>>() {
             @Override
             public void onChanged(ArrayList<AdReview> adReviews) {
                 ad.setAdReviews(adReviews);
-                setRecycler();
-                initReviewBox();
+                if(getActivity()!=null){
+                    setRecycler();
+                    initReviewBox();
+                }
             }
         });
     }
 
+    @SuppressLint("SetTextI18n")
     private void initReviewBox(){
         binding.tvReviewsAdReviewsFragment.setText(getString(R.string.reviews)+"("+ad.getAdReviews().size()+")");
+
         Glide.with(getActivity()).load(user.getImage()).into(binding.userImageAdReview);
         if(userMadeReview()){
             binding.linearLayoutCommentBox.setVisibility(View.GONE);

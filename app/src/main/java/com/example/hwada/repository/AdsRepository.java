@@ -14,6 +14,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.AdReview;
 import com.example.hwada.Model.MyReview;
+import com.example.hwada.Model.User;
 import com.example.hwada.database.DbHandler;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -360,17 +361,17 @@ public class AdsRepository {
     /**
      * get All Ads
      **/
-    public MutableLiveData<ArrayList<Ad>> getAllAds(String category ,String subCategory){
-       return getAllAds(getAdColRef(category,subCategory));
+    public MutableLiveData<ArrayList<Ad>> getAllAds(User user, String category , String subCategory){
+       return getAllAds(user,getAdColRef(category,subCategory));
     }
-    public MutableLiveData<ArrayList<Ad>> getAllAds(String category ,String subCategory,String subSubCategory){
-       return getAllAds(getAdColRef(category,subCategory,subSubCategory));
+    public MutableLiveData<ArrayList<Ad>> getAllAds(User user,String category ,String subCategory,String subSubCategory){
+       return getAllAds(user,getAdColRef(category,subCategory,subSubCategory));
     }
-    public MutableLiveData<ArrayList<Ad>> getAllAds(){
-        return getAllAds(getAdColHomePageRef());
+    public MutableLiveData<ArrayList<Ad>> getAllAds(User user){
+        return getAllAds(user,getAdColHomePageRef());
     }
 
-    private MutableLiveData<ArrayList<Ad>> getAllAds(CollectionReference adColRef){
+    private MutableLiveData<ArrayList<Ad>> getAllAds(User user,CollectionReference adColRef){
         MutableLiveData<ArrayList<Ad>> mutableLiveData =new MutableLiveData<>();
         adColRef
                 .orderBy("timeStamp", Query.Direction.DESCENDING)
@@ -382,7 +383,9 @@ public class AdsRepository {
                     ArrayList<Ad> ads = new ArrayList<>();
                     QuerySnapshot adQuerySnapshot = task.getResult();
                     for (QueryDocumentSnapshot adSnapshot : adQuerySnapshot) {
-                        ads.add(adSnapshot.toObject(Ad.class));
+                        Ad ad = adSnapshot.toObject(Ad.class);
+                        ad.setDistance_(user.getLocation());
+                        ads.add(ad);
                     }
                     mutableLiveData.setValue(ads);
                 }else {

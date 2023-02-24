@@ -11,6 +11,7 @@ import com.google.firebase.Timestamp;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class Ad implements Parcelable {
 
@@ -293,7 +294,20 @@ public class Ad implements Parcelable {
         dest.writeByte((byte) (isActive ? 1 : 0));
     }
 
+    public void setDistance_(LocationCustom userLocation){
+        Location location1 = new Location("userLocation");
 
+        location1.setLatitude(userLocation.getLatitude());
+        location1.setLongitude(userLocation.getLongitude());
+
+        Location location2 = new Location("adLocation");
+        location2.setLatitude(this.getAuthorLocation().getLatitude());
+        location2.setLongitude(this.getAuthorLocation().getLongitude());
+
+        float distanceInMeters = location1.distanceTo(location2)/1000;
+
+        this.distance = Float.parseFloat(String.format(Locale.US, "%.2f", distanceInMeters));
+    }
     @Override
     public String toString() {
         return "Ad{" +

@@ -40,6 +40,8 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
     FavViewModel favViewModel ;
     UserViewModel userViewModel ;
     AdsViewModel adsViewModel;
+    FilterModel filterModel ;
+
     FilterViewModel filterViewModel ;
 
     User user;
@@ -90,9 +92,7 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
 
         setUserFavListener();
         getAllAds();
-
-        getFilter();
-
+        setFilterObserver();
     }
 
     private void setUserFavListener(){
@@ -124,7 +124,8 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
     @Override
     public void onClick(View v) {
         if(v.getId() == binding.imFilter.getId()){
-            callFilterDialog();
+            if(filterModel==null) filterModel = new FilterModel(getString(R.string.updateDateVal),false);
+            callFilterDialog(filterModel);
         }
     }
 
@@ -177,17 +178,21 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
         }else getAllAds(category,subCategory);
     }
     private void getAllAds(String category ,String subCategory){
-        adsViewModel.getAllAds(category,subCategory).observe(this, ads -> {
+        adsViewModel.getAllAds(user,category,subCategory).observe(this, ads -> {
             adsList = ads;
-            setRecycler();
+            if(filterModel!=null){
+                setFilter();
+            }else setRecycler();
             if(binding.swipeRefreshAdsActivity.isRefreshing()) binding.swipeRefreshAdsActivity.setRefreshing(false);
         });
     }
 
     private void getAllAds(String category ,String subCategory, String subSubCategory){
-        adsViewModel.getAllAds(category,subCategory,subSubCategory).observe(this, ads -> {
+        adsViewModel.getAllAds(user,category,subCategory,subSubCategory).observe(this, ads -> {
             adsList = ads;
-           setRecycler();
+            if(filterModel!=null){
+                setFilter();
+            }else setRecycler();
             if(binding.swipeRefreshAdsActivity.isRefreshing()) binding.swipeRefreshAdsActivity.setRefreshing(false);
         });
     }
@@ -230,35 +235,40 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
         getAllAds();
     }
 
-    public void callFilterDialog() {
+    public void callFilterDialog(FilterModel filterModel) {
         FilterFragment fragment = new FilterFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(getString(R.string.filterVal),filterModel);
+        fragment.setArguments(bundle);
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragment.show(fragmentManager, fragment.getTag());
     }
-
-    public void getFilter(){
-        filterViewModel.getFilter().observe(this, new Observer<FilterModel>() {
-            @Override
-            public void onChanged(FilterModel filterModel) {
-                FilterFunctions filterFunctions = new FilterFunctions(adapter.getList(),getApplication());
-
-                if(filterModel.isOpen()){
-                    adsList = new ArrayList<>(filterFunctions.removeClosedAds());
-                }
-                if(filterModel.getSort().equals(getString(R.string.ratingVal))){
-                    adsList = new ArrayList<>(filterFunctions.sortAdsByRating());
-                }else if(filterModel.getSort().equals(getString(R.string.theClosestVal))){
-                    adsList = new ArrayList<>(filterFunctions.sortAdsByTheClosest());
-                }else if(filterModel.getSort().equals(getString(R.string.updateDateVal))){
-                    adsList = new ArrayList<>(filterFunctions.sortAdsByDate());
-                }else if(filterModel.getSort().equals(getString(R.string.theCheapestVal))){
-                    adsList = new ArrayList<>(filterFunctions.sortAdsByTheCheapest());
-                }else if(filterModel.getSort().equals(getString(R.string.theExpensiveVal))){
-                    adsList = new ArrayList<>(filterFunctions.sortAdsByTheExpensive());
-                }
-                setRecycler();
-            }
+    public void setFilterObserver(){
+        filterViewModel.getFilter().observe(this, filter -> {
+            filterModel = filter;
+            getAllAds();
         });
+    }
+
+    private void setFilter(){
+        if(filterModel!=null){
+            FilterFunctions filterFunctions = new FilterFunctions(adsList,this);
+            if(filterModel.isOpen()){
+                adsList = new ArrayList<>(filterFunctions.removeClosedAds());
+            }
+            if(filterModel.getSort().equals(getString(R.string.ratingVal))){
+                adsList = new ArrayList<>(filterFunctions.sortAdsByRating());
+            }else if(filterModel.getSort().equals(getString(R.string.theClosestVal))){
+                adsList = new ArrayList<>(filterFunctions.sortAdsByTheClosest());
+            }else if(filterModel.getSort().equals(getString(R.string.updateDateVal))){
+                adsList = new ArrayList<>(filterFunctions.sortAdsByDate());
+            }else if(filterModel.getSort().equals(getString(R.string.theCheapestVal))){
+                adsList = new ArrayList<>(filterFunctions.sortAdsByTheCheapest());
+            }else if(filterModel.getSort().equals(getString(R.string.theExpensiveVal))){
+                adsList = new ArrayList<>(filterFunctions.sortAdsByTheExpensive());
+            }
+            setRecycler();
+        }
     }
 
 }

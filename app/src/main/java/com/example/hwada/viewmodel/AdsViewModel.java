@@ -37,14 +37,14 @@ public class AdsViewModel extends AndroidViewModel {
     public void updateExistAd(Ad ad, String mainImageName,ArrayList<String> imagesToDelete){
         repository.updateExistAd(ad,mainImageName,imagesToDelete);
     }
-    public LiveData<ArrayList<Ad>> getAllAds(String category ,String subCategory){
-       return repository.getAllAds(category,subCategory);
+    public LiveData<ArrayList<Ad>> getAllAds(User user,String category ,String subCategory){
+       return repository.getAllAds(user,category,subCategory);
     }
-    public LiveData<ArrayList<Ad>> getAllAds(String category ,String subCategory,String subSubCategory){
-        return repository.getAllAds(category,subCategory,subSubCategory);
+    public LiveData<ArrayList<Ad>> getAllAds(User user,String category ,String subCategory,String subSubCategory){
+        return repository.getAllAds(user,category,subCategory,subSubCategory);
     }
-    public LiveData<ArrayList<Ad>> getAllAds(){
-        return repository.getAllAds();
+    public LiveData<ArrayList<Ad>> getAllAds(User user){
+        return repository.getAllAds(user);
     }
     public void updateViews(Ad ad){
         repository.updateViews(ad);
