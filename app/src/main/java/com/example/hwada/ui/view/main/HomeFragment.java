@@ -204,16 +204,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
         filterViewModel = new ViewModelProvider(this).get(FilterViewModel.class);
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
         adsViewModel =  new ViewModelProvider(this).get(AdsViewModel.class);
-
         favViewModel = FavViewModel.getInstance() ;
-
-        app =(App) getContext().getApplicationContext();
         binding.swipeRefreshHomeFragment.setOnRefreshListener(this);
 
-        getAllAds();
-        setUserListener();
-        userFavAdsListener();
-        setFilterObserver();
+        if(getActivity()!=null){
+            app = (App) getContext().getApplicationContext();
+            setUserListener();
+            userFavAdsListener();
+            setFilterObserver();
+        }
     }
 
     @Override
@@ -272,13 +271,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
         fragment.show(fragmentManager, fragment.getTag());
     }
 
-
     private void setUserListener(){
         userViewModel.userListener(user.getUId()).observe(getActivity(), new Observer<User>() {
             @Override
             public void onChanged(User updatedUser) {
                 user.updateUser(updatedUser);
-                if(user.getLocation()!=null) binding.userAddress.setText(user.getAddress());
+                if(user.getLocation()!=null) {
+                    if(getActivity()!=null) getAllAds();
+                    binding.userAddress.setText(user.getAddress());
+                }
             }
         });
     }

@@ -23,6 +23,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -250,8 +251,8 @@ private CollectionReference getAdReviewsColRef(CollectionReference adColRef,MyRe
                         }
                         assert value != null;
                         ArrayList<Ad>ads = new ArrayList<>();
-                        for (QueryDocumentSnapshot document : value) {
-                            ads.add(document.toObject(Ad.class));
+                        for (DocumentChange change : value.getDocumentChanges()) {
+                            ads.add(change.getDocument().toObject(Ad.class));
                         }
                         mutableLiveData.setValue(ads);
                     }

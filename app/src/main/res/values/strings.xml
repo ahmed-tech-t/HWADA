@@ -35,7 +35,12 @@
     <string name="statusVal" translatable="false">Status :</string>
     <string name="openVal" translatable="false"> Open</string>
     <string name="filterVal" translatable="false">filter</string>
+    <string name="onlineVal" translatable="false">online</string>
+    <string name="receiver" translatable="false">receiver</string>
+    <string name="posVal" translatable="false">pos</string>
+    <string name="imagesUrlVal" translatable="false">imagesUrl</string>
 
+    <string name="imageVal" translatable="false">image</string>
     <string-array name="daysVal" translatable="false">
         <item>saturday</item>
         <item>sunday</item>
@@ -206,7 +211,7 @@
     <string name="loadingImagesInstruction">Loading your Images ...</string>
     <string name="failedToLoadImages">Failed to load Images .. Please check your connection and try again</string>
     <string name="updateAdMessage">your ads list will be updated automatically once update is complete</string>
-
+    <string name="updateProfileMessage">profile will be updated automatically once update is complete </string>
     <string name="sortBy">Sort by :</string>
 
 

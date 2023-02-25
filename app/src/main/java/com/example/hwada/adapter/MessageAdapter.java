@@ -1,12 +1,11 @@
 package com.example.hwada.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,29 +18,25 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Priority;
-import com.bumptech.glide.request.RequestOptions;
 import com.example.hwada.Model.Message;
 import com.example.hwada.R;
 import com.example.hwada.application.App;
-import com.example.hwada.util.GlideImageLoader;
+import com.example.hwada.databinding.ChatReceiverHolderBinding;
+import com.example.hwada.databinding.ChatSenderHolderBinding;
 import com.example.hwada.viewmodel.MessageViewModel;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-     private ArrayList<Message> list = new ArrayList();
+     private ArrayList<Message> list ;
      String userId ;
      private Picasso picassoInstance;
 
@@ -52,6 +47,9 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
      private static final int SENDER = 1;
      private static final int RECEIVER = 2;
 
+     ChatSenderHolderBinding senderHolderBinding;
+     ChatReceiverHolderBinding receiverHolderBinding;
+
      App app;
     OnItemListener pOnItemListener;
 
@@ -59,21 +57,24 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public MessageAdapter(Context context,String chatId,MessageViewModel messageViewModel){
         this.mContext =context;
-        this.chatId =chatId;
+        this.chatId = chatId;
         this.messageViewModel = messageViewModel;
+        list = new ArrayList<>();
         app = (App) mContext.getApplicationContext();
-       setHasStableIds(true);
-       picassoInstance = Picasso.get();
-       picassoInstance.setLoggingEnabled(true);
+        setHasStableIds(true);
+        picassoInstance = Picasso.get();
+        picassoInstance.setLoggingEnabled(true);
     }
      @NonNull
      @Override
      public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         if(SENDER == viewType){
-            return new SenderViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.chat_sender_holder, parent, false), pOnItemListener);
+            senderHolderBinding = ChatSenderHolderBinding.inflate(LayoutInflater.from(parent.getContext()),parent,false);
+            return new SenderViewHolder(senderHolderBinding.getRoot(),pOnItemListener);
         }else if(RECEIVER == viewType){
-            return new ReceiverViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.chat_recevier_holder, parent, false), pOnItemListener);
+            receiverHolderBinding = ChatReceiverHolderBinding.inflate(LayoutInflater.from(parent.getContext()),parent,false);
+            return new ReceiverViewHolder(receiverHolderBinding.getRoot(),pOnItemListener);
         }
         return null;
     }
@@ -81,75 +82,82 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
      @Override
      public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof SenderViewHolder ) {
-            holder.setIsRecyclable(false);
-            Message message = list.get(position);
-            // set body text
-            if(message.getBody() != null && message.getBody().length()>25){
-                handelLayouts(message,((SenderViewHolder) holder).body_tv,((SenderViewHolder) holder).llDate,((SenderViewHolder) holder).rlImage,((SenderViewHolder) holder).clBody);
-            }
-
-            setBodyText(position,((SenderViewHolder) holder).body_tv);
-
-            // set body image
-            if(message.getUrl()!= null ||message.getUri() != null){
-                handelLayouts(message,((SenderViewHolder) holder).body_tv,((SenderViewHolder) holder).llDate,((SenderViewHolder) holder).rlImage,((SenderViewHolder) holder).clBody);
-                ((SenderViewHolder) holder).rlImage.setVisibility(View.VISIBLE);
-
-                setImage(position , ((SenderViewHolder) holder).image_sim,((SenderViewHolder) holder).progressBar);
-            }
-
-            //set date
-            setDate(position , ((SenderViewHolder) holder).date_tv);
-
-            if(message.getBody()!= null && message.getBody().length()==0 || message.getBody()== null){
-                ((SenderViewHolder) holder).date_tv.setTextColor(ContextCompat.getColor(mContext,R.color.whiteCoffee));
-            }
-
-
-            // set status
-            setStatus(position , ((SenderViewHolder) holder).status_im);
-
+           setSenderViewHolder(holder,position);
         }
         else if (holder instanceof ReceiverViewHolder){
-            holder.setIsRecyclable(false);
-
-            Message message =  list.get(position);
-            // set body text
-            if(message.getBody() != null && message.getBody().length()>25){
-                handelLayouts(message,((ReceiverViewHolder) holder).body_tv,((ReceiverViewHolder) holder).llDate,((ReceiverViewHolder) holder).rlImage,((ReceiverViewHolder) holder).clBody);
-            }
-
-            setBodyText(position,((ReceiverViewHolder) holder).body_tv);
-
-
-            if(message.getUrl()!= null || message.getUri()!= null){
-                handelLayouts(message,((ReceiverViewHolder) holder).body_tv,((ReceiverViewHolder) holder).llDate,((ReceiverViewHolder) holder).rlImage,((ReceiverViewHolder) holder).clBody);
-
-                ((ReceiverViewHolder) holder).rlImage.setVisibility(View.VISIBLE);
-                setImage(position , ((ReceiverViewHolder) holder).image_sim,((ReceiverViewHolder) holder).progressBar);
-            }
-
-            setDate(position , ((ReceiverViewHolder) holder).date_tv);
-
-            if(message.getBody()!= null && message.getBody().length()==0||(message.getBody()== null)) {
-                ((ReceiverViewHolder) holder).date_tv.setTextColor(ContextCompat.getColor(mContext, R.color.whiteCoffee));
-            }
-
-            setMessageStatusToSeen(position);
+          serReceiverViewHolder(holder,position);
         }
     }
 
+    private void serReceiverViewHolder(RecyclerView.ViewHolder holder, int position) {
+        holder.setIsRecyclable(false);
 
-     @Override
-     public long getItemId(int position) {
-        return position;
+        Message message =  list.get(position);
+        // set body text
+        if(message.getBody() != null && message.getBody().length()>25){
+            handelLayouts(message,((ReceiverViewHolder) holder).body_tv,((ReceiverViewHolder) holder).llDate,((ReceiverViewHolder) holder).rlImage,((ReceiverViewHolder) holder).clBody);
+        }
+
+        setBodyText(position,((ReceiverViewHolder) holder).body_tv);
+
+
+        if(message.getUrl()!= null || message.getUri()!= null){
+            handelLayouts(message,((ReceiverViewHolder) holder).body_tv,((ReceiverViewHolder) holder).llDate,((ReceiverViewHolder) holder).rlImage,((ReceiverViewHolder) holder).clBody);
+
+            ((ReceiverViewHolder) holder).rlImage.setVisibility(View.VISIBLE);
+            setImage(position , ((ReceiverViewHolder) holder).image_sim,((ReceiverViewHolder) holder).progressBar);
+        }
+
+        setDate(position , ((ReceiverViewHolder) holder).date_tv);
+
+        if(message.getBody()!= null && message.getBody().length()==0||(message.getBody()== null)) {
+            ((ReceiverViewHolder) holder).date_tv.setTextColor(ContextCompat.getColor(mContext, R.color.whiteCoffee));
+        }
+
+        setMessageStatusToSeen(position);
     }
 
-     private void setBodyText(int pos , TextView body_tv){
+    private void setSenderViewHolder(RecyclerView.ViewHolder holder, int position) {
+        holder.setIsRecyclable(false);
+        Message message = list.get(position);
+        // set body text
+        if(message.getBody() != null && message.getBody().length()>25){
+            handelLayouts(message,((SenderViewHolder) holder).body_tv,((SenderViewHolder) holder).llDate,((SenderViewHolder) holder).rlImage,((SenderViewHolder) holder).clBody);
+        }
+
+        setBodyText(position,((SenderViewHolder) holder).body_tv);
+
+        // set body image
+        if(message.getUrl()!= null ||message.getUri() != null){
+            handelLayouts(message,((SenderViewHolder) holder).body_tv,((SenderViewHolder) holder).llDate,((SenderViewHolder) holder).rlImage,((SenderViewHolder) holder).clBody);
+            ((SenderViewHolder) holder).rlImage.setVisibility(View.VISIBLE);
+
+            setImage(position , ((SenderViewHolder) holder).image_sim,((SenderViewHolder) holder).progressBar);
+        }
+
+        //set date
+        setDate(position , ((SenderViewHolder) holder).date_tv);
+
+        if(message.getBody()!= null && message.getBody().length() == 0 || message.getBody() == null){
+            ((SenderViewHolder) holder).date_tv.setTextColor(ContextCompat.getColor(mContext,R.color.whiteCoffee));
+        }
+
+
+        // set status
+        setStatus(position , ((SenderViewHolder) holder).status_im);
+
+    }
+
+
+    @Override
+    public long getItemId(int position) {
+        return list.get(position).getId().hashCode();
+    }
+
+    private void setBodyText(int pos , TextView body_tv){
         if(list.get(pos).getBody()!=null && list.get(pos).getBody().length()>0){
             String body = list.get(pos).getBody();
             body_tv.setText(body);
-
         }else {
             body_tv.setVisibility(View.GONE);
         }
@@ -163,74 +171,67 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             }
         }
     }
-     private void setLayoutToVertical( LinearLayout llParent , LinearLayout llBodyChild ){
-       llParent.setOrientation(LinearLayout.VERTICAL);
-        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) llBodyChild.getLayoutParams();
-        params.width = LinearLayout.LayoutParams.WRAP_CONTENT;
-        llBodyChild.setLayoutParams(params);
-    }
 
      private void setImage(int pos , ShapeableImageView image,ProgressBar progressBar){
-       double imageWidth = image.getWidth();
-       double imageHeight = image.getHeight();
-       if(imageHeight>imageWidth*1.5){
-           imageHeight = imageWidth * 1.5;
-           LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) image.getLayoutParams();
-           params.height = (int) imageHeight;
-           image.setLayoutParams(params);
-       }
-   if(list.get(pos).getUri() != null){
-       Uri uri = list.get(pos).getUri();
-       progressBar.setVisibility(View.VISIBLE);
-       Picasso.get().load(uri).placeholder(R.color.forest_Green).into(image, new Callback() {
-                   @Override
-                   public void onSuccess() {
-                       progressBar.setVisibility(View.GONE);
-                   }
-
-                   @Override
-                   public void onError(Exception e) {
-                       progressBar.setVisibility(View.GONE);
-                   }
-               });
-   }else {
-           String url = list.get(pos).getUrl();
-           String fileName = "Title_" + list.get(pos).getId() + ".jpg";
-           File imageFile = new File(mContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES), fileName);
-           if (imageFile.exists()) {
-               Log.e(TAG, "setImage: exist" );
-               // Load image from the device storage
-               progressBar.setVisibility(View.GONE);
-               Uri imageUri = Uri.fromFile(imageFile);
-               Picasso.get().load(imageUri).into(image);
-               list.get(pos).setUri(imageUri);
-           } else {
-               Log.e(TAG, "setImage: not Exist" );
-               // Make API call to download image
-               progressBar.setVisibility(View.VISIBLE);
-               Picasso.get().load(url).placeholder(R.color.forest_Green).into(image, new Callback() {
-                   @Override
-                   public void onSuccess() {
-                       progressBar.setVisibility(View.GONE);
-                       Bitmap bitmap = ((BitmapDrawable) image.getDrawable()).getBitmap();
-                       Uri imageUri = getImageUri(list.get(pos), mContext, bitmap);
-                       list.get(pos).setUri(imageUri);
-                   }
-
-                   @Override
-                   public void onError(Exception e) {
-                       progressBar.setVisibility(View.GONE);
-                       e.getMessage();
-                   }
-               });
+           double imageWidth = image.getWidth();
+           double imageHeight = image.getHeight();
+           if(imageHeight>imageWidth*1.5){
+               imageHeight = imageWidth * 1.5;
+               LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) image.getLayoutParams();
+               params.height = (int) imageHeight;
+               image.setLayoutParams(params);
            }
-       }
+           if(list.get(pos).getUri() != null){
+               Uri uri = list.get(pos).getUri();
+               progressBar.setVisibility(View.VISIBLE);
+               Picasso.get().load(uri).placeholder(R.color.forest_Green).into(image, new Callback() {
+                   @Override
+                   public void onSuccess() {
+                       progressBar.setVisibility(View.GONE);
+                   }
+
+                   @Override
+                   public void onError(Exception e) {
+                       progressBar.setVisibility(View.GONE);
+                   }
+               });
+           }else {
+               String url = list.get(pos).getUrl();
+               String fileName = "Title_" + list.get(pos).getId() + ".jpg";
+               File imageFile = new File(mContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES), fileName);
+               if (imageFile.exists()) {
+                   Log.e(TAG, "setImage: exist" );
+                   // Load image from the device storage
+                   progressBar.setVisibility(View.GONE);
+                   Uri imageUri = Uri.fromFile(imageFile);
+                   Picasso.get().load(imageUri).into(image);
+                   list.get(pos).setUri(imageUri);
+               } else {
+                   Log.e(TAG, "setImage: not Exist" );
+                   // Make API call to download image
+                   progressBar.setVisibility(View.VISIBLE);
+                   Picasso.get().load(url).placeholder(R.color.forest_Green).into(image, new Callback() {
+                       @Override
+                       public void onSuccess() {
+                           progressBar.setVisibility(View.GONE);
+                           Bitmap bitmap = ((BitmapDrawable) image.getDrawable()).getBitmap();
+                           Uri imageUri = getImageUri(list.get(pos), mContext, bitmap);
+                           list.get(pos).setUri(imageUri);
+                       }
+
+                       @Override
+                       public void onError(Exception e) {
+                           progressBar.setVisibility(View.GONE);
+                           e.getMessage();
+                       }
+                   });
+               }
+           }
 
     }
 
      private void setDate(int pos , TextView date_tv){
         String date = app.getDateFromTimeStamp(list.get(pos).getTimeStamp()) ;
-        Log.w(TAG, "setDate: "+date );
         String time = date.split(",")[1]+date.split(",")[3];
         date_tv.setText(time);
     }
@@ -281,10 +282,8 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public int getItemViewType(int position) {
        Message message = list.get(position);
         if (message.getSenderId().equals(userId)) {
-
             return SENDER;
         } else{
-
             return RECEIVER;
         }
     }
@@ -294,12 +293,11 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return list.size();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void setList(ArrayList<Message> list , String userId , OnItemListener onItemListener) {
         this.list = list;
-        this.mContext = mContext;
         this.userId = userId ;
         this.pOnItemListener = onItemListener;
-
         notifyDataSetChanged();
     }
 
@@ -307,40 +305,38 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         TextView body_tv , date_tv;
         ShapeableImageView image_sim;
         ImageView status_im;
-        LinearLayout llParent ,llChatBody,llBackground,llDate;
+        LinearLayout llDate;
         RelativeLayout rlImage;
         ProgressBar progressBar;
         ConstraintLayout clBody;
         OnItemListener onItemListener;
         public SenderViewHolder(@NonNull View v, OnItemListener onItemListener) {
             super(v);
-            body_tv = v.findViewById(R.id.tv_body_chat_sender_holder);
-            date_tv =v.findViewById(R.id.tv_date_chat_sender_holder);
-            image_sim =v.findViewById(R.id.sim_body_chat_sender_holder);
-            status_im = v.findViewById(R.id.im_message_status_chat_sender_holder);
-
-            llDate = v.findViewById(R.id.ll_date_chat_sender_holder);
-            rlImage =v.findViewById(R.id.rl_image_chat_sender_holder);
-            clBody =v.findViewById(R.id.cl_body_image_chat_sender_holder);
-            progressBar = v.findViewById(R.id.progressBar_image_chat_sender_holder);
+            body_tv = senderHolderBinding.tvBodyChatSenderHolder;
+            date_tv = senderHolderBinding.tvDateChatSenderHolder;
+            image_sim = senderHolderBinding.simBodyChatSenderHolder;
+            status_im = senderHolderBinding.imMessageStatusChatSenderHolder;
+            llDate = senderHolderBinding.llDateChatSenderHolder;
+            rlImage = senderHolderBinding.rlImageChatSenderHolder;
+            clBody = senderHolderBinding.clBodyImageChatSenderHolder;
+            progressBar = senderHolderBinding.progressBarImageChatSenderHolder;
 
             this.onItemListener = onItemListener;
             v.setOnClickListener(this);
 
         }
-
         @Override
         public void onClick(View v) {
-            if(list.get(getAdapterPosition()).getUri()==null){
-                onItemListener.getImagePosition(list.get(getAdapterPosition()).getUrl());
-            }else onItemListener.getImagePosition(list.get(getAdapterPosition()).getUri().toString());
+            if(list.get(getBindingAdapterPosition()).getUri()==null){
+                onItemListener.getImagePosition(list.get(getBindingAdapterPosition()).getUrl(),getBindingAdapterPosition());
+            }else onItemListener.getImagePosition(list.get(getBindingAdapterPosition()).getUri().toString(),getBindingAdapterPosition());
         }
     }
 
     class ReceiverViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
          TextView body_tv , date_tv;
          ShapeableImageView image_sim;
-         LinearLayout llParent ,llChatBody,llBackground , llDate;
+         LinearLayout llDate;
         ProgressBar progressBar;
         RelativeLayout rlImage;
         ConstraintLayout clBody;
@@ -348,15 +344,13 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         OnItemListener onItemListener;
         public ReceiverViewHolder(@NonNull View v, OnItemListener onItemListener) {
             super(v);
-            body_tv = v.findViewById(R.id.tv_body_chat_receiver_holder);
-            date_tv =v.findViewById(R.id.tv_date_chat_receiver_holder);
-            image_sim =v.findViewById(R.id.sim_body_chat_receiver_holder);
-
-            llDate = v.findViewById(R.id.ll_date_chat_receiver_holder);
-            rlImage =v.findViewById(R.id.rl_image_chat_receiver_holder);
-            clBody =v.findViewById(R.id.cl_body_image_chat_receiver_holder);
-
-            progressBar = v.findViewById(R.id.progressBar_image_chat_receiver_holder);
+            body_tv = receiverHolderBinding.tvBodyChatReceiverHolder;
+            date_tv = receiverHolderBinding.tvDateChatReceiverHolder;
+            image_sim =receiverHolderBinding.simBodyChatReceiverHolder;
+            llDate = receiverHolderBinding.llDateChatReceiverHolder;
+            rlImage =receiverHolderBinding.rlImageChatReceiverHolder;
+            clBody =receiverHolderBinding.clBodyImageChatReceiverHolder;
+            progressBar = receiverHolderBinding.progressBarImageChatReceiverHolder;
 
             this.onItemListener = onItemListener;
             v.setOnClickListener(this);
@@ -364,9 +358,9 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         @Override
         public void onClick(View v) {
-            if(list.get(getAdapterPosition()).getUri()==null){
-                onItemListener.getImagePosition(list.get(getAdapterPosition()).getUrl());
-            }else onItemListener.getImagePosition(list.get(getAdapterPosition()).getUri().toString());
+            if(list.get(getBindingAdapterPosition()).getUri()==null){
+                onItemListener.getImagePosition(list.get(getBindingAdapterPosition()).getUrl(),getBindingAdapterPosition());
+            }else onItemListener.getImagePosition(list.get(getBindingAdapterPosition()).getUri().toString(),getBindingAdapterPosition());
         }
     }
 
@@ -376,14 +370,14 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
    }
 
     public interface OnItemListener {
-        void getImagePosition(String uri);
+        void getImagePosition(String uri,int pos);
     }
     public ArrayList<Message> getList(){
         return list;
     }
     public void updateItem(int position, Message message) {
         list.set(position, message);
-        notifyItemChanged(position);
+        notifyItemChanged(position,message);
     }
     public Uri getImageUri(Message message , Context inContext, Bitmap inImage) {
         String fileName = "Title_" + message.getId() + ".jpg";

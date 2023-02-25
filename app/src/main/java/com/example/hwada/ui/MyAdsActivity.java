@@ -35,6 +35,7 @@ public class MyAdsActivity extends AppCompatActivity implements MyAdsAdapter.OnI
     UserViewModel userViewModel ;
     ActivityMyAdsBinding binding ;
     User user;
+    MyAdsAdapter myAdsAdapter;
     AdsViewModel adsViewModel ;
     private App app;
     private static final String TAG = "MyAdsActivity";
@@ -55,18 +56,20 @@ public class MyAdsActivity extends AppCompatActivity implements MyAdsAdapter.OnI
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
         adsViewModel = new ViewModelProvider(this).get(AdsViewModel.class);
         user = intent.getParcelableExtra(getString(R.string.userVal));
+        user.setAds(new ArrayList<>());
+
         debounceHandler = new Handler();
         app = (App) getApplication();
         binding.shimmerMyAdsActivity.startShimmer();
+        myAdsAdapter = new MyAdsAdapter(this);
+        setRecycler();
         setAdsListener();
     }
 
     private void setRecycler(){
         closeShimmer();
         binding.myAdsRecycler.setVisibility(View.VISIBLE);
-        MyAdsAdapter myAdsAdapter = new MyAdsAdapter(this);
-        if(!user.getAds().isEmpty()) binding.myAdsRecycler.setBackgroundResource(R.drawable.recycle_view_background);
-        myAdsAdapter.setList(user ,this);
+        myAdsAdapter.setList(user,this);
         binding.myAdsRecycler.setAdapter(myAdsAdapter);
         binding.myAdsRecycler.setLayoutManager(new LinearLayoutManager(this));
     }
@@ -90,7 +93,6 @@ public class MyAdsActivity extends AppCompatActivity implements MyAdsAdapter.OnI
     @Override
     public void getClickedItemMenu(int position,ImageView imageView) {
        callPopupMenu(position,imageView);
-
     }
 
     private void callPopupMenu(int position,ImageView imageView) {
@@ -165,12 +167,16 @@ public class MyAdsActivity extends AppCompatActivity implements MyAdsAdapter.OnI
     }
 
     private void setAdsListener(){
-        userViewModel.setUserAdsListener(user.getUId()).observe(this, new Observer<ArrayList<Ad>>() {
-            @Override
-            public void onChanged(ArrayList<Ad> ads) {
-                user.setAds(ads);
-                setRecycler();
+        userViewModel.setUserAdsListener(user.getUId()).observe(this, ads -> {
+            for (Ad ad: ads) {
+                int pos = user.getAds().indexOf(ad);
+                if(pos == -1){
+                    myAdsAdapter.addNewItem(ad);
+                }else {
+                    myAdsAdapter.updateItem(ad,pos);
+                }
             }
+            if(!user.getAds().isEmpty()) binding.myAdsRecycler.setBackgroundResource(R.drawable.recycle_view_background);
         });
     }
 }

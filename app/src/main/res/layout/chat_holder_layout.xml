@@ -54,6 +54,7 @@
                         app:shapeAppearanceOverlay="@style/Circular"
                         android:adjustViewBounds="true"
                         android:scaleType="centerCrop"
+                        android:background="@color/white_blue"
                         app:strokeColor="@null"
                         android:layout_marginStart="5dp"
                         android:layout_gravity="center" />

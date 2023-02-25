@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -42,6 +43,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 public class ChatFragment extends Fragment implements ChatAdapter.OnItemListener {
 
@@ -54,30 +56,33 @@ public class ChatFragment extends Fragment implements ChatAdapter.OnItemListener
 
     private static final String TAG = "ChatFragment";
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentChatBinding.inflate(inflater, container, false);
+        chatList = new ArrayList<>();
         return binding.getRoot();
     }
 
+
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        user = getArguments().getParcelable("user");
+        assert getArguments() != null;
+        user = getArguments().getParcelable(getString(R.string.userVal));
 
-        chatViewModel = new ViewModelProvider(this, (ViewModelProvider.Factory) new ViewModelProvider.AndroidViewModelFactory(getActivity().getApplication()))
-                .get(ChatViewModel.class);
+        chatViewModel = new ViewModelProvider(this).get(ChatViewModel.class);
         adapter = new ChatAdapter(getContext());
-
-        chatListener();
+        if(getActivity()!=null){
+            setRecycler();
+            chatListener();
+        }
     }
 
     private void setRecycler(){
         adapter.setList(user.getUId(),chatList,this);
         binding.recyclerChatFragment.setAdapter(adapter);
-        if(chatList.size()==0)binding.recyclerChatFragment.setBackgroundResource(R.drawable.empty_page);
         binding.recyclerChatFragment.setLayoutManager( new LinearLayoutManager(getContext()));
     }
 
@@ -94,7 +99,7 @@ public class ChatFragment extends Fragment implements ChatAdapter.OnItemListener
 
     public void callImageDialog(int pos) {
         Bundle bundle = new Bundle();
-        bundle.putString("image", chatList.get(pos).getAd().getImagesUrl().get(0));
+        bundle.putString(getString(R.string.imageVal), chatList.get(pos).getAd().getImagesUrl().get(0));
         ImageMiniDialogFragment fragment = new ImageMiniDialogFragment();
         fragment.setArguments(bundle);
         FragmentManager fragmentManager = getChildFragmentManager();
@@ -103,62 +108,33 @@ public class ChatFragment extends Fragment implements ChatAdapter.OnItemListener
 
     public void callChatActivity(int pos){
         Intent intent = new Intent(getActivity(), ChatActivity.class);
-        intent.putExtra("user",user);
-        intent.putExtra("chat",chatList.get(pos));
+        intent.putExtra(getString(R.string.userVal),user);
+        intent.putExtra(getString(R.string.chatVal),chatList.get(pos));
         startActivity(intent);
     }
 
 
     private void chatListener(){
-        chatViewModel.chatListener(user.getUId()).observe(getActivity(), new Observer<ArrayList<Chat>>() {
-            @Override
-            public void onChanged(ArrayList<Chat> chats) {
-                binding.loadingChatFragment.setVisibility(View.GONE);
-                handelRecyclerWhenChatChanged(chats);
+        chatViewModel.chatListener(user.getUId()).observe(getActivity(), chats -> {
+            binding.loadingChatFragment.setVisibility(View.GONE);
+            chats = rearrangeList(chats);
+            for (Chat chat:chats) {
+                int pos  = chatList.indexOf(chat);
+                if(pos == -1){
+                    adapter.addItem(chat);
+                }else{
+                    if(chatList.get(pos).getLastMessage().isNewMessage(chat.getLastMessage())) {
+                        adapter.updateChatWithNewMessage(chat, pos);
+                    }
+                   else {
+                       adapter.updateChat(chat,pos);
+                   }
+                }
             }
         });
     }
 
-    private void handelRecyclerWhenChatChanged(ArrayList<Chat>chats){
-        chats = checkChatList(chats);
-        if(chatList == null) {
-            //get all messages
-            chatList = checkChatList(chats);
-            setRecycler();
-        }else {
-            for (Chat c:chats) {
-                int pos  = chatList.indexOf(c) ;
-                if(pos==-1){
-                    //add new chat
-                    adapter.addItem(c,0);
-                    setRecycler();
-                }else{
-                    if(!chatList.get(pos).getLastMessage().getId().equals(c.getLastMessage().getId())){
-                        if(c.getLastMessage().isSent()){
-                            adapter.updateLastMessage(pos,c.getLastMessage());
-                            setRecycler();
-                        }
-                    }else {
-                        //update status
-                        if(chatList.get(pos).getLastMessage().isStatusChanged(c.getLastMessage())){
-                            adapter.updateLastMessageStatus(pos,c.getLastMessage());
-                            setRecycler();
-                        }
-                    }
-                }
-            }
-        }
-
-
+    private ArrayList<Chat> rearrangeList(ArrayList<Chat> chats){
+       return chats.stream().sorted(Comparator.comparing(chat -> chat.getLastMessage().getTimeStamp())).collect(Collectors.toCollection(ArrayList::new));
     }
-    private ArrayList<Chat> checkChatList(ArrayList<Chat> chat){
-        ArrayList<Chat> temp = new ArrayList<>();
-        for (int i = 0; i < chat.size(); i++) {
-            if(chat.get(i).getLastMessage()!=null){
-                temp.add(chat.get(i));
-            }
-        }
-        return temp;
-    }
-
 }

@@ -107,7 +107,7 @@ public class MessageRepo {
             @Nullable
             @Override
             public Object apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
-
+               message.setSent(true);
                transaction.set(docSenderRef,message);
                //update last message in chat collection
                Map<String,Object> data = new HashMap<>();
@@ -127,7 +127,7 @@ public class MessageRepo {
             @Override
             public void onComplete(@NonNull Task<Object> task) {
                 if(task.isSuccessful()){
-                    changeMessageStatusToSent(message,chatId);
+                    //changeMessageStatusToSent(message,chatId);
                     sendMessage.setValue(message);
                 }
             }

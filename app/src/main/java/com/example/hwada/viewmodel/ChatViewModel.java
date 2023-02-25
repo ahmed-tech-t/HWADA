@@ -29,9 +29,6 @@ public class ChatViewModel extends AndroidViewModel {
         return repo.addNewChat(fromUserId,chat);
     }
 
-    public LiveData<ArrayList<Chat>> getAllChats(String userId){
-        return  repo.getALlChats(userId);
-    }
     public LiveData<ArrayList<Chat>> chatListener(String userId){
         return repo.chatListener(userId);
     }

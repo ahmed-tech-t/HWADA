@@ -196,6 +196,15 @@ public class Message implements Parcelable {
         this.timeStamp = timeStamp;
     }
 
+    public boolean isStatusChanged(Message m){
+        if(this.sent != m.isSent()) return true;
+        if(this.seen!= m.isSeen()) return true;
+        if(this.delivered!= m.isDelivered()) return true;
+        return false;
+    }
+    public boolean isNewMessage(Message m){
+        return !this.getId().equals(m.getId());
+    }
     @Override
     public String toString() {
         return "Message{" +
@@ -221,12 +230,6 @@ public class Message implements Parcelable {
         return false;
     }
 
-    public boolean isStatusChanged(Message m){
-        if(this.sent!= m.sent)return true;
-        if (this.delivered!= m.delivered)return true;
-        if(this.seen != m.seen) return  true;
-        return false;
-    }
 
     public String printStatus(){
         return  ", seen=" + seen +

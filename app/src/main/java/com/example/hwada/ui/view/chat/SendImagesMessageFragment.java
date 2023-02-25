@@ -7,6 +7,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -66,8 +67,9 @@ public class SendImagesMessageFragment extends DialogFragment implements Message
 
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        assert getArguments() != null;
         messages = getArguments().getParcelableArrayList("messages");
         imagesUri = getArguments().getStringArrayList("imagesUri");
         receiverName =  getArguments().getString("receiverName");

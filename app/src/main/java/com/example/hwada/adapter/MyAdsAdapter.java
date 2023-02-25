@@ -53,7 +53,7 @@ public class MyAdsAdapter extends RecyclerView.Adapter<MyAdsAdapter.MyAdsViewHol
     public MyAdsAdapter(Context context){
         this.mContext =context;
         list = new ArrayList<>();
-      app = (App) mContext.getApplicationContext();
+        app = (App) mContext.getApplicationContext();
     }
     @NonNull
     @Override
@@ -134,6 +134,7 @@ public class MyAdsAdapter extends RecyclerView.Adapter<MyAdsAdapter.MyAdsViewHol
     @SuppressLint("NotifyDataSetChanged")
     public void setList(User user, OnItemListener onItemListener) {
         this.user = user;
+        if(user.getAds()==null) user.setAds(new ArrayList<>());
         this.list = user.getAds();
         this.pOnItemListener = onItemListener;
         notifyDataSetChanged();
@@ -211,5 +212,12 @@ public class MyAdsAdapter extends RecyclerView.Adapter<MyAdsAdapter.MyAdsViewHol
         }
         return dateString.split(",")[0]+dateString.split(",")[3];
     }
-
+    public void addNewItem(Ad ad){
+        list.add(ad);
+        notifyItemInserted(list.size()-1);
+    }
+    public void updateItem(Ad ad , int pos){
+        list.set(pos,ad);
+        notifyItemChanged(pos);
+    }
 }

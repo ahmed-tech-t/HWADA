@@ -224,6 +224,9 @@ public class App extends Application {
     }
     public int getDayIndex(){
         Calendar calendar = Calendar.getInstance();
-        return calendar.get(Calendar.DAY_OF_WEEK);
+        int dayIndex =calendar.get(Calendar.DAY_OF_WEEK);
+        if(dayIndex==7) dayIndex =0;
+        Log.d(TAG, "getDayIndex:"+dayIndex);
+        return dayIndex;
     }
 }

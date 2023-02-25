@@ -10,6 +10,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -33,6 +34,7 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
@@ -86,6 +88,11 @@ public class EditUserFragment extends BottomSheetDialogFragment implements View.
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setBottomSheet(view);
+        assert getArguments() != null;
+        user = getArguments().getParcelable("user");
+        setDataToFields();
+        spinnerListener();
+        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
     }
 
 
@@ -128,14 +135,7 @@ public class EditUserFragment extends BottomSheetDialogFragment implements View.
         setStyle(BottomSheetDialogFragment.STYLE_NORMAL, R.style.CustomBottomSheetDialogTheme);
 
     }
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        user = getArguments().getParcelable("user");
-        setDataToFields();
-        spinnerListener();
-        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
-    }
+
     private void setDataToFields(){
         binding.userNameEditUserFragment.setText(user.getUsername());
         binding.aboutUEditUserFragment.setText(user.getAboutYou());
@@ -158,11 +158,14 @@ public class EditUserFragment extends BottomSheetDialogFragment implements View.
             else app.requestStoragePermissions(getContext());
         }else if(v.getId() == binding.saveButtonAddNewAd.getId()){
             if(fieldsNotEmpty()){
+                String phone = binding.phoneEditUserFragment.getText().toString();
+                String userName = binding.userNameEditUserFragment.getText().toString();
+                String aboutYou = binding.aboutUEditUserFragment.getText().toString();
                 app.hideKeyboardFrom(getContext(), v);
                 tempUser.setUId(user.getUId());
-                tempUser.setPhone(binding.phoneEditUserFragment.getText().toString());
-                tempUser.setUsername(binding.userNameEditUserFragment.getText().toString());
-                tempUser.setAboutYou(binding.aboutUEditUserFragment.getText().toString());
+                tempUser.setPhone(phone.trim());
+                tempUser.setUsername(userName.trim());
+                tempUser.setAboutYou(aboutYou.trim());
                 updateUser();
             }
         }
@@ -170,6 +173,7 @@ public class EditUserFragment extends BottomSheetDialogFragment implements View.
 
     private void updateUser(){
         userViewModel.updateUser(tempUser);
+        showToast(getString(R.string.updateProfileMessage));
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
     }
 
@@ -232,5 +236,26 @@ public class EditUserFragment extends BottomSheetDialogFragment implements View.
        return false;
    }
 
+    private Toast mCurrentToast;
+    public void showToast(String message) {
+        if (mCurrentToast == null) {
+            mCurrentToast = Toast.makeText(this.getContext(), message, Toast.LENGTH_SHORT);
+            mCurrentToast.show();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                mCurrentToast.addCallback(new Toast.Callback() {
+                    @Override
+                    public void onToastShown() {
+                        super.onToastShown();
+                    }
+
+                    @Override
+                    public void onToastHidden() {
+                        super.onToastHidden();
+                        mCurrentToast = null;
+                    }
+                });
+            }
+        }
+    }
 
 }

@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -96,25 +97,23 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(view);
         // get user data
         Intent intent = getIntent();
-        user =  intent.getParcelableExtra("user");
-        chat = intent.getParcelableExtra("chat");
+        user =  intent.getParcelableExtra(getString(R.string.userVal));
+        chat = intent.getParcelableExtra(getString(R.string.chatVal));
         binding.shimmerChatActivity.startShimmer();
-
         ad = chat.getAd();
 
+
         app = (App) getApplication();
-
         setSendImageWhenLanguageIsArabic();
-
         advertiserFragment = new AdvertiserFragment();
-
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
-        messageViewModel = ViewModelProviders.of(this).get(MessageViewModel.class);
-        chatViewModel = ViewModelProviders.of(this).get(ChatViewModel.class);
+        messageViewModel = new ViewModelProvider(this).get(MessageViewModel.class);
+        chatViewModel = new ViewModelProvider (this).get(ChatViewModel.class);
 
         adapter = new MessageAdapter(this,chat.getId(),messageViewModel);
         messagesList = new ArrayList<>();
 
+        setRecycler();
         setListeners();
         setDataToFields();
         getAllMessages();
@@ -122,27 +121,18 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-
     private void messagesObserver(){
-        messageViewModel.messagesListener(user.getUId(),chat.getId()).observe(this, new Observer<ArrayList<Message>>() {
-            @Override
-            public void onChanged(ArrayList<Message> messages) {
-                if (messages != null) {
-                    for (Message m : messages) {
-                        int index = messagesList.indexOf(m);
-                        if (index != -1) {
-                                messagesList.set(index, m);
-                                adapter.notifyDataSetChanged();
-                        } else {
-                            messagesList.add(m);
-                            adapter.notifyItemInserted(messagesList.size()-1);
-                        }
-                    }
-                    binding.recyclerChatActivity.smoothScrollToPosition(messagesList.size() - 1);
+        messageViewModel.messagesListener(user.getUId(),chat.getId()).observe(this, messages -> {
+            for (Message message: messages) {
+                int pos = messagesList.indexOf(message);
+                if(pos==-1){
+                    adapter.addItem(message);
+                }else {
+                    adapter.updateItem(pos,message);
                 }
+                binding.recyclerChatActivity.smoothScrollToPosition(messagesList.size() - 1);
             }
         });
-
     }
 
     private void setListeners(){
@@ -175,7 +165,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         //scroll recycle to the bottom
         binding.recyclerChatActivity.addOnLayoutChangeListener((view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
             if (bottom < oldBottom) {
-                Log.e(TAG, "setListeners: inside");
                 binding.recyclerChatActivity.getLayoutManager().smoothScrollToPosition(binding.recyclerChatActivity, null, messagesList.size());
             }
         });
@@ -188,24 +177,19 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void setReceiverListener(){
-        userViewModel.userListener(chat.getReceiver().getUId()).observe(this, new Observer<User>() {
-            @Override
-            public void onChanged(User u) {
-                chat.setReceiver(u);
-                setUserStatusToView(u.getStatus());
-                binding.tvReceiverLastSeenChatActivity.setText(getString(R.string.lastSeen)+" "+handleTime(chat.getReceiver().getLastSeen()));
-                binding.tvReceiverNameChatActivity.setText(chat.getReceiver().getUsername());
-            }
+        userViewModel.userListener(chat.getReceiver().getUId()).observe(this, u -> {
+            chat.setReceiver(u);
+            setUserStatusToView(u.getStatus());
+            binding.tvReceiverNameChatActivity.setText(chat.getReceiver().getUsername());
+            Glide.with(getApplication()).load(u.getImage()).into(binding.simReceiverImageChatActivity);
         });
     }
+    @SuppressLint("SetTextI18n")
     private void setUserStatusToView(String status){
-        binding.simUserStatus.setVisibility(View.VISIBLE);
         if(status.equals(DbHandler.ONLINE)){
-            binding.tvReceiverLastSeenChatActivity.setVisibility(View.GONE);
-            binding.simUserStatus.setBackgroundColor(getResources().getColor(R.color.green));
+            binding.tvReceiverLastSeenChatActivity.setText(getText(R.string.onlineVal));
         }else {
-            binding.tvReceiverLastSeenChatActivity.setVisibility(View.VISIBLE);
-            binding.simUserStatus.setBackgroundColor(Color.RED);
+            binding.tvReceiverLastSeenChatActivity.setText(getString(R.string.lastSeen)+" "+handleTime(chat.getReceiver().getLastSeen()));
         }
     }
 
@@ -225,24 +209,20 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         adapter.setList(messagesList ,user.getUId(),this);
         binding.recyclerChatActivity.setAdapter(adapter);
         binding.recyclerChatActivity.setLayoutManager(new LinearLayoutManager(this));
-
         binding.recyclerChatActivity.setItemAnimator(new DefaultItemAnimator());
         binding.recyclerChatActivity.setNestedScrollingEnabled(false);
         binding.recyclerChatActivity.setHasFixedSize(true);
-       // scrollRecycleViewToBottom();
+        scrollRecycleViewToBottom();
         messagesObserver();
     }
 
     private void getAllMessages(){
-        messageViewModel.getAllMessages(user.getUId(),chat.getId()).observe(this, new Observer<ArrayList<Message>>() {
-            @Override
-            public void onChanged(ArrayList<Message> messages) {
-                messagesList = messages;
-                binding.shimmerChatActivity.setVisibility(View.GONE);
-                binding.shimmerChatActivity.stopShimmer();
-                binding.recyclerChatActivity.setVisibility(View.VISIBLE);
-                setRecycler();
-            }
+        messageViewModel.getAllMessages(user.getUId(),chat.getId()).observe(this, messages -> {
+            messagesList = messages;
+            binding.shimmerChatActivity.setVisibility(View.GONE);
+            binding.shimmerChatActivity.stopShimmer();
+            binding.recyclerChatActivity.setVisibility(View.VISIBLE);
+            setRecycler();
         });
     }
 
@@ -251,15 +231,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
         Message newMessage = new Message(app.getCurrentDate(),s,user.getUId(),chat.getReceiver().getUId());
 
-        saveMessage(messageViewModel.getMessageId(newMessage,ad));
+        sendMessage(messageViewModel.getMessageId(newMessage,ad));
     }
-    private void saveMessage(Message newMessage){
-        messageViewModel.sendMessage(newMessage,ad).observe(this, new Observer<Message>() {
-            @Override
-            public void onChanged(Message message) {
-                if(message!=null){
-                    changeMessageStatusToSend(message);
-                }
+    private void sendMessage(Message newMessage){
+        messageViewModel.sendMessage(newMessage,ad).observe(this, message -> {
+            if(message!=null){
+                int pos = messagesList.indexOf(message);
+                if(pos!=-1) adapter.updateItem(pos,message);
             }
         });
         adapter.addItem(newMessage);
@@ -369,13 +347,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             if(uri != null){
                 ArrayList<Message>tempMessages = new ArrayList<>();
 
-             ArrayList<String> list  = new ArrayList<>();
+                ArrayList<String> list  = new ArrayList<>();
                 list.add(uri.toString());
 
                 tempMessages.add(new Message(app.getCurrentDate(),uri,user.getUId(),chat.getReceiver().getUId()));
 
-                //TODO
-                 callSendImagesFragment(tempMessages,list);
+                callSendImagesFragment(tempMessages,list);
             }
             mCurrentPhotoPath = null;
         }
@@ -424,7 +401,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void getSendMessage(ArrayList<Message> messages) {
         for (int i = 0;i<messages.size();i++) {
-            saveMessage(messageViewModel.getMessageId(messages.get(i),ad));
+            sendMessage(messageViewModel.getMessageId(messages.get(i),ad));
         }
     }
 
@@ -436,36 +413,30 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    public void getImagePosition(String uri) {
-        if(app.checkStoragePermissions()){
-            ArrayList<String> uris = new ArrayList<>();
-            uris.add(uri);
-            callImagesFullDialogFragment(uris,0);
-        }else app.requestStoragePermissions(this);
+    public void getImagePosition(String uri , int pos) {
+        Message message = messagesList.get(pos);
+        if(message.getUrl()!=null){
+            if(app.checkStoragePermissions()){
+                ArrayList<String> uris = new ArrayList<>();
+                uris.add(uri);
+                callImagesFullDialogFragment(uris,0);
+            }else app.requestStoragePermissions(this);
+        }
     }
 
     private void callImagesFullDialogFragment(ArrayList<String> url,int pos){
         ImagesFullDialogFragment fragment = new ImagesFullDialogFragment();
         Bundle bundle = new Bundle();
-        bundle.putStringArrayList("imagesUrl", url);
-        bundle.putInt("pos",pos);
+        bundle.putStringArrayList(getString(R.string.imagesUrlVal), url);
+        bundle.putInt(getString(R.string.posVal),pos);
         fragment.setArguments(bundle);
         fragment.setArguments(bundle);
         fragment.show(getSupportFragmentManager(),fragment.getTag());
     }
-    private void changeMessageStatusToSend(Message message){
-        for (int i = 0; i < messagesList.size(); i++) {
-            if(messagesList.get(i).getId().equals(message.getId())){
-                messagesList.get(i).setSent(true);
-                adapter.notifyDataSetChanged();
-            }
-        }
-    }
-
     private void callUserProfileActivity(){
         Intent intent = new Intent(this, UserProfileActivity.class);
-        intent.putExtra("receiver",chat.getReceiver());
-        intent.putExtra("user",user);
+        intent.putExtra(getString(R.string.receiver),chat.getReceiver());
+        intent.putExtra(getString(R.string.userVal),user);
     startActivity(intent);
     }
     public String handleTime(Timestamp timestamp){
@@ -493,8 +464,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private void callAdvertiserFragment(){
         if(!advertiserFragment.isAdded()){
             Bundle bundle = new Bundle();
-            bundle.putParcelable("user", user);
-            bundle.putParcelable("ad",chat.getAd());
+            bundle.putParcelable(getString(R.string.userVal), user);
+            bundle.putParcelable(getString(R.string.adVal),chat.getAd());
             advertiserFragment.setArguments(bundle);
             advertiserFragment.show(getSupportFragmentManager(),advertiserFragment.getTag());
         }

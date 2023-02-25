@@ -1,5 +1,6 @@
 package com.example.hwada.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -15,8 +16,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.hwada.R;
+import com.example.hwada.databinding.ImageLayoutBinding;
 import com.example.hwada.util.GlideImageLoader;
 import com.github.chrisbanes.photoview.PhotoView;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,19 +29,28 @@ public class MessagesImageWithCaptionAdapter extends RecyclerView.Adapter<Messag
     private ArrayList<String> list = new ArrayList();
     Context mContext;
     OnItemListener pOnItemListener;
-
+    ImageLayoutBinding binding;
     @NonNull
     @Override
     public MessagesImageWithCaptionViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new MessagesImageWithCaptionViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.image_layout, parent, false), pOnItemListener);
+        binding = ImageLayoutBinding.inflate(LayoutInflater.from(parent.getContext()),parent,false);
+        return new MessagesImageWithCaptionViewHolder(binding.getRoot(),pOnItemListener);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MessagesImageWithCaptionViewHolder holder, int position) {
         String url = list.get(position);
-        RequestOptions options = new RequestOptions()
-                .priority(Priority.HIGH);
-        new GlideImageLoader(holder.image,new ProgressBar(mContext)).load(url,options);
+        Picasso.get().load(url).into(holder.image, new Callback() {
+            @Override
+            public void onSuccess() {
+                holder.progressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onError(Exception e) {
+
+            }
+        });
     }
 
     @Override
@@ -45,7 +58,8 @@ public class MessagesImageWithCaptionAdapter extends RecyclerView.Adapter<Messag
         return list.size();
     }
 
-    public void setList(ArrayList<String> list,Context mContext, OnItemListener onItemListener) {
+    @SuppressLint("NotifyDataSetChanged")
+    public void setList(ArrayList<String> list, Context mContext, OnItemListener onItemListener) {
         this.list = list;
         this.mContext = mContext;
         this.pOnItemListener = onItemListener;
@@ -57,9 +71,11 @@ public class MessagesImageWithCaptionAdapter extends RecyclerView.Adapter<Messag
 
         OnItemListener onItemListener;
         PhotoView image ;
+        ProgressBar progressBar;
         public MessagesImageWithCaptionViewHolder(@NonNull View v, OnItemListener onItemListener) {
             super(v);
-            image = v.findViewById(R.id.im_image_layout);
+            image = binding.imImageLayout;
+            progressBar = binding.progressBarImageLayout;
             this.onItemListener = onItemListener;
             v.setOnClickListener(this);
         }

@@ -1,5 +1,6 @@
 package com.example.hwada.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,6 +18,7 @@ import com.example.hwada.Model.Chat;
 import com.example.hwada.Model.Message;
 import com.example.hwada.R;
 import com.example.hwada.application.App;
+import com.example.hwada.databinding.ChatHolderLayoutBinding;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.Timestamp;
@@ -34,6 +36,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
     Context mContext;
     String userId;
     App app;
+    ChatHolderLayoutBinding binding;
     private static final String TAG = "ChatAdapter";
 
     public ChatAdapter(Context context){
@@ -46,12 +49,13 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
     @NonNull
     @Override
     public ChatViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ChatViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.chat_holder_layout, parent, false), pOnItemListener);
+        binding = ChatHolderLayoutBinding.inflate(LayoutInflater.from(parent.getContext()),parent,false);
+        return new ChatViewHolder(binding.getRoot(),pOnItemListener);
     }
 
     @Override
     public long getItemId(int position) {
-        return super.getItemId(position);
+        return  list.get(position).getId().hashCode();
     }
 
     @Override
@@ -63,9 +67,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
     public void onBindViewHolder(@NonNull ChatViewHolder holder, int position) {
         holder.setIsRecyclable(false);
 
-        Message lastMessage = list.get(position).getLastMessage();
-
-        //TODO bug java.lang.NullPointerException: Attempt to invoke virtual method 'java.util.List com.example.hwada.Model.Ad.getImagesUrl()' on a null object reference
        //add title and image
         Glide.with(mContext).load(list.get(position).getAd().getImagesUrl().get(0)).into(holder.adImage);
         holder.title.setText(list.get(position).getAd().getTitle());
@@ -74,11 +75,21 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
         Glide.with(mContext).load(list.get(position).getReceiver().getImage()).into(holder.receiverImage);
         holder.receiverName.setText(list.get(position).getReceiver().getUsername());
 
-        if (list.get(position).getLastMessage() == null) {
+        handelLastMessage(holder,position);
+
+        holder.date.setText(handleTime(list.get(position).getLastMessage().getTimeStamp()));
+    }
+
+
+    private void handelLastMessage(ChatViewHolder holder ,int position){
+        Message lastMessage = list.get(position).getLastMessage();
+
+        if (lastMessage == null) {
             holder.messageStatus.setVisibility(View.GONE);
             holder.date.setText(handleTime(list.get(position).getTimeStamp()));
             holder.lastMessage.setText(mContext.getString(R.string.noMessages));
-        } else {
+        }else {
+            //set body
             if(lastMessage.getBody() != null){
                 String body = lastMessage.getBody();
                 if(body.length()>0){
@@ -92,29 +103,41 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
                 holder.imageIcon.setVisibility(View.VISIBLE);
             }
 
-
-
             //set status
-            if (!lastMessage.getSenderId().equals(userId)) {
-                holder.messageStatus.setVisibility(View.GONE);
-            } else {
-                setStatus(position, holder.messageStatus);
-            }
+          handelMessageStatus(holder,position);
 
-
-            //set alert if their is new messages
-            if(lastMessage.getReceiverId().equals(userId)){
-                if(!lastMessage.isSeen()){
-                    holder.newMessageNotification.setVisibility(View.VISIBLE);
-                    holder.date.setTextColor(ContextCompat.getColor(mContext,R.color.background));
-                }
-            }
+          handelMessagesAlert(holder,position);
         }
-
-        holder.date.setText(handleTime(list.get(position).getLastMessage().getTimeStamp()));
     }
+
+    private void handelMessagesAlert(ChatViewHolder holder ,int position){
+        Message lastMessage = list.get(position).getLastMessage();
+        //set alert if their is new messages
+        if(lastMessage.getReceiverId().equals(userId)){
+            if(!lastMessage.isSeen()){
+                holder.newMessageNotification.setVisibility(View.VISIBLE);
+                holder.date.setTextColor(ContextCompat.getColor(mContext,R.color.background));
+            }else{
+                holder.newMessageNotification.setVisibility(View.GONE);
+                holder.date.setTextColor(ContextCompat.getColor(mContext,R.color.gray));
+            }
+        }else {
+            holder.newMessageNotification.setVisibility(View.GONE);
+            holder.date.setTextColor(ContextCompat.getColor(mContext,R.color.gray));
+        }
+    }
+    private void handelMessageStatus(ChatViewHolder holder,int position){
+        Message lastMessage = list.get(position).getLastMessage();
+        
+        if (lastMessage.getSenderId().equals(userId)) {
+            holder.messageStatus.setVisibility(View.VISIBLE);
+            setStatus(position, holder.messageStatus);
+        }else holder.messageStatus.setVisibility(View.GONE);
+    }
+    
+
     private void setStatus(int pos , ImageView status_im){
-        Message message =list.get(pos).getLastMessage();
+        Message message = list.get(pos).getLastMessage();
 
         if(message.isSeen()){
             status_im.setImageResource(R.drawable.message_read);
@@ -132,7 +155,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
         return list.size();
     }
 
-    public void setList(String userId ,ArrayList<Chat> list, OnItemListener onItemListener) {
+    @SuppressLint("NotifyDataSetChanged")
+    public void setList(String userId , ArrayList<Chat> list, OnItemListener onItemListener) {
         this.userId=userId;
         this.list = list;
         this.pOnItemListener = onItemListener;
@@ -143,20 +167,19 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
 
         OnItemListener onItemListener;
         TextView date ,title, lastMessage , receiverName;
-
         ImageView adImage, messageStatus ,imageIcon;
         ShapeableImageView newMessageNotification,receiverImage;
         public ChatViewHolder(@NonNull View v, OnItemListener onItemListener) {
             super(v);
-            date = v.findViewById(R.id.date_last_message_chat_holder);
-            receiverName = v.findViewById(R.id.receiver_name_chat_holder);
-            receiverImage = v.findViewById(R.id.sim_receiver_image_chat_holder);
-            title = v.findViewById(R.id.chat_title_chat_holder);
-            lastMessage =v.findViewById(R.id.last_message_chat_holder);
-            adImage =v.findViewById(R.id.chat_image_chat_holder);
-            messageStatus = v.findViewById(R.id.message_status_chat_holder);
-            imageIcon = v.findViewById(R.id.image_icon_chat_holder);
-            newMessageNotification = v.findViewById(R.id.new_message_notification_chat_holder);
+            date =binding.dateLastMessageChatHolder;
+            receiverName = binding.receiverNameChatHolder;
+            receiverImage = binding.simReceiverImageChatHolder;
+            title = binding.chatTitleChatHolder;
+            lastMessage =binding.lastMessageChatHolder;
+            adImage =binding.chatImageChatHolder;
+            messageStatus = binding.messageStatusChatHolder;
+            imageIcon = binding.imageIconChatHolder;
+            newMessageNotification = binding.newMessageNotificationChatHolder;
 
             this.onItemListener = onItemListener;
             v.setOnClickListener(this);
@@ -166,8 +189,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
         @Override
         public void onClick(View v) {
             if(v.getId()==adImage.getId()){
-                onItemListener.pressedImagePosition(getAdapterPosition());
-            }else onItemListener.getItemPosition(getAdapterPosition());
+                onItemListener.pressedImagePosition(getBindingAdapterPosition());
+            }else onItemListener.getItemPosition(getBindingAdapterPosition());
         }
     }
 
@@ -197,25 +220,28 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
         }
         return dateString;
     }
-    public void updateLastMessage(int pos, Message lastMessage){
-        list.get(pos).setLastMessage(lastMessage);
-        moveToTop(list.get(pos));
-    }
-    public void updateLastMessageStatus(int pos, Message lastMessage){
-        list.get(pos).setLastMessage(lastMessage);
-        notifyItemChanged(pos);
-    }
-    private void moveToTop(Chat chat) {
+
+    @SuppressLint("NotifyDataSetChanged")
+    private void moveToTop(Chat chat,int pos) {
         list.remove(chat);
+        notifyItemRemoved(pos);
         list.add(0, chat);
-        notifyDataSetChanged();
+        notifyItemInserted(0);
     }
     public ArrayList<Chat>getList(){
         return list;
     }
-    public void addItem(Chat c, int position) {
-        list.add(position, c);
-        notifyItemInserted(position);
+    public void addItem(Chat c) {
+        list.add(0,c);
+        notifyItemInserted(0);
     }
-
+    public void updateChatWithNewMessage(Chat chat ,int pos){
+        list.set(pos,chat);
+        moveToTop(chat,pos);
+    }
+    @SuppressLint("NotifyDataSetChanged")
+    public void updateChat(Chat chat , int pos){
+        list.set(pos,chat);
+        notifyItemChanged(pos,chat);
+    }
 }

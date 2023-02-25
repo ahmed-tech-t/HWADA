@@ -49,10 +49,14 @@ public class ChatRepo {
     private FirebaseAuth auth ;
     private static final String TAG = "ChatRepo";
 
+    public MutableLiveData<ArrayList<Chat>> chatListMutableLiveData;
     Application application ;
     App app;
+    AdsRepository adsRepository;
     public ChatRepo(Application application){
         this.application = application;
+        adsRepository = new AdsRepository(application);
+        chatListMutableLiveData = new MutableLiveData<>();
         app = (App) application.getApplicationContext();
     }
     public MutableLiveData<Chat> addNewChat(String senderId ,Chat chat){
@@ -100,54 +104,6 @@ public class ChatRepo {
         return mutableLiveData;
     }
     
-    public MutableLiveData<ArrayList<Chat>> getALlChats(String userId){
-        MutableLiveData<ArrayList<Chat>> mutableLiveData = new MutableLiveData<>();
-        getChatRef(userId)
-                .orderBy("lastMessage.timeStamp", Query.Direction.DESCENDING)
-                .get()
-                .continueWithTask(new Continuation<QuerySnapshot, Task<List<Chat>>>() {
-                    @Override
-                    public Task<List<Chat>> then(@NonNull Task<QuerySnapshot> task) {
-                        ArrayList<Task<Chat>> chatTasks = new ArrayList<>();
-                        QuerySnapshot querySnapshot = task.getResult();
-                        if (querySnapshot.isEmpty()) {
-                            return Tasks.forResult(new ArrayList<Chat>());
-                        }
-                        for (DocumentSnapshot document : task.getResult()) {
-                            Chat chat = document.toObject(Chat.class);
-                            Log.e(TAG, "then: chat" );
-                            Task<DocumentSnapshot> userTask = userDocumentRef(chat.getReceiver().getUId()).get();
-                            Task<DocumentSnapshot> adTask = getAdColRef(chat.getAd()).document(chat.getAd().getId()).get();
-                            Task<Chat> chatTask = Tasks.whenAllSuccess(userTask, adTask).continueWith(new Continuation<List<Object>, Chat>() {
-                                @Override
-                                public Chat then(@NonNull Task<List<Object>> task) {
-                                    List<Object> results = task.getResult();
-                                    // Update the chat with the user information
-                                    DocumentSnapshot userDoc = (DocumentSnapshot) results.get(0);
-                                    if (userDoc.exists()) {
-                                        chat.setReceiver(userDoc.toObject(User.class));
-                                    }
-                                    DocumentSnapshot adDoc = (DocumentSnapshot) results.get(1);
-                                    if (adDoc.exists()) {
-                                        chat.setAd(adDoc.toObject(Ad.class));
-                                    }
-                                    return chat;
-                                }
-                            });
-
-                            chatTasks.add(chatTask);
-                        }
-                        return Tasks.whenAllSuccess(chatTasks);
-                    }
-                }).continueWith(new Continuation<List<Chat>, Object>() {
-                    @Override
-                    public Object then(@NonNull Task<List<Chat>> task) throws Exception {
-                       mutableLiveData.setValue((ArrayList<Chat>) task.getResult());
-                        return null;
-                    }
-                });
-        return mutableLiveData;
-    }
 
     private String getChatId(String senderId , String receiverId, Ad ad){
         if(ad.getAuthorId().equals(senderId)){
@@ -162,87 +118,60 @@ public class ChatRepo {
     private DocumentReference userDocumentRef(String id){
         return rootRef.collection(DbHandler.userCollection).document(id);
     }
+
+    /**
+     *chat listener
+     * **/
     public MutableLiveData<ArrayList<Chat>> chatListener(String userId){
-        MutableLiveData<ArrayList<Chat>> mutableLiveData = new MutableLiveData<>();
         getChatRef(userId)
-                .orderBy("lastMessage.timeStamp", Query.Direction.DESCENDING)
+                .orderBy("lastMessage.timeStamp", Query.Direction.ASCENDING)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException e) {
-                        Log.e(TAG, "onEvent: start function" );
                         if (e != null) {
                             Log.e(TAG, "Listen failed.", e);
-                            mutableLiveData.setValue(new ArrayList<>());
+                            chatListMutableLiveData.setValue(new ArrayList<>());
                             return;
                         }
+                        assert value != null;
                         if (value.isEmpty()) {
                             Log.e(TAG, "QuerySnapshot is empty.");
-                            mutableLiveData.setValue(new ArrayList<>());
+                            chatListMutableLiveData.setValue(new ArrayList<>());
                             return;
                         }
                         ArrayList<Chat> chats = new ArrayList<>();
                         for (DocumentChange change : value.getDocumentChanges()) {
                             Chat chat = change.getDocument().toObject(Chat.class);
-                            getAdColRef(chat.getAd()).document(chat.getAd().getId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                    if(task.isSuccessful()){
-                                        chat.setAd(task.getResult().toObject(Ad.class));
-                                            userDocumentRef(chat.getReceiver().getUId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                                      if (task.isSuccessful()){
-                                                          chat.setReceiver(task.getResult().toObject(User.class));
-                                                          chats.add(chat);
-                                                          if(value.getDocumentChanges().size() == chats.size()) {
-
-                                                            mutableLiveData.setValue(chats);
-
-                                                          }
-                                                      }else{
-                                                         // Log.e(TAG, "onComplete: failed to load chat");
-                                                          mutableLiveData.setValue(new ArrayList<>());
-                                                      }
-                                                }
-                                            });
-                                    }else {
-                                        Log.e(TAG, "onComplete: failed to load chat");
-                                        mutableLiveData.setValue(new ArrayList<>());
-                                    }
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    e.printStackTrace();
-                                }
-                            });
+                            getAdAndReceiver(chats,value.getDocumentChanges().size(),chat);
                         }
                     }
                 });
-        return mutableLiveData ;
+        return chatListMutableLiveData ;
     }
 
-    private CollectionReference getAdColRef(Ad ad){
-        if (ad.getCategory().equals(DbHandler.FREELANCE)){
-            return getAdColRef(ad.getCategory(),ad.getSubCategory(),ad.getSubSubCategory());
-        }else {
-            return getAdColRef(ad.getCategory(),ad.getSubCategory());
-        }
+    private void getAdAndReceiver(ArrayList<Chat>chats,int size,Chat chat) {
+       Task<DocumentSnapshot> task1 = adsRepository.getAdColRef(chat.getAd()).document(chat.getAd().getId()).get();
+       Task<DocumentSnapshot> task2 = userDocumentRef(chat.getReceiver().getUId()).get();
+
+        Tasks.whenAllComplete(task1, task2).addOnCompleteListener(task -> {
+            if(task.isSuccessful()){
+                if(task1.getResult()!=null && task2.getResult()!=null){
+                    chat.setAd( task1.getResult().toObject(Ad.class));
+                    chat.setReceiver(task2.getResult().toObject(User.class));
+                    chats.add(chat);
+                }
+                if(size == chats.size()){
+                    chatListMutableLiveData.setValue(chats);
+                }
+            }else {
+                Log.d(TAG, "onComplete: "+task.getException());
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
-    private CollectionReference getAdColRef(String category , String subCategory){
-        CollectionReference adColRef;
-        adColRef = rootRef.collection(DbHandler.adCollection)
-                .document(category)
-                .collection(subCategory);
-        return adColRef;
-    }
-    private CollectionReference getAdColRef(String category , String subCategory , String subSubCategory){
-        CollectionReference adColRef;
-        adColRef = rootRef.collection(DbHandler.adCollection)
-                .document(category)
-                .collection(category)
-                .document(subCategory)
-                .collection(subSubCategory);
-        return adColRef;
-    }
+
 }

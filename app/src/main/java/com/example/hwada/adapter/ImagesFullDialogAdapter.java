@@ -3,6 +3,7 @@ package com.example.hwada.adapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,8 @@ import com.example.hwada.R;
 import com.example.hwada.databinding.ImageLayoutBinding;
 import com.example.hwada.util.GlideImageLoader;
 import com.github.chrisbanes.photoview.PhotoView;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -45,18 +48,19 @@ public class ImagesFullDialogAdapter extends RecyclerView.Adapter<ImagesFullDial
     @Override
     public void onBindViewHolder(@NonNull ImagesFullDialogViewHolder holder, int position) {
         String url = list.get(position);
-        Glide.with(mContext).load(url).listener(new RequestListener<Drawable>() {
+        Log.d(TAG, "onBindViewHolder: onSuccess out");
+        Picasso.get().load(url).into(holder.image, new Callback() {
             @Override
-            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                return false;
+            public void onSuccess() {
+                Log.d(TAG, "onSuccess: in");
+                holder.progressBar.setVisibility(View.GONE);
             }
 
             @Override
-            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                holder.progressBar.setVisibility(View.GONE);
-                return false;
+            public void onError(Exception e) {
+
             }
-        }).into(holder.image);
+        });
     }
 
     @Override

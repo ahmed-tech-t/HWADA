@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -22,6 +23,7 @@ import com.example.hwada.adapter.ImagesFullDialogAdapter;
 import com.example.hwada.databinding.FragmentImagesFullDialogBinding;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 public class ImagesFullDialogFragment extends DialogFragment implements ImagesIndicatorAdapter.OnItemListener , View.OnClickListener {
@@ -31,7 +33,7 @@ public class ImagesFullDialogFragment extends DialogFragment implements ImagesIn
     ImagesIndicatorAdapter imagesIndicatorAdapter ;
     int currentPos =-1;
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentImagesFullDialogBinding.inflate(inflater, container, false);
@@ -40,10 +42,11 @@ public class ImagesFullDialogFragment extends DialogFragment implements ImagesIn
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         setCancelable(true);
-        getDialog().setCanceledOnTouchOutside(true);
+        Objects.requireNonNull(getDialog()).setCanceledOnTouchOutside(true);
+        assert getArguments() != null;
         imagesUrl = getArguments().getStringArrayList("imagesUrl");
         currentPos = getArguments().getInt("pos");
         setVp2();
@@ -64,7 +67,7 @@ public class ImagesFullDialogFragment extends DialogFragment implements ImagesIn
 
 
     @Override
-    public void onCancel(DialogInterface dialog) {
+    public void onCancel(@NonNull DialogInterface dialog) {
         super.onCancel(dialog);
         dismiss();
     }
