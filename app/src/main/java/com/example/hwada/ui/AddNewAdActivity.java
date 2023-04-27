@@ -49,6 +49,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -150,7 +151,6 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
             int toPosition = target.getAdapterPosition();
             Collections.swap(ad.getImagesUri(),fromPosition,toPosition);
             recyclerView.getAdapter().notifyItemMoved(fromPosition,toPosition);
-            Log.d(TAG, "onMove: "+ad.getImagesUri());
             return true;
         }
         @Override
@@ -209,14 +209,20 @@ public class AddNewAdActivity extends AppCompatActivity implements ImagesAdapter
         }else if (v.getId() == binding.nextButtonAddNewAd.getId()){
             setFieldsWarning();
             if(checkIfFieldsAreValid()){
-                String price = binding.adPrice.getText().toString().trim();
+                String price = new BigDecimal(binding.adPrice.getText().toString().trim()).toString();
                 String title = binding.adTitle.getText().toString().trim();
                 String description =binding.adDescription.getText().toString().trim();
 
                 ad.setPrice(Double.parseDouble(price));
                 ad.setTitle(title);
                 ad.setDescription(description);
-                callBottomSheet(new WorkTimePreviewFragment());
+
+                try {
+                    callBottomSheet(new WorkTimePreviewFragment());
+                }catch (Exception e){
+                  //  app.reportError(e,this);
+                }
+
             }
         }else if (v.getId() == binding.linearLayout.getId()
                 || v.getId() == binding.scrollViewAddNewAdd.getId()

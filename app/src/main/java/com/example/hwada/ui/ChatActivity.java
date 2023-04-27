@@ -182,6 +182,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             setUserStatusToView(u.getStatus());
             binding.tvReceiverNameChatActivity.setText(chat.getReceiver().getUsername());
             Glide.with(getApplication()).load(u.getImage()).into(binding.simReceiverImageChatActivity);
+            app.setCurrentChatId(u.getUId());
         });
     }
     @SuppressLint("SetTextI18n")
@@ -203,6 +204,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     protected void onPause() {
         super.onPause();
         app.setUserOffline(user.getUId(),this);
+        app.setCurrentChatId("");
     }
 
     private void setRecycler(){

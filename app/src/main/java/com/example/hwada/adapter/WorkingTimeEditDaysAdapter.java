@@ -21,7 +21,9 @@ import com.example.hwada.R;
 import com.example.hwada.databinding.WorkingTimeEditDaysLayoutBinding;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -43,10 +45,11 @@ public class WorkingTimeEditDaysAdapter extends RecyclerView.Adapter<WorkingTime
 
     @Override
     public void onBindViewHolder(@NonNull MainWorkingTimeViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        String dayTitle = days.getDayTitleFromPosition(position);
+        List<String> dayTitle= Arrays.asList(context.getResources().getStringArray(R.array.days));
+
         String dayVal = days.getDayValFromPosition(position);
         holder.button.setText(context.getString(R.string.add));
-        holder.title.setText(dayTitle);
+        holder.title.setText(dayTitle.get(position));
         WorkingTimePreviewPeriodAdapter innerAdapter = new WorkingTimePreviewPeriodAdapter();
 
         String day = days.getDayValFromPosition(position);

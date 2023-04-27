@@ -37,6 +37,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
 public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> {
     private ArrayList<Ad> list ;
     private User user ;
@@ -193,6 +195,7 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
     public interface OnItemListener{
         void getItemPosition(int position);
         void getFavItemPosition(int position , ImageView imageView);
+
     }
     private boolean adIsInFavList(String id) {
         for (int i =  0 ; i < user.getFavAds().size(); i++) {
@@ -232,6 +235,11 @@ public class AdsAdapter extends RecyclerView.Adapter<AdsAdapter.HomeViewHolder> 
     @SuppressLint("NotifyDataSetChanged")
     public void addItem(Ad ad) {
         list.add(ad);
+        notifyDataSetChanged();
+    }
+    @SuppressLint("NotifyDataSetChanged")
+    public void updateList(ArrayList<Ad> newList){
+        list = newList ;
         notifyDataSetChanged();
     }
 }

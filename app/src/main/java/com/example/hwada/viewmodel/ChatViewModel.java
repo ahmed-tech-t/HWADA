@@ -21,7 +21,7 @@ public class ChatViewModel extends AndroidViewModel {
 
     public ChatViewModel(@NonNull Application application) {
         super(application);
-        repo = new ChatRepo(application);
+        repo = new ChatRepo();
     }
 
 
@@ -29,7 +29,17 @@ public class ChatViewModel extends AndroidViewModel {
         return repo.addNewChat(fromUserId,chat);
     }
 
-    public LiveData<ArrayList<Chat>> chatListener(String userId){
-        return repo.chatListener(userId);
+    public LiveData<ArrayList<Chat>> chatListener(){
+        return repo.chatListMutableLiveData;
+    }
+
+    public void startChatListener(String userId){
+        repo.startChatListener(userId);
+    }
+    public void removeChatListener(){
+        repo.removeChatListener();
+    }
+    public void deleteChat(String userId,String chatId){
+        repo.deleteChat(userId,chatId);
     }
 }

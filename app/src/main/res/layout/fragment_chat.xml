@@ -21,15 +21,38 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:src="@drawable/arrow_up"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+       <LinearLayout
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:layout_marginStart="20dp"
+           android:layout_marginEnd="20dp"
+           android:layout_marginTop="20dp"
+           android:orientation="vertical">
+           <ImageView
+               android:id="@+id/arrow_image"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:src="@drawable/arrow_up"
+               android:padding="5dp"
+               app:layout_constraintStart_toStartOf="parent"
+               app:layout_constraintTop_toTopOf="parent" />
+           <ImageView
+               android:id="@+id/delete_chat_fragment"
+               android:layout_width="35dp"
+               android:layout_height="35dp"
+               android:visibility="gone"
+               android:src="@drawable/delete_icon"
+               android:padding="5dp"
+               android:focusable="true"
+               android:background="?android:attr/selectableItemBackground"
+               android:clickable="true"
+               android:layout_gravity="end"
+               app:layout_constraintStart_toStartOf="parent"
+               app:layout_constraintTop_toTopOf="parent" />
 
+
+
+       </LinearLayout>
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_chat_fragment"
             android:layout_width="match_parent"

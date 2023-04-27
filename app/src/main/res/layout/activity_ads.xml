@@ -39,13 +39,13 @@
             android:orientation="horizontal">
 
             <EditText
-                android:id="@+id/ed_search"
+                android:id="@+id/et_search"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="10dp"
 
                 android:layout_weight="1"
-                android:background="@drawable/frame"
+                android:background="@drawable/frame_gray"
 
                 android:drawableLeft="@drawable/search_icon"
 

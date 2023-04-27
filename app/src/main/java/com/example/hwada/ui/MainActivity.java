@@ -1,56 +1,49 @@
 package com.example.hwada.ui;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
-import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.os.Looper;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.hwada.Model.Ad;
-import com.example.hwada.Model.DebugModel;
 import com.example.hwada.Model.LocationCustom;
 import com.example.hwada.Model.User;
 import com.example.hwada.R;
 import com.example.hwada.application.App;
 import com.example.hwada.databinding.ActivityMainBinding;
+import com.example.hwada.services.MyService;
 import com.example.hwada.ui.view.EditUserFragment;
-import com.example.hwada.ui.view.FilterFragment;
 import com.example.hwada.ui.view.category.CategoryFragment;
 import com.example.hwada.ui.view.main.AccountFragment;
 import com.example.hwada.ui.view.main.ChatFragment;
 import com.example.hwada.ui.view.main.FavoritesFragment;
 import com.example.hwada.ui.view.main.HomeFragment;
-import com.example.hwada.viewmodel.AdsViewModel;
 import com.example.hwada.viewmodel.DebugViewModel;
 import com.example.hwada.viewmodel.UserAddressViewModel;
 import com.example.hwada.viewmodel.UserViewModel;
@@ -62,14 +55,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-import com.google.android.material.snackbar.Snackbar;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -105,12 +90,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
           callFragment(new HomeFragment(), "home");
           navBarOnSelected();
           userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
-          userAddressViewModel = ViewModelProviders.of(this).get(UserAddressViewModel.class);
+          userAddressViewModel =new ViewModelProvider(this).get(UserAddressViewModel.class);
 
           app = (App) getApplication();
 
+          askForNotificationPermission();
 
           setUserListener();
+
+          startMyService();
 
           //disable middle button in bottom nav bar
           binding.bottomNavView.getMenu().getItem(2).setEnabled(false);
@@ -123,13 +111,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
       }
     }
 
+    private void askForNotificationPermission() {
+        if(!app.checkNotificationPermissions()) app.requestNotificationPermissions(this);
+    }
+
     private void setUserListener() {
-        userViewModel.userListener(user.getUId()).observe(this, new Observer<User>() {
-            @Override
-            public void onChanged(User updatedUser) {
-                user.updateUser(updatedUser);
-            }
-        });
+        userViewModel.userListener(user.getUId()).observe(this, updatedUser -> user.updateUser(updatedUser));
     }
 
     private void setLocationManually(){
@@ -162,7 +149,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onResume() {
         super.onResume();
-        Log.e(TAG, "onResume: "+user.getUId() );
         app.setUserOnline(user.getUId(),this);
         try {
            if(user.getLocation()==null){
@@ -207,7 +193,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                       }
 
                   } else {
-                      Log.e(TAG, "getLastLocation: " );
                       app.askUserToOpenGps(this,false);
                   }
               } else {
@@ -453,4 +438,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
+    public void callSearchActivity() {
+        Intent intent = new Intent(this,SearchActivity.class);
+        intent.putExtra(getString(R.string.userVal),user);
+        startActivity(intent);
+    }
+
+
+    private Boolean isBound = false ;
+
+    private ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            MyService.MyBinder myServiceInterface = (MyService.MyBinder) service;
+            myServiceInterface.getService().observe(user);
+            isBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            isBound = false;
+        }
+    };
+
+
+    private void startMyService() {
+        if (!isBound) {
+            Intent intent = new Intent(this, MyService.class);
+            bindService(intent, connection, Context.BIND_AUTO_CREATE);
+        }
+    }
 }

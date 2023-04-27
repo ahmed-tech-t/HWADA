@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -101,6 +102,7 @@ public class UserProfileActivity extends AppCompatActivity implements AdsGridAda
             }
         });
     }
+    @SuppressLint("SetTextI18n")
     private void setDataToView(){
         Picasso.get().load(receiver.getImage()).into(binding.simUserImageUserProfileActivity, new Callback() {
             @Override
@@ -117,8 +119,7 @@ public class UserProfileActivity extends AppCompatActivity implements AdsGridAda
 
         if(receiver.getAboutYou()==null){
             binding.llDescriptionUserProfileActivity.setVisibility(View.GONE);
-        }
-        binding.tvUserDescriptionUserProfileActivity.setText(receiver.getAboutYou());
+        }else binding.tvUserDescriptionUserProfileActivity.setText(receiver.getAboutYou());
 
         String joinDate = app.getDateFromTimeStamp(receiver.getTimeStamp()).split(",")[0];
         String join = getString(R.string.joinAt)+" "+ joinDate;

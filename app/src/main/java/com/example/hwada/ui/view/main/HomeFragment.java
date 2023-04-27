@@ -50,6 +50,8 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.Objects;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 public class HomeFragment extends Fragment implements View.OnClickListener , AdsAdapter.OnItemListener , SwipeRefreshLayout.OnRefreshListener {
     AdsViewModel adsViewModel;
     FavViewModel favViewModel ;
@@ -89,11 +91,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
 
         binding.userAddress.setOnClickListener(this);
         binding.imFilterHomeFragment.setOnClickListener(this);
+        binding.edSearch.setOnClickListener(this);
         setLocationArrowWhenLanguageIsArabic();
 
         debounceHandler = new Handler();
         advertiserFragment = new AdvertiserFragment();
-
 
         return binding.getRoot();
     }
@@ -188,6 +190,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
            }else if(v.getId() == binding.imFilterHomeFragment.getId()){
                if(filterModel==null) filterModel = new FilterModel(getString(R.string.updateDateVal),false);
                callFilterDialog(filterModel);
+           }else if(v.getId() == binding.edSearch.getId()){
+               ((MainActivity) getActivity()).callSearchActivity();
            }
        }catch (Exception e){
            app.reportError(e,getContext());
@@ -272,14 +276,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener , Ads
     }
 
     private void setUserListener(){
-        userViewModel.userListener(user.getUId()).observe(getActivity(), new Observer<User>() {
-            @Override
-            public void onChanged(User updatedUser) {
-                user.updateUser(updatedUser);
-                if(user.getLocation()!=null) {
-                    if(getActivity()!=null) getAllAds();
-                    binding.userAddress.setText(user.getAddress());
-                }
+        userViewModel.userListener(user.getUId()).observe(getActivity(), updatedUser -> {
+            user.updateUser(updatedUser);
+            if(user.getLocation()!=null) {
+                if(getActivity()!=null) getAllAds();
+                binding.userAddress.setText(user.getAddress());
             }
         });
     }

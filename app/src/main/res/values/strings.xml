@@ -229,6 +229,15 @@
     <string name="active">Active</string>
     <string name="inactive">Inactive</string>
     <string name="adNotActiveAnyMoreMaessage">this ad has been deactivated by the owner</string>
+    <string name="deleteChatsDialogBody">Notice: that you will only delete your copy of this selected chats </string>
 
-
+    <string-array name="days">
+        <item>Saturday</item>
+        <item>Sunday</item>
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+    </string-array>
 </resources>

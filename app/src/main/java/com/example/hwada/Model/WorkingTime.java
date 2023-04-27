@@ -37,6 +37,7 @@ public class WorkingTime implements Parcelable {
             Date currentTime = df.parse(time);
 
             // Check if current time is within the period
+            assert currentTime != null;
             return currentTime.after(fromDate) && currentTime.before(toDate);
         } catch (ParseException e) {
             e.printStackTrace();

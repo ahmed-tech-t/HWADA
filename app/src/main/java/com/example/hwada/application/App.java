@@ -6,6 +6,8 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Application;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -43,12 +45,18 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.HiltAndroidApp;
+
+@HiltAndroidApp
 public class App extends Application {
 
     public final int PICK_IMAGE_REQUEST = 2;
     public final int REQUEST_CAMERA_PERMISSION = 3;
     public final int LOCATION_PERMISSION_ID = 1;
-
+    public final int NOTIFICATION_PERMISSION_ID = 4;
+    private String currentChatId = "";
     DebugViewModel debugViewModel;
     private static final String TAG = "App";
     UserViewModel userViewModel ;
@@ -57,7 +65,26 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        createNotificationChannel();
+    }
 
+    private void createNotificationChannel() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel channel_messages =new NotificationChannel(
+                    "direct_message",
+                    "direct_message" ,
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+            NotificationChannel channel_comments =new NotificationChannel(
+                    "comments",
+                    "comments" ,
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            manager.createNotificationChannel(channel_messages);
+            manager.createNotificationChannel(channel_comments);
+
+        }
     }
 
     public void setUserOnline(String userId,ViewModelStoreOwner owner) {
@@ -77,6 +104,9 @@ public class App extends Application {
             userViewModel.setUserLastSeen(getCurrentDate(),userId);
         }
     }
+    public Integer getResumeCounter(){
+        return resumeCounter;
+    }
     public Timestamp getCurrentDate(){
         Calendar calendar = Calendar.getInstance();
         Date date = calendar.getTime();
@@ -93,6 +123,18 @@ public class App extends Application {
         }
         return false;
     }
+    public boolean checkNotificationPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            return ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED;
+        } else return true ;
+    }
+    public void requestNotificationPermissions(Context context) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+            ActivityCompat.requestPermissions((Activity) context, new String[]{
+                    Manifest.permission.POST_NOTIFICATIONS }, NOTIFICATION_PERMISSION_ID);
+        }
+    }
+
     public void requestStoragePermissions(Context context) {
         Log.e(TAG, "requestPermissions: "+Build.VERSION.SDK_INT );
         if(Build.VERSION.SDK_INT <= 32){
@@ -121,9 +163,11 @@ public class App extends Application {
         return false ;
     }
     public String getDateFromTimeStamp(Timestamp timestamp) {
-        Date date = timestamp.toDate();
-        SimpleDateFormat sdf = timeFormatInSecond();
-        return sdf.format(date);
+        if(timestamp!=null){
+            Date date = timestamp.toDate();
+            SimpleDateFormat sdf = timeFormatInSecond();
+            return sdf.format(date);
+        }return "";
     }
     public Timestamp getTimeStampFromDate(String d){
         SimpleDateFormat dateFormat = timeFormatInSecond();
@@ -228,5 +272,13 @@ public class App extends Application {
         if(dayIndex==7) dayIndex =0;
         Log.d(TAG, "getDayIndex:"+dayIndex);
         return dayIndex;
+    }
+
+    public String getCurrentChatId() {
+        return currentChatId;
+    }
+
+    public void setCurrentChatId(String currentChatId) {
+        this.currentChatId = currentChatId;
     }
 }

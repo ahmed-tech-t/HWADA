@@ -69,6 +69,8 @@
                 android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:clickable="true"
+                android:focusable="true"
+                android:background="?android:attr/selectableItemBackground"
                 android:src="@drawable/filter_icon" />
 
         </LinearLayout>

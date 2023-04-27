@@ -86,6 +86,7 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
 
         binding.imFilter.setOnClickListener(this);
         binding.swipeRefreshAdsActivity.setOnRefreshListener(this);
+        binding.etSearch.setOnClickListener(this);
 
         advertiserFragment = new AdvertiserFragment();
         debounceHandler = new Handler();
@@ -126,6 +127,8 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
         if(v.getId() == binding.imFilter.getId()){
             if(filterModel==null) filterModel = new FilterModel(getString(R.string.updateDateVal),false);
             callFilterDialog(filterModel);
+        }else if(v.getId() == binding.etSearch.getId()){
+            callSearchActivity();
         }
     }
 
@@ -270,6 +273,12 @@ public class AdsActivity extends AppCompatActivity implements View.OnClickListen
             }
             setRecycler();
         }
+    }
+
+    public void callSearchActivity() {
+        Intent intent = new Intent(this,SearchActivity.class);
+        intent.putExtra(getString(R.string.userVal),user);
+        startActivity(intent);
     }
 
 }

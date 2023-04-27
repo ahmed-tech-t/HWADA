@@ -11,7 +11,9 @@ import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
 
-public class FavViewModel extends ViewModel {
+import dagger.hilt.android.lifecycle.HiltViewModel;
+
+public class FavViewModel  extends ViewModel {
    public static FavViewModel favViewModel = new FavViewModel();
    public LiveData<Ad> addFavAdLiveData = new MutableLiveData<>();
    FavRepo repo = new FavRepo();

@@ -27,56 +27,6 @@ tools:context=".ui.MyAdsActivity">
             android:padding="5dp"
             android:src="@drawable/arrow_up" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="20dp"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <EditText
-                android:id="@+id/ed_search"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-
-                android:layout_weight="1"
-                android:background="@drawable/frame"
-
-                android:drawableLeft="@drawable/search_icon"
-
-                android:drawablePadding="10dp"
-
-                android:hint="@string/whatDoYouWant"
-
-                android:inputType="text"
-                android:maxLines="1"
-
-                android:focusable="false"
-                android:clickable="true"
-
-                android:paddingLeft="10dp"
-                android:paddingTop="2dp"
-
-                android:paddingRight="10dp"
-                android:paddingBottom="2dp"
-
-                android:textColorHint="@color/gray"
-
-                />
-
-            <ImageView
-                android:id="@+id/im_filter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                android:src="@drawable/filter_icon" />
-
-        </LinearLayout>
-
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
