@@ -10,6 +10,6 @@
 ![Group 33](https://github.com/ahmed-tech-t/HWADA/assets/54076405/0d81c0ef-f76a-4036-90c6-968f1ffa2ac3)
 ![Group 34](https://github.com/ahmed-tech-t/HWADA/assets/54076405/e97f986b-169f-45f3-82c4-38861fd0e0a5)
 ![Group 35](https://github.com/ahmed-tech-t/HWADA/assets/54076405/2fb09786-0b39-4faf-84e1-ded48970e24b)
-<img src="https://github.com/ahmed-tech-t/HWADA/assets/54076405/c4b56535-f5e0-4bcd-b421-99d872cd4c89" width ="1000">
+<img src="https://github.com/ahmed-tech-t/HWADA/assets/54076405/c4b56535-f5e0-4bcd-b421-99d872cd4c89" width ="900">
 
 <img src="https://github.com/ahmed-tech-t/HWADA/assets/54076405/93233ad0-d57a-44d8-85cb-1adee9be91eb" width="200">
