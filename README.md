@@ -24,11 +24,11 @@
 <img src="https://github.com/ahmed-tech-t/HWADA/assets/54076405/e97f986b-169f-45f3-82c4-38861fd0e0a5" width ="450"></br>
 </p>
 <p align="center">
-<img src="https://github.com/ahmed-tech-t/HWADA/assets/54076405/2fb09786-0b39-4faf-84e1-ded48970e24b" width ="650"></br>
+<img src="https://github.com/ahmed-tech-t/HWADA/assets/54076405/2fb09786-0b39-4faf-84e1-ded48970e24b" width ="450"></br>
 </p>
 <p align="center">
-<img src="https://github.com/ahmed-tech-t/HWADA/assets/54076405/c4b56535-f5e0-4bcd-b421-99d872cd4c89" width ="850"></br>
+<img src="https://github.com/ahmed-tech-t/HWADA/assets/54076405/c4b56535-f5e0-4bcd-b421-99d872cd4c89" width ="650"></br>
 </p>
 <p align="center">
-<img src="https://github.com/ahmed-tech-t/HWADA/assets/54076405/93233ad0-d57a-44d8-85cb-1adee9be91eb" width="200"></br>
+<img src="https://github.com/ahmed-tech-t/HWADA/assets/54076405/93233ad0-d57a-44d8-85cb-1adee9be91eb" width="150"></br>
 </p>
