@@ -152,17 +152,16 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
 
         Locale locale = Resources.getSystem().getConfiguration().locale;
         if (locale.getLanguage().equals("ar")) {
-            Log.e(TAG, "setArrowDirections: " );
             binding.tvMyAds.setCompoundDrawablesWithIntrinsicBounds(R.drawable.arrow_left, 0, R.drawable.my_ads_icon, 0);
-            binding.joinMemberShipAccountFragment.setCompoundDrawablesWithIntrinsicBounds(R.drawable.arrow_left, 0, R.drawable.blue_membership_icon, 0);
-            binding.helpSupportAccountFragment.setCompoundDrawablesWithIntrinsicBounds(R.drawable.arrow_left, 0, R.drawable.help_support_icon, 0);
-            binding.cancelSubscriptionAccountFragment.setCompoundDrawablesWithIntrinsicBounds(R.drawable.arrow_left, 0, R.drawable.cancel_sub_icon, 0);
+//            binding.joinMemberShipAccountFragment.setCompoundDrawablesWithIntrinsicBounds(R.drawable.arrow_left, 0, R.drawable.blue_membership_icon, 0);
+//            binding.helpSupportAccountFragment.setCompoundDrawablesWithIntrinsicBounds(R.drawable.arrow_left, 0, R.drawable.help_support_icon, 0);
+//            binding.cancelSubscriptionAccountFragment.setCompoundDrawablesWithIntrinsicBounds(R.drawable.arrow_left, 0, R.drawable.cancel_sub_icon, 0);
 
         }else{
             binding.tvMyAds.setCompoundDrawablesWithIntrinsicBounds( R.drawable.my_ads_icon, 0,R.drawable.arrow_right, 0);
-            binding.joinMemberShipAccountFragment.setCompoundDrawablesWithIntrinsicBounds( R.drawable.blue_membership_icon, 0,R.drawable.arrow_right, 0);
-            binding.helpSupportAccountFragment.setCompoundDrawablesWithIntrinsicBounds( R.drawable.help_support_icon, 0,R.drawable.arrow_right, 0);
-            binding.cancelSubscriptionAccountFragment.setCompoundDrawablesWithIntrinsicBounds( R.drawable.cancel_sub_icon, 0,R.drawable.arrow_right, 0);
+//            binding.joinMemberShipAccountFragment.setCompoundDrawablesWithIntrinsicBounds( R.drawable.blue_membership_icon, 0,R.drawable.arrow_right, 0);
+//            binding.helpSupportAccountFragment.setCompoundDrawablesWithIntrinsicBounds( R.drawable.help_support_icon, 0,R.drawable.arrow_right, 0);
+//            binding.cancelSubscriptionAccountFragment.setCompoundDrawablesWithIntrinsicBounds( R.drawable.cancel_sub_icon, 0,R.drawable.arrow_right, 0);
     }
 }
 }

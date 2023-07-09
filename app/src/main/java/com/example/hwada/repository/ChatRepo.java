@@ -1,6 +1,5 @@
 package com.example.hwada.repository;
 
-import android.app.Application;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -9,18 +8,13 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.hwada.Model.Ad;
 import com.example.hwada.Model.Chat;
-import com.example.hwada.Model.Message;
 import com.example.hwada.Model.User;
-import com.example.hwada.application.App;
 import com.example.hwada.database.DbHandler;
-import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
-import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -29,16 +23,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Transaction;
 
-import org.checkerframework.checker.units.qual.A;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -187,9 +175,11 @@ public class ChatRepo {
         Log.d(TAG, "startChatListener: ");
         listenerRegistration = CollectionRef.Companion.getChatRef(rootRef, userId).orderBy("lastMessage.timeStamp", Query.Direction.ASCENDING).addSnapshotListener(listener);
     }
-    public void removeChatListener(){
+
+    public void removeChatListener() {
         listenerRegistration.remove();
     }
+
     public void deleteChat(String userId, String chatId) {
         Log.d(TAG, "deleteChat: remove listener");
         CollectionRef.Companion.getChatRef(rootRef, userId).document(chatId).collection(DbHandler.messagesCollection).get().addOnCompleteListener(task -> {

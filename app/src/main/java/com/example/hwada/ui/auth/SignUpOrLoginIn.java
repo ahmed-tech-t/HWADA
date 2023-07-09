@@ -125,6 +125,7 @@ public class SignUpOrLoginIn extends AppCompatActivity implements View.OnClickLi
     }
     private void goToSplashActivity(User user) {
         Intent intent = new Intent(SignUpOrLoginIn.this, SplashActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra("user", user);
         startActivity(intent);
         finish();

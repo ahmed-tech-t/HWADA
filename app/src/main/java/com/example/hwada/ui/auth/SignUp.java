@@ -172,9 +172,10 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
     }
     private void goToSplashActivity(User user) {
         Intent intent = new Intent(SignUp.this, SplashActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra("user", user);
+        this.finish();
         startActivity(intent);
-        finish();
     }
 
     public void hideKeyBoard(View v){
@@ -185,7 +186,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        finish();
+        this.finish();
     }
 
 }

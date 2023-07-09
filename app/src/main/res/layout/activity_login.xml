@@ -23,7 +23,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
-        android:id="@+id/login_main_linear_layout"
+
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:elevation="10dp"
@@ -36,16 +36,17 @@
         app:layout_constraintTop_toBottomOf="@+id/logo">
 
         <ScrollView
+
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingTop="20dp">
 
             <LinearLayout
+                android:id="@+id/login_main_linear_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:layout_marginTop="60dp"
                 android:gravity="center"
+                android:orientation="vertical"
                 android:paddingLeft="50dp"
                 android:paddingRight="50dp">
 
@@ -53,36 +54,37 @@
                     android:id="@+id/et_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/email_hint"
+                    android:layout_marginTop="80dp"
                     android:drawableLeft="@drawable/email_icon"
                     android:drawablePadding="10dp"
+                    android:hint="@string/email_hint"
                     android:inputType="textEmailAddress"
-                    android:paddingLeft="5dp"
-                    android:layout_marginTop="20dp" />
+                    android:paddingLeft="5dp" />
 
 
                 <EditText
                     android:id="@+id/et_pass"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/password_hint"
+                    android:layout_marginTop="20dp"
                     android:drawableLeft="@drawable/password_icon"
                     android:drawablePadding="10dp"
-                    android:inputType="textPassword"
-                    android:layout_marginTop="20dp" />
+                    android:hint="@string/password_hint"
+                    android:inputType="textPassword" />
 
 
                 <Button
                     android:id="@+id/bt_login"
                     android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
                     android:background="@drawable/layout_design_curve"
                     android:backgroundTint="@color/mainBackGround"
                     android:text="@string/login"
                     android:textAllCaps="false"
-                    android:textSize="18dp"
-                    android:layout_marginTop="30dp"
                     android:textColor="@color/white"
-                    android:layout_height="wrap_content" />
+                    android:textSize="18dp" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -90,20 +92,22 @@
                     android:layout_marginTop="10dp"
                     android:gravity="center"
                     android:orientation="horizontal">
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/not_having_account"
                         android:textColor="@color/black" />
+
                     <TextView
                         android:id="@+id/tv_login"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/signUp_link"
-                        android:textSize="15dp"
                         android:layout_marginLeft="5dp"
                         android:layout_marginRight="5dp"
-                        android:textColor="@color/background" />
+                        android:text="@string/signUp_link"
+                        android:textColor="@color/background"
+                        android:textSize="15dp" />
 
                 </LinearLayout>
 
@@ -111,8 +115,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:gravity="center"
                     android:layout_marginTop="30dp"
+                    android:gravity="center"
                     android:orientation="horizontal">
 
                     <Button
@@ -123,22 +127,18 @@
                         android:background="@drawable/layout_design_curve"
                         android:drawableLeft="@drawable/google_icon"
                         android:drawablePadding="10sp"
-                        android:textAllCaps="false"
                         android:padding="13dp"
-
                         android:text="@string/conWithGoogle"
+
+                        android:textAllCaps="false"
                         android:textColor="@color/black"
                         android:textSize="20dp" />
 
                 </LinearLayout>
 
 
-
-
             </LinearLayout>
         </ScrollView>
-
-
 
 
     </LinearLayout>

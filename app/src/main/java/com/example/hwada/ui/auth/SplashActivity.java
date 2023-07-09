@@ -68,16 +68,15 @@ public class SplashActivity extends AppCompatActivity {
     }
     private void goToMainActivity(User user) {
         Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra("user", user);
         startActivity(intent);
         finish();
     }
     private void goToAuthInActivity() {
         Intent intent = new Intent(SplashActivity.this, SignUpOrLoginIn.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();
     }
-
-
-
 }

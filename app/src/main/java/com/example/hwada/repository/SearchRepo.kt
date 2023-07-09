@@ -1,11 +1,9 @@
 package com.example.hwada.repository
 
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import com.example.hwada.Model.Ad
 import com.example.hwada.Model.User
 import com.google.android.gms.tasks.Task
-import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 import kotlinx.coroutines.Dispatchers
@@ -16,15 +14,22 @@ import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 class SearchRepo @Inject constructor(
-    val  rootRef : FirebaseFirestore
+    val rootRef: FirebaseFirestore
 ) {
 
     private val TAG = "SearchRepo"
 
-    suspend fun search(user: User, keyword : String ): Flow<List<Ad>> = callbackFlow {
+    suspend fun search(user: User, keyword: String): Flow<List<Ad>> = callbackFlow {
+        val searchLower: String = keyword.toLowerCase()
+
         CollectionRef.getAdColHomePageRef(rootRef)
             .whereEqualTo("active", true)
-            .whereEqualTo("title",keyword)
+            .whereEqualTo("title", keyword)
+
+//            .orderBy("title").whereGreaterThanOrEqualTo("title", searchLower)
+//            .whereLessThanOrEqualTo("title", searchLower + "\uf8ff")
+
+
             .get()
             .addOnCompleteListener { task: Task<QuerySnapshot> ->
                 if (task.isSuccessful) {

@@ -148,6 +148,9 @@
     <string name="storagePermissionWarning">صلاحيات التخزين مهمه ليعمل التطبيق بشكل جيد</string>
     <string name="faildToLoadYourLocation">حدث خطا ما اثناء تحديد موقعك</string>
     <string name="googleServicesWarning">عذرا خدمات جوجل غير متوفرة على هذا الهاتف</string>
+    <string name="userAds">اعلانات المستخدم</string>
+
+
 
     <string-array name="days">
         <item>السبت</item>

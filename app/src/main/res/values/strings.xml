@@ -40,6 +40,8 @@
     <string name="posVal" translatable="false">pos</string>
     <string name="imagesUrlVal" translatable="false">imagesUrl</string>
 
+    <string name="status" >Status :</string>
+    <string name="open"> Open</string>
     <string name="imageVal" translatable="false">image</string>
     <string-array name="daysVal" translatable="false">
         <item>saturday</item>
@@ -213,7 +215,7 @@
     <string name="updateAdMessage">your ads list will be updated automatically once update is complete</string>
     <string name="updateProfileMessage">profile will be updated automatically once update is complete </string>
     <string name="sortBy">Sort by :</string>
-
+    <string name="userAds"><b>User Ads</b></string>
 
     <string name="theClosest">The closest</string>
     <string name="rating">Rating</string>

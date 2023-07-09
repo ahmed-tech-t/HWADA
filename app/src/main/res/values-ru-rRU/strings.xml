@@ -137,9 +137,56 @@
     <string name="message"><font size="18">Сообщение</font> </string>
     <string name="noMessages">Нет сообщений</string>
     <string name="addCaption">Добавить подпись..</string>
+    <string name="userAds"><b>Объявления пользователей</b></string>
+
     <string-array name="spinner_gender">
         <item>Мужской</item>
         <item>Женский</item>
     </string-array>
 
+
+    <string-array name="days">
+        <item>Суббота</item>
+        <item>Воскресенье</item>
+        <item>Понедельник</item>
+        <item>Вторник</item>
+        <item>Среда</item>
+        <item>Четверг</item>
+        <item>Пятница</item>
+    </string-array>
+
+    <string name="theClosest">Ближайший</string>
+    <string name="rating">Рейтинг</string>
+    <string name="updateDate">Дата</string>
+    <string name="apply">Применить</string>
+    <string name ="theCheapest">Самый дешевый</string>
+    <string name="theExpensive">Дорогой</string>
+    <string name="closed">Закрыто</string>
+
+    <string name="activate" >Активировать</string>
+    <string name="deactivate" >Деактивировать</string>
+    <string name="active">Активный</string>
+    <string name="inactive">Неактивно</string>
+    <string name="adNotActiveAnyMoreMaessage">это объявление было деактивировано владельцем</string>
+    <string name="deleteChatsDialogBody">Примечание: вы удалите только свою копию выбранных чатов </string>
+
+    <string name="photo">Фото</string>
+    <string name="locationPermissionWarning">Разрешение на определение местоположения требуется для правильной работы приложения.</string>
+    <string name="cameraPermissionWarning">Для использования функций камеры требуется разрешение камеры.</string>
+    <string name="storagePermissionWarning">Разрешение на хранение требуется для правильной работы приложения.</string>
+    <string name="faildToLoadYourLocation">не удалось загрузить ваше местоположение</string>
+    <string name="googleServicesWarning">Сервис Google недоступен на этом устройстве</string>
+    <string name="unsupportedLocation">скоро мы поддержим ваше местоположение</string>
+    <string name="joinAt">присоединяйтесь к Hwada в </string>
+    <string name="lastSeen">последнее посещение </string>
+
+    <string name="stop">стоп</string>
+    <string name="loadingImagesInstruction">Загрузка изображений...</string>
+    <string name="failedToLoadImages">Не удалось загрузить изображения. Проверьте подключение и повторите попытку</string>
+    <string name="updateAdMessage">список ваших объявлений будет обновлен автоматически после завершения обновления</string>
+    <string name="updateProfileMessage">профиль будет обновлен автоматически после завершения обновления</string>
+    <string name="sortBy">Сортировать по:</string>
+
+    <string name="status" >Статус:</string>
+    <string name="open">Открыть</string>
 </resources>

@@ -145,7 +145,7 @@
                        android:textColor="@color/black"
                        android:textSize="18dp"
                        style="bold"
-                       android:text="@string/similarAds"/>
+                       android:text="@string/userAds"/>
                </LinearLayout>
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>

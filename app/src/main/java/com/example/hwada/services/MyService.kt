@@ -36,14 +36,12 @@ class MyService : Service(){
     lateinit var repo : NotificationRepo;
 
 
-
     @Inject
    lateinit var  application:App
 
     private val binder = MyBinder()
 
     fun observe(user:User) = serviceScope.launch {
-        Log.d(TAG, "observe: Starting service")
         repo.chatListener(user.uId)
 
        repo.chatListener(user.uId).collect{

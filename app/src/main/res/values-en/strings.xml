@@ -136,6 +136,8 @@
     <string name="message"><font size="18">Message</font> </string>
     <string name="noMessages">No messages</string>
     <string name="addCaption">Add a caption..</string>
+    <string name="userAds">User Ads</string>
+
     <string-array name="spinner_gender">
         <item>Male</item>
         <item>Female</item>
@@ -151,5 +153,21 @@
     <string name="joinAt">join Hwada in </string>
     <string name="lastSeen">last seen </string>
     <string name="stop">stop</string>
+
+    <string name="theClosest">The closest</string>
+    <string name="rating">Rating</string>
+    <string name="updateDate">Date</string>
+    <string name="apply">Apply</string>
+    <string name ="theCheapest">The cheapest</string>
+    <string name="theExpensive">The Expensive</string>
+    <string name="closed">Closed</string>
+
+    <string name="activate" >Activate</string>
+    <string name="deactivate" >Deactivate</string>
+    <string name="active">Active</string>
+    <string name="inactive">Inactive</string>
+    <string name="adNotActiveAnyMoreMaessage">this ad has been deactivated by the owner</string>
+    <string name="deleteChatsDialogBody">Notice: that you will only delete your copy of this selected chats </string>
+
 
 </resources>

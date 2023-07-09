@@ -144,85 +144,85 @@
                 android:layout_marginRight="10dp"
                 android:background="@color/white_gray" />
 
-            <TextView
-                android:id="@+id/join_member_ship_account_fragment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="?android:attr/selectableItemBackground"
-                android:clickable="true"
-                android:drawableStart="@drawable/blue_membership_icon"
-                android:drawableEnd="@drawable/arrow_right"
-                android:drawablePadding="20dp"
-                android:focusable="true"
-                android:paddingLeft="20dp"
-                android:paddingTop="20dp"
-                android:paddingRight="20dp"
-                android:paddingBottom="10dp"
+<!--            <TextView-->
+<!--                android:id="@+id/join_member_ship_account_fragment"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_gravity="center"-->
+<!--                android:background="?android:attr/selectableItemBackground"-->
+<!--                android:clickable="true"-->
+<!--                android:drawableStart="@drawable/blue_membership_icon"-->
+<!--                android:drawableEnd="@drawable/arrow_right"-->
+<!--                android:drawablePadding="20dp"-->
+<!--                android:focusable="true"-->
+<!--                android:paddingLeft="20dp"-->
+<!--                android:paddingTop="20dp"-->
+<!--                android:paddingRight="20dp"-->
+<!--                android:paddingBottom="10dp"-->
 
-                android:text="@string/joinBlueMemberShip"
-                android:textColor="@color/black"
-                android:textSize="18dp" />
+<!--                android:text="@string/joinBlueMemberShip"-->
+<!--                android:textColor="@color/black"-->
+<!--                android:textSize="18dp" />-->
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:background="@color/white_gray" />
+<!--            <View-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="1dp"-->
+<!--                android:layout_marginLeft="10dp"-->
+<!--                android:layout_marginRight="10dp"-->
+<!--                android:background="@color/white_gray" />-->
 
 
-            <TextView
-                android:id="@+id/help_support_account_fragment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="?android:attr/selectableItemBackground"
-                android:clickable="true"
-                android:drawableStart="@drawable/help_support_icon"
-                android:drawableEnd="@drawable/arrow_right"
-                android:drawablePadding="20dp"
-                android:focusable="true"
-                android:paddingLeft="20dp"
-                android:paddingTop="20dp"
-                android:paddingRight="20dp"
-                android:paddingBottom="10dp"
-                android:text="@string/helpAndSupport"
-                android:textColor="@color/black"
-                android:textSize="18dp" />
+<!--            <TextView-->
+<!--                android:id="@+id/help_support_account_fragment"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_gravity="center"-->
+<!--                android:background="?android:attr/selectableItemBackground"-->
+<!--                android:clickable="true"-->
+<!--                android:drawableStart="@drawable/help_support_icon"-->
+<!--                android:drawableEnd="@drawable/arrow_right"-->
+<!--                android:drawablePadding="20dp"-->
+<!--                android:focusable="true"-->
+<!--                android:paddingLeft="20dp"-->
+<!--                android:paddingTop="20dp"-->
+<!--                android:paddingRight="20dp"-->
+<!--                android:paddingBottom="10dp"-->
+<!--                android:text="@string/helpAndSupport"-->
+<!--                android:textColor="@color/black"-->
+<!--                android:textSize="18dp" />-->
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:background="@color/white_gray" />
+<!--            <View-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="1dp"-->
+<!--                android:layout_marginLeft="10dp"-->
+<!--                android:layout_marginRight="10dp"-->
+<!--                android:background="@color/white_gray" />-->
 
-            <TextView
-                android:id="@+id/cancel_subscription_account_fragment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="?android:attr/selectableItemBackground"
-                android:clickable="true"
-                android:drawableStart="@drawable/cancel_sub_icon"
-                android:drawableEnd="@drawable/arrow_right"
-                android:drawablePadding="20dp"
-                android:focusable="true"
-                android:paddingLeft="20dp"
-                android:paddingTop="20dp"
-                android:paddingRight="20dp"
-                android:paddingBottom="10dp"
-                android:text="@string/cancelSubscription"
-                android:textColor="@color/black"
-                android:textSize="18dp" />
+<!--            <TextView-->
+<!--                android:id="@+id/cancel_subscription_account_fragment"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_gravity="center"-->
+<!--                android:background="?android:attr/selectableItemBackground"-->
+<!--                android:clickable="true"-->
+<!--                android:drawableStart="@drawable/cancel_sub_icon"-->
+<!--                android:drawableEnd="@drawable/arrow_right"-->
+<!--                android:drawablePadding="20dp"-->
+<!--                android:focusable="true"-->
+<!--                android:paddingLeft="20dp"-->
+<!--                android:paddingTop="20dp"-->
+<!--                android:paddingRight="20dp"-->
+<!--                android:paddingBottom="10dp"-->
+<!--                android:text="@string/cancelSubscription"-->
+<!--                android:textColor="@color/black"-->
+<!--                android:textSize="18dp" />-->
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:background="@color/white_gray" />
+<!--            <View-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="1dp"-->
+<!--                android:layout_marginLeft="10dp"-->
+<!--                android:layout_marginRight="10dp"-->
+<!--                android:background="@color/white_gray" />-->
 
             <TextView
                 android:id="@+id/tv_logout"

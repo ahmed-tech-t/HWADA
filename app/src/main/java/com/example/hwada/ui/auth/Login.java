@@ -84,9 +84,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
     }
     private void loginWithEmail(String email ,String pass){
             viewModel.loginWithEmail(email,pass);
-            viewModel.authenticatedUserLiveData.observe(this, authenticatedUser -> {
-                goToSplashActivity(authenticatedUser);
-        });
+            viewModel.authenticatedUserLiveData.observe(this, this::goToSplashActivity);
     }
     private boolean fieldsNotEmpty() {
         boolean validate = false;
@@ -133,15 +131,14 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 
     private void signInWithGoogleAuthCredential(AuthCredential googleAuthCredential) {
         viewModel.signInWithGoogle(googleAuthCredential);
-        viewModel.authenticatedUserLiveData.observe(this, authenticatedUser -> {
-            goToSplashActivity(authenticatedUser);
-        });
+        viewModel.authenticatedUserLiveData.observe(this, this::goToSplashActivity);
     }
     private void goToSplashActivity(User user) {
         Intent intent = new Intent(Login.this, SplashActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra("user", user);
+        this.finish();
         startActivity(intent);
-        finish();
     }
 
     public void hideKeyBoard(View v){
